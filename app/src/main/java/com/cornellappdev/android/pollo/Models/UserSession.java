@@ -13,4 +13,21 @@ public class UserSession {
         this.sessionExpiration = sessionExpiration;
         this.isActive = isActive;
     }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public Long getSessionExpiration() {
+        return sessionExpiration;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
 }

@@ -1,9 +1,5 @@
 package com.cornellappdev.android.pollo.Models;
 
-/**
- * Created by jehronpetty on 10/15/18.
- */
-
 public class User {
 
     enum Role {
