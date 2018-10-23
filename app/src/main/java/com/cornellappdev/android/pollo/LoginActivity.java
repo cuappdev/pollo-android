@@ -28,6 +28,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestProfile()
+                .requestEmail()
                 .build();
 
         SignInButton loginButton = (SignInButton)findViewById(R.id.sign_in_button);
@@ -35,23 +36,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setGoogleSignInButtonText(loginButton,"Continue with Google");
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        //If account is null, attempt to sign in, if not, launch the normal activity. updateUI(account);
-        if(account != null){
-            Intent data = new Intent();
-            data.putExtra("accountData_name", account.getDisplayName());
-            data.putExtra("accountData_givenName", account.getGivenName());
-            data.putExtra("accountData_familyName", account.getFamilyName());
-            data.putExtra("accountData_email", account.getEmail());
-            data.putExtra("accountData_id", account.getId());
-            setResult(RESULT_OK, data);
-            finish();
-        }
     }
 
     protected void setGoogleSignInButtonText(SignInButton signInButton, String buttonText) {

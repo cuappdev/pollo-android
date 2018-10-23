@@ -1,6 +1,7 @@
 package com.cornellappdev.android.pollo;
 
 import android.net.Uri;
+import android.util.Log;
 
 import com.cornellappdev.android.pollo.Models.GoogleCredentials;
 import com.cornellappdev.android.pollo.Models.Nodes.UserSessionNode;
@@ -19,20 +20,18 @@ import okhttp3.ResponseBody;
 public final class NetworkUtils {
 
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-    private static final String MOBILE_AUTH_ROUTE = "/auth/mobile";
+    private static final String MOBILE_AUTH_ROUTE = "/api/v2/auth/mobile";
+    static final String DEPLOYED_BACKEND = "http://pollo-backend.cornellappdev.com";
 
     public static UserSession userAuthenticate(GoogleCredentials googleCredentials) throws IOException {
 
         final String googleCredentialsJSON = new Gson().toJson(googleCredentials, GoogleCredentials.class);
         final RequestBody requestBody = RequestBody.create(JSON, googleCredentialsJSON);
-        final Uri endpoint = new Uri.Builder()
-                .authority(Constants.DEPLOYED_BACKEND)
-                .path(MOBILE_AUTH_ROUTE)
-                .build();
+        final String endpoint = DEPLOYED_BACKEND + MOBILE_AUTH_ROUTE;
         final OkHttpClient client = new OkHttpClient();
         final Request request = new Request.Builder()
-                .url(endpoint.toString())
-                .put(requestBody)
+                .url(endpoint)
+                .post(requestBody)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
