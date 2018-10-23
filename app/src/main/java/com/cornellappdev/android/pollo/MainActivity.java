@@ -1,5 +1,6 @@
 package com.cornellappdev.android.pollo;
 
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -41,12 +42,15 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
+
+    final int LOGIN_REQ_CODE = 10031;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final EditText editText = (EditText) findViewById(R.id.editText2);
+        final EditText editText = (EditText) findViewById(R.id.editText_joinPoll);
         editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -105,8 +109,22 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
+        Intent signInIntent = new Intent(this, LoginActivity.class);
+        startActivityForResult(signInIntent, LOGIN_REQ_CODE);
+
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == LOGIN_REQ_CODE) {
+            if (resultCode == RESULT_OK) {
+                String loginText = "Logged into ";
+                loginText += data.getStringExtra("accountData_email");
+                Snackbar loginDialog = Snackbar.make(findViewById(R.id.main_content), loginText, 200);
+                loginDialog.show();
+            }
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

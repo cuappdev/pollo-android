@@ -53,7 +53,9 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="0dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     </android.support.v4.view.ViewPager>
@@ -61,7 +63,7 @@
     <RelativeLayout
         android:id="@+id/InnerRelativeLayout"
         android:layout_width="wrap_content"
-        android:layout_height="40pt"
+        android:layout_height="64dp"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="0dp"
         android:background="@color/black">
@@ -70,51 +72,51 @@
             android:id="@+id/EditText"
             android:layout_width="match_parent"
             android:layout_height="30pt"
-            android:layout_marginBottom="5pt"
-            android:layout_marginLeft="6.5pt"
-            android:layout_marginRight="6.5pt"
-            android:layout_marginTop="5pt"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
             android:background="@drawable/rounded_container"
-            android:elevation="0dp"
-            android:gravity="end"
-            android:orientation="horizontal"
             android:descendantFocusability="beforeDescendants"
-            android:focusableInTouchMode="true">
+            android:elevation="0dp"
+            android:focusableInTouchMode="true"
+            android:gravity="end"
+            android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/editText2"
+                android:id="@+id/editText_joinPoll"
                 android:layout_width="0dp"
-                android:layout_height="19pt"
-                android:layout_marginBottom="5.5pt"
-                android:layout_marginEnd="11pt"
-                android:layout_marginStart="12pt"
-                android:layout_marginTop="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="6dp"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
                 android:cursorVisible="false"
-                android:focusedByDefault="false"
-                android:textCursorDrawable="@drawable/custom_cursor"
                 android:ems="10"
+                android:focusedByDefault="false"
                 android:hint="Enter a code..."
                 android:inputType="textCapCharacters"
                 android:maxLength="8"
                 android:textAlignment="viewStart"
                 android:textColor="@color/blueyGrey"
-                android:textColorHint="@color/blueyGrey" />
+                android:textColorHint="@color/blueyGrey"
+                android:textCursorDrawable="@drawable/custom_cursor" />
 
             <Button
                 android:id="@+id/join_poll_group"
-                android:layout_width="55pt"
+                android:layout_width="100dp"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="1pt"
-                android:layout_marginEnd="1pt"
                 android:layout_marginTop="1pt"
-                android:textColorHighlight="@color/black"
+                android:layout_marginEnd="1pt"
+                android:layout_marginBottom="1pt"
                 android:background="@drawable/rounded_join_button"
                 android:text="Join"
-                android:textSize="10pt"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
+                android:textColorHighlight="@color/black"
+                android:textSize="10pt"
                 android:textStyle="bold"
                 android:visibility="visible" />
 
