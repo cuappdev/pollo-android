@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        //Force sign out every app launch, for debugging purposes only
+        // Force sign out every app launch, for debugging purposes only
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestProfile()
                 .build();
@@ -132,10 +132,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        //        //If account is null, attempt to sign in, if not, launch the normal activity. updateUI(account);
+        final GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        // If account is null, attempt to sign in, if not, launch the normal activity. updateUI(account);
         if (account == null) {
-            Intent signInIntent = new Intent(this, LoginActivity.class);
+            final Intent signInIntent = new Intent(this, LoginActivity.class);
             startActivityForResult(signInIntent, LOGIN_REQ_CODE);
         } else {
             new RetrieveUserSessionTask().execute(account);
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
     class RetrieveUserSessionTask extends AsyncTask<GoogleSignInAccount, Void, UserSession> {
 
         protected UserSession doInBackground(GoogleSignInAccount... accounts) {
-            GoogleSignInAccount account = accounts[0];
+            final GoogleSignInAccount account = accounts[0];
             try {
                 userSession = NetworkUtils.userAuthenticate(new GoogleCredentials(
                         account.getId(), account.getGivenName(),
