@@ -21,7 +21,7 @@ public final class NetworkUtils {
 
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     private static final String MOBILE_AUTH_ROUTE = "/api/v2/auth/mobile";
-    static final String DEPLOYED_BACKEND = "http://pollo-backend.cornellappdev.com";
+    private static final String DEPLOYED_BACKEND = "http://pollo-backend.cornellappdev.com";
 
     public static UserSession userAuthenticate(GoogleCredentials googleCredentials) throws IOException {
 

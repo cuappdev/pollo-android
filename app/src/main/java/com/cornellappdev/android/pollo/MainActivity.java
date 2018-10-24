@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
-    final int LOGIN_REQ_CODE = 10031;
+    private static final int LOGIN_REQ_CODE = 10031;
 
     UserSession userSession;
 
@@ -157,11 +157,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(UserSession userSession) {
-            if (userSession != null) {
-                String loginText = "Logged into ";
-                loginText += userSession.getAccessToken();
-                Toast.makeText(MainActivity.this, loginText, Toast.LENGTH_SHORT).show();
-            }
+            if(userSession == null) return;
+
+            String loginText = "Logged into ";
+            loginText += userSession.getAccessToken();
+            Toast.makeText(MainActivity.this, loginText, Toast.LENGTH_SHORT).show();
         }
     }
 
