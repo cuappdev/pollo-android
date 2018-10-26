@@ -1,6 +1,7 @@
 package com.cornellappdev.android.pollo;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,6 +24,16 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.cornellappdev.android.pollo.Models.GoogleCredentials;
+import com.cornellappdev.android.pollo.Models.User;
+import com.cornellappdev.android.pollo.Models.UserSession;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,8 +52,9 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
+    private static final int LOGIN_REQ_CODE = 10031;
 
-    final int LOGIN_REQ_CODE = 10031;
+    UserSession userSession;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,22 +111,52 @@ public class MainActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
+        // Force sign out every app launch, for debugging purposes only
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestProfile()
+                .build();
+        GoogleSignIn.getClient(this, gso).signOut();
+      
         Intent signInIntent = new Intent(this, LoginActivity.class);
         startActivityForResult(signInIntent, LOGIN_REQ_CODE);
-
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == LOGIN_REQ_CODE) {
-            if (resultCode == RESULT_OK) {
-                String loginText = "Logged into ";
-                loginText += data.getStringExtra("accountData_email");
-                Snackbar loginDialog = Snackbar.make(findViewById(R.id.main_content), loginText, 200);
-                loginDialog.show();
-            }
+    protected void onStart() {
+        super.onStart();
+        final GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        // If account is null, attempt to sign in, if not, launch the normal activity. updateUI(account);
+        if (account == null) {
+            final Intent signInIntent = new Intent(this, LoginActivity.class);
+            startActivityForResult(signInIntent, LOGIN_REQ_CODE);
+        } else {
+            new RetrieveUserSessionTask().execute(account);
         }
     }
+
+    class RetrieveUserSessionTask extends AsyncTask<GoogleSignInAccount, Void, UserSession> {
+
+        protected UserSession doInBackground(GoogleSignInAccount... accounts) {
+            final GoogleSignInAccount account = accounts[0];
+            try {
+                userSession = NetworkUtils.userAuthenticate(new GoogleCredentials(
+                        account.getId(), account.getGivenName(),
+                        account.getFamilyName(), account.getEmail()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return userSession;
+        }
+
+        protected void onPostExecute(UserSession userSession) {
+            if(userSession == null) return;
+
+            String loginText = "Logged into ";
+            loginText += userSession.getAccessToken();
+            Toast.makeText(MainActivity.this, loginText, Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
