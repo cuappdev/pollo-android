@@ -3,7 +3,6 @@ package com.cornellappdev.android.pollo;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -12,7 +11,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cornellappdev.android.pollo.Models.GoogleCredentials;
+import com.cornellappdev.android.pollo.Models.Group;
 import com.cornellappdev.android.pollo.Models.User;
 import com.cornellappdev.android.pollo.Models.UserSession;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -34,6 +33,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final EditText editText = (EditText) findViewById(R.id.editText_joinPoll);
+        final EditText editText = findViewById(R.id.editText_joinPoll);
         editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button button = (Button) findViewById(R.id.join_poll_group);
+        Button button = findViewById(R.id.join_poll_group);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,21 +93,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN|WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
-
-        // getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = findViewById(R.id.tabs);
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
@@ -116,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 .requestProfile()
                 .build();
         GoogleSignIn.getClient(this, gso).signOut();
-      
+
         Intent signInIntent = new Intent(this, LoginActivity.class);
         startActivityForResult(signInIntent, LOGIN_REQ_CODE);
     }
@@ -149,11 +146,33 @@ public class MainActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(UserSession userSession) {
-            if(userSession == null) return;
+            if (userSession == null) return;
+            User.currentSession = userSession;
+            // TODO(kevin): Remove the literal, but also find out a better place for this call.
+            new RetrieveGroupsTask().execute("member");
+        }
+    }
 
-            String loginText = "Logged into ";
-            loginText += userSession.getAccessToken();
-            Toast.makeText(MainActivity.this, loginText, Toast.LENGTH_SHORT).show();
+    class RetrieveGroupsTask extends AsyncTask<String, Void, List<Group>> {
+
+        @Override
+        protected List<Group> doInBackground(String... strings) {
+            List<Group> groups = new ArrayList<>();
+            try {
+                groups = NetworkUtils.getAllGroups(strings[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return groups;
+        }
+
+        @Override
+        protected void onPostExecute(List<Group> groups) {
+            super.onPostExecute(groups);
+
+            // TODO(kevin): We can remove this. I just used it for testing purposes
+            String foundGroups = "Found " + groups.size() + " groups";
+            Toast.makeText(MainActivity.this, foundGroups, Toast.LENGTH_SHORT).show();
         }
     }
 
