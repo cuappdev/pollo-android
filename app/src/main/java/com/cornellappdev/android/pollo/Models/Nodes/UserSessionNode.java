@@ -10,10 +10,4 @@ public class UserSessionNode extends ApiResponse {
     public UserSession getData() {
         return data;
     }
-
-    @Override
-    public String toString() {
-        return "accessToken: " + getData().getAccessToken() + "\n"
-                + "isActive: " + getData().isActive();
-    }
 }
