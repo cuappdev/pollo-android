@@ -2,7 +2,7 @@ package com.cornellappdev.android.pollo.Models;
 
 public class User {
 
-    enum Role {
+    public enum Role {
         ADMIN,
         MEMBER
     }
