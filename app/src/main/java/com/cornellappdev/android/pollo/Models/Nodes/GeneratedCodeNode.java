@@ -1,8 +1,14 @@
 package com.cornellappdev.android.pollo.Models.Nodes;
 
-/**
- * Created by jehronpetty on 10/30/18.
- */
+import com.cornellappdev.android.pollo.Models.ApiResponse;
 
-public class GeneratedCodeNode {
+import org.json.JSONObject;
+
+public class GeneratedCodeNode extends ApiResponse {
+
+    private JSONObject data;
+
+    public JSONObject getData() {
+        return data;
+    }
 }
