@@ -6,7 +6,7 @@
 /build
 /captures
 .externalNativeBuild
-app/src/main/java/com/cornellappdev/android/pollo/Constants.java
+app/src/main/res/values/secrets.xml
 
 # Built application files
 *.apk
