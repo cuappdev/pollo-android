@@ -111,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
         // Force sign out every app launch, for debugging purposes only
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestProfile()
+                .requestIdToken(getString(R.string.web_client_id))
                 .build();
         GoogleSignIn.getClient(this, gso).signOut();
 
@@ -136,9 +137,7 @@ public class MainActivity extends AppCompatActivity {
         protected UserSession doInBackground(GoogleSignInAccount... accounts) {
             final GoogleSignInAccount account = accounts[0];
             try {
-                userSession = NetworkUtils.userAuthenticate(new GoogleCredentials(
-                        account.getId(), account.getGivenName(),
-                        account.getFamilyName(), account.getEmail()));
+                userSession = NetworkUtils.userAuthenticate(new GoogleCredentials(account.getIdToken()));
             } catch (IOException e) {
                 e.printStackTrace();
             }

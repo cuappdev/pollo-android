@@ -27,6 +27,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         final GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestProfile()
                 .requestEmail()
+                .requestIdToken(getString(R.string.web_client_id))
                 .build();
 
         SignInButton loginButton = (SignInButton) findViewById(R.id.sign_in_button);
