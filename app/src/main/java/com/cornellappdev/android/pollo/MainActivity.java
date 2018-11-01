@@ -158,7 +158,8 @@ public class MainActivity extends AppCompatActivity {
         protected List<Group> doInBackground(String... strings) {
             List<Group> groups = new ArrayList<>();
             try {
-                groups = NetworkUtils.getAllGroups(strings[0]);
+                groups = strings[0].equals("admin") ? NetworkUtils.getAllGroupsAsMember()
+                        : NetworkUtils.getAllGroupsAsAdmin();
             } catch (IOException e) {
                 e.printStackTrace();
             }
