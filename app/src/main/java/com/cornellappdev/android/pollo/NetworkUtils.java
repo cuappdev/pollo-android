@@ -23,7 +23,7 @@ import okhttp3.ResponseBody;
 
 final class NetworkUtils {
 
-    private static final  OkHttpClient client = new OkHttpClient();
+    private static final OkHttpClient client = new OkHttpClient();
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     private static final String AUTHORIZATION = "Authorization";
     private static final String BEARER = "Bearer";
