@@ -25,7 +25,7 @@ public class GroupEdge extends ApiResponse {
     public List<Group> edgesToModels() {
         List<Group> models = new ArrayList<>();
         for (GroupNode g : data) {
-            models.add(g.getNode());
+            models.add(g.getData());
         }
         return models;
     }
