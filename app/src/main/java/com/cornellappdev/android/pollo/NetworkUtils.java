@@ -174,7 +174,6 @@ final class NetworkUtils {
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
-            final ResponseBody responseBody = response.body();
             return response.isSuccessful();
         }
     }
