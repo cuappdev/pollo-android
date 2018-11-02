@@ -46,7 +46,7 @@ final class NetworkUtils {
     static UserSession userAuthenticate(final GoogleCredentials googleCredentials) throws IOException {
         final String googleCredentialsJSON = new Gson().toJson(googleCredentials, GoogleCredentials.class);
         final RequestBody requestBody = RequestBody.create(JSON, googleCredentialsJSON);
-        final String endpoint = R.string.deployed_backed + API_V2 + MOBILE_AUTH_ROUTE;
+        final String endpoint = R.string.deployed_backend + API_V2 + MOBILE_AUTH_ROUTE;
         final Request request = new Request.Builder()
                 .url(endpoint)
                 .post(requestBody)
