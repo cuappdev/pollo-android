@@ -30,8 +30,6 @@ final class NetworkUtils {
     private static final OkHttpClient client = new OkHttpClient();
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
-
-    private static final String API_V2 = "/api/v2";
     private static final String GENERATE_CODE_ROUTE = "/generate/code";
     private static final String MOBILE_AUTH_ROUTE = "/auth/mobile";
     private static final String JOIN_GROUP_ROUTE = "/join/session";
@@ -46,7 +44,7 @@ final class NetworkUtils {
     static UserSession userAuthenticate(final GoogleCredentials googleCredentials) throws IOException {
         final String googleCredentialsJSON = new Gson().toJson(googleCredentials, GoogleCredentials.class);
         final RequestBody requestBody = RequestBody.create(JSON, googleCredentialsJSON);
-        final String endpoint = R.string.deployed_backend + API_V2 + MOBILE_AUTH_ROUTE;
+        final String endpoint = R.string.deployed_backend + MOBILE_AUTH_ROUTE;
         final Request request = new Request.Builder()
                 .url(endpoint)
                 .post(requestBody)
@@ -67,7 +65,7 @@ final class NetworkUtils {
     }
 
     static String generateCode() throws IOException {
-        final String endpoint = R.string.deployed_backed + API_V2 + GENERATE_CODE_ROUTE;
+        final String endpoint = R.string.deployed_backend + GENERATE_CODE_ROUTE;
         final Request request = new Request.Builder()
                 .url(endpoint)
                 .build();
@@ -98,7 +96,7 @@ final class NetworkUtils {
         } catch (JSONException e) {
             return null;
         }
-        final String endpoint = R.string.deployed_backed + API_V2 + JOIN_GROUP_ROUTE;
+        final String endpoint = R.string.deployed_backend + JOIN_GROUP_ROUTE;
         final RequestBody requestBody = RequestBody.create(JSON, codeJSON.toString());
         final Request request = new Request.Builder()
                 .url(endpoint)
@@ -119,7 +117,7 @@ final class NetworkUtils {
     }
 
     static Group getGroup(final String id) throws IOException {
-        final String endpoint = R.string.deployed_backed + API_V2 + GET_GROUP_ROUTE + id;
+        final String endpoint = R.string.deployed_backend + GET_GROUP_ROUTE + id;
         final Request request = new Request.Builder()
                 .url(endpoint)
                 .addHeader(AUTHORIZATION, BEARER + " " + User.currentSession.getAccessToken())
@@ -147,7 +145,7 @@ final class NetworkUtils {
     }
 
     private static List<Group> getAllGroups(final String roleEndpoint) throws IOException {
-        final String endpoint = R.string.deployed_backed + API_V2 + GET_GROUPS_ROUTE + roleEndpoint;
+        final String endpoint = R.string.deployed_backend + GET_GROUPS_ROUTE + roleEndpoint;
         final Request request = new Request.Builder()
                 .url(endpoint)
                 .addHeader(AUTHORIZATION, BEARER + " " + User.currentSession.getAccessToken())
@@ -167,7 +165,7 @@ final class NetworkUtils {
     }
 
     static boolean leaveGroup(final String id) throws IOException {
-        final String endpoint = R.string.deployed_backed + API_V2 + GET_GROUP_ROUTE + id + MEMBERS_ENDPOINT;
+        final String endpoint = R.string.deployed_backend + GET_GROUP_ROUTE + id + MEMBERS_ENDPOINT;
         final Request request = new Request.Builder()
                 .url(endpoint)
                 .addHeader(AUTHORIZATION, BEARER + " " + User.currentSession.getAccessToken())
