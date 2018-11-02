@@ -134,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
 
     class RetrieveUserSessionTask extends AsyncTask<GoogleSignInAccount, Void, UserSession> {
 
+        @Override
         protected UserSession doInBackground(GoogleSignInAccount... accounts) {
             final GoogleSignInAccount account = accounts[0];
             try {
@@ -144,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
             return userSession;
         }
 
+        @Override
         protected void onPostExecute(UserSession userSession) {
             if (userSession == null) return;
             User.currentSession = userSession;
