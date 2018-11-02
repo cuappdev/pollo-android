@@ -25,10 +25,11 @@ import okhttp3.ResponseBody;
 
 final class NetworkUtils {
 
-    private static final OkHttpClient client = new OkHttpClient();
-    private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     private static final String AUTHORIZATION = "Authorization";
     private static final String BEARER = "Bearer";
+    private static final OkHttpClient client = new OkHttpClient();
+    private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+
 
     private static final String API_V2 = "/api/v2";
     private static final String GENERATE_CODE_ROUTE = "/generate/code";
@@ -37,10 +38,10 @@ final class NetworkUtils {
     private static final String GET_GROUP_ROUTE = "/sessions/";
     private static final String GET_GROUPS_ROUTE = "/sessions/all";
 
-    private static final String MEMBER_ENDPOINT = "/member";
-    private static final String MEMBERS_ENDPOINT = MEMBER_ENDPOINT + "s";
     private static final String ADMIN_ENDPOINT = "/admin";
     private static final String ADMINS_ENDPOINT = ADMIN_ENDPOINT + "s";
+    private static final String MEMBER_ENDPOINT = "/member";
+    private static final String MEMBERS_ENDPOINT = MEMBER_ENDPOINT + "s";
 
     static UserSession userAuthenticate(final GoogleCredentials googleCredentials) throws IOException {
         final String googleCredentialsJSON = new Gson().toJson(googleCredentials, GoogleCredentials.class);
