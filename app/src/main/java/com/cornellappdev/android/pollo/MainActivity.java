@@ -103,8 +103,8 @@ public class MainActivity extends AppCompatActivity implements GroupRecyclerView
             }
         });
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
     }
 
     @Override
