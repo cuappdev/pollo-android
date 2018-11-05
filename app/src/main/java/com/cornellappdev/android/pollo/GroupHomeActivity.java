@@ -9,6 +9,13 @@ import java.net.URISyntaxException;
 
 public class GroupHomeActivity extends AppCompatActivity {
 
+    private final String SERVER_POLL_END = "server/poll/end";
+    private final String SERVER_POLL_START = "";
+    private final String SERVER_POLL_RESULTS = "";
+    private final String SERVER_POLL_TALLY = "";
+    private final String SERVER_POLL_UPVOTE = "";
+
+
     private Socket mSocket;
     {
         try {
