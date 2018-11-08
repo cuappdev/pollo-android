@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         protected UserSession doInBackground(GoogleSignInAccount... accounts) {
             final GoogleSignInAccount account = accounts[0];
             try {
-                userSession = NetworkUtils.userAuthenticate(new GoogleCredentials(account.getIdToken()));
+                userSession = NetworkUtils.userAuthenticate(getApplicationContext(), new GoogleCredentials(account.getIdToken()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -160,8 +160,8 @@ public class MainActivity extends AppCompatActivity {
         protected List<Group> doInBackground(String... strings) {
             List<Group> groups = new ArrayList<>();
             try {
-                groups = strings[0].equals("admin") ? NetworkUtils.getAllGroupsAsMember()
-                        : NetworkUtils.getAllGroupsAsAdmin();
+                groups = strings[0].equals("admin") ? NetworkUtils.getAllGroupsAsMember(getApplicationContext())
+                        : NetworkUtils.getAllGroupsAsAdmin(getApplicationContext());
             } catch (IOException e) {
                 e.printStackTrace();
             }
