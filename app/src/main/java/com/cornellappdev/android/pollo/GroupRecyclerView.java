@@ -31,8 +31,31 @@ public class GroupRecyclerView extends RecyclerView.Adapter<GroupRecyclerView.Vi
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Group group = mData.get(position);
-        if(group != null)
+        if(group != null) {
             holder.groupName.setText(group.getName());
+            if(group.isLive())
+                holder.groupSubtext.setText("⚫ Live");
+            else {
+                long unixTime = System.currentTimeMillis() / 1000L;
+                long lastUpdated = Long.parseLong(group.getUpdatedAt());
+                String timeResult = "";
+                int[] timeSplit = Util.splitToComponentTimes(unixTime - lastUpdated);
+                for(int i=0;i<7;i++){
+                    switch (i){
+                        case 0: timeResult = timeSplit[i] + " years"; break;
+                        case 1: timeResult = timeSplit[i] + " months"; break;
+                        case 2: timeResult = timeSplit[i] + " weeks"; break;
+                        case 3: timeResult = timeSplit[i] + " days"; break;
+                        case 4: timeResult = timeSplit[i] + " hours"; break;
+                        case 5: timeResult = timeSplit[i] + " minutes"; break;
+                        case 6: timeResult = timeSplit[i] + " seconds"; break;
+                    }
+                    if(timeSplit[i] != 0)
+                        break;
+                }
+                holder.groupSubtext.setText("Last live " + timeResult + " ago.");
+            }
+        }
         //holder.groupSubtext.setText();
     }
 
