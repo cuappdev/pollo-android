@@ -1,13 +1,12 @@
 package com.cornellappdev.android.pollo.Models.Nodes;
 
-import com.cornellappdev.android.pollo.Models.ApiResponse;
 import com.cornellappdev.android.pollo.Models.Group;
 
-public class GroupNode extends ApiResponse {
+public class GroupNode {
 
-    private Group data;
+    private Group node;
 
-    public Group getData() {
-        return data;
+    public Group getNode() {
+        return node;
     }
 }

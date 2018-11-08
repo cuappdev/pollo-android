@@ -136,11 +136,6 @@ public class GroupFragment extends Fragment {
             super.onPostExecute(groups);
             //TODO: Remove when retrival is working
             Log.d("debug", Arrays.toString(groups.toArray()));
-            groups = new ArrayList<Group>();
-            groups.add(new Group("id2","RailgunTest","MyTask"));
-            groups.add(new Group("id3","MikotoTest","YourTask"));
-            if(x == 1)
-                groups.add(new Group("id4","World War 3","OURTask"));
 
             currentAdapter.addAll(groups);
             currentAdapter.notifyDataSetChanged();
