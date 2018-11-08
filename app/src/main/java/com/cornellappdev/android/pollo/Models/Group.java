@@ -5,6 +5,8 @@ public class Group {
     private String id;
     private String name;
     private String code;
+    private String updatedAt;
+    private boolean isLive;
 
     public Group(String id, String name, String code) {
         this.id = id;
@@ -18,6 +20,22 @@ public class Group {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public boolean isLive() {
+        return isLive;
+    }
+
+    public void setLive(boolean live) {
+        isLive = live;
     }
 
     public String getName() {
