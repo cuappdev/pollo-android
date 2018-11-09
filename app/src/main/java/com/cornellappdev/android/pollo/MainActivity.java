@@ -4,31 +4,22 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cornellappdev.android.pollo.Models.GoogleCredentials;
-import com.cornellappdev.android.pollo.Models.Group;
 import com.cornellappdev.android.pollo.Models.User;
 import com.cornellappdev.android.pollo.Models.UserSession;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -36,8 +27,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements GroupRecyclerView.ItemClickListener{
 
@@ -59,13 +48,6 @@ public class MainActivity extends AppCompatActivity implements GroupRecyclerView
     private static final int LOGIN_REQ_CODE = 10031;
 
     UserSession userSession;
-
-
-
-    List<Group> groupList_admin;
-    List<Group> groupList_memeber;
-    GroupRecyclerView groupViewAdapter_admin;
-    GroupRecyclerView groupViewAdapeter_member;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,8 +85,11 @@ public class MainActivity extends AppCompatActivity implements GroupRecyclerView
             }
         });
 
-        //Toolbar toolbar = findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
+        // Force sign out every app launch, for debugging purposes only
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestProfile()
+                .build();
+        GoogleSignIn.getClient(this, gso).signOut();
     }
 
     @Override
@@ -151,13 +136,6 @@ public class MainActivity extends AppCompatActivity implements GroupRecyclerView
             tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
         }
     }
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

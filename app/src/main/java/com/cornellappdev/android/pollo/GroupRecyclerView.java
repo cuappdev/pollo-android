@@ -12,7 +12,6 @@ import com.cornellappdev.android.pollo.Models.Group;
 import java.util.List;
 
 public class GroupRecyclerView extends RecyclerView.Adapter<GroupRecyclerView.ViewHolder> {
-    //https://stackoverflow.com/questions/40584424/simple-android-recyclerview-example
     private List<Group> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
