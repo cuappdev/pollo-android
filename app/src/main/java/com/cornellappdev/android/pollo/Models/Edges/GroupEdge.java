@@ -3,6 +3,7 @@ package com.cornellappdev.android.pollo.Models.Edges;
 import com.cornellappdev.android.pollo.Models.ApiResponse;
 import com.cornellappdev.android.pollo.Models.Group;
 import com.cornellappdev.android.pollo.Models.Nodes.GroupNode;
+import com.cornellappdev.android.pollo.Models.Nodes.GroupNodeResponse;
 
 import org.json.JSONObject;
 
@@ -25,7 +26,7 @@ public class GroupEdge extends ApiResponse {
     public List<Group> edgesToModels() {
         List<Group> models = new ArrayList<>();
         for (GroupNode g : data) {
-            models.add(g.getData());
+            models.add(g.getNode());
         }
         return models;
     }
