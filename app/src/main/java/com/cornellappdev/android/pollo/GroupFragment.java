@@ -72,7 +72,7 @@ public class GroupFragment extends Fragment {
 
         currentAdapter = new GroupRecyclerView(getContext(), new ArrayList<Group>());
         groupRecyclerView.setAdapter(currentAdapter);
-        new RetrieveGroupsTask().execute(new Util().new Triple(rootView,currentAdapter,this.sectionNumber));
+        new RetrieveGroupsTask().execute(new Util().new Triple(rootView, currentAdapter, this.sectionNumber));
         return rootView;
     }
 
@@ -105,11 +105,11 @@ public class GroupFragment extends Fragment {
 
         @Override
         protected List<Group> doInBackground(Util.Triple... data) {
-            rootView = (View)data[0].x;
-            currentAdapter = (GroupRecyclerView)data[0].y;
+            rootView = (View) data[0].x;
+            currentAdapter = (GroupRecyclerView) data[0].y;
             List<Group> groups = new ArrayList<>();
             try {
-                groups = ((int)data[0].z) == 1 ? NetworkUtils.getAllGroupsAsMember(getContext())
+                groups = ((int) data[0].z) == 1 ? NetworkUtils.getAllGroupsAsMember(getContext())
                         : NetworkUtils.getAllGroupsAsAdmin(getContext());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -123,7 +123,7 @@ public class GroupFragment extends Fragment {
 
             currentAdapter.addAll(groups);
             currentAdapter.notifyDataSetChanged();
-            if(groups.size() > 0)
+            if (groups.size() > 0)
                 rootView.findViewById(R.id.no_groups_layout).setVisibility(View.GONE);
         }
     }

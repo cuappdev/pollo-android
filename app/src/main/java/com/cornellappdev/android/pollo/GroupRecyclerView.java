@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.cornellappdev.android.pollo.Models.Group;
 
 import java.util.List;
@@ -25,29 +26,29 @@ public class GroupRecyclerView extends RecyclerView.Adapter<GroupRecyclerView.Vi
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.group_list_item, parent, false);
+        final View view = mInflater.inflate(R.layout.group_list_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Group group = mData.get(position);
-        if(group == null)
+        final Group group = mData.get(position);
+        if (group == null)
             return;
         holder.groupName.setText(group.getName());
-        if(group.isLive())
+        if (group.isLive())
             holder.groupSubtext.setText("⚫ Live");
         else {
             long unixTime = System.currentTimeMillis() / 1000L;
             long lastUpdated = Long.parseLong(group.getUpdatedAt());
             String timeResult = "";
             int[] timeSplit = Util.splitToComponentTimes(unixTime - lastUpdated);
-            for(int i=0;i<7;i++){
+            for (int i = 0; i < 7; i++) {
                 timeResult = timeSplit[i] + " " + TIME_LABELS[i];
-                if(timeSplit[i] != 0)
+                if (timeSplit[i] != 0)
                     break;
             }
-            holder.groupSubtext.setText("Last live " + timeResult + " ago.");
+            holder.groupSubtext.setText("Last live " + timeResult + " ago");
         }
     }
 
@@ -61,7 +62,7 @@ public class GroupRecyclerView extends RecyclerView.Adapter<GroupRecyclerView.Vi
         TextView groupSubtext;
         TextView groupMenu;
 
-        ViewHolder(View itemView){
+        ViewHolder(View itemView) {
             super(itemView);
             groupName = itemView.findViewById(R.id.textView_group);
             groupSubtext = itemView.findViewById(R.id.textView_group_live);
@@ -76,7 +77,7 @@ public class GroupRecyclerView extends RecyclerView.Adapter<GroupRecyclerView.Vi
         }
     }
 
-    public void addAll(List<Group> newList){
+    public void addAll(List<Group> newList) {
         mData.clear();
         mData.addAll(newList);
     }
