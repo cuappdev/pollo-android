@@ -13,6 +13,14 @@ public class Util {
             this.x = x;
             this.y = y;
         }
+
+        public X getX() {
+            return x;
+        }
+
+        public Y getY() {
+            return y;
+        }
     }
 
     public class Triple<X, Y, Z> {
@@ -24,6 +32,18 @@ public class Util {
             this.x = x;
             this.y = y;
             this.z = z;
+        }
+
+        public X getX() {
+            return x;
+        }
+
+        public Y getY() {
+            return y;
+        }
+
+        public Z getZ() {
+            return z;
         }
     }
 

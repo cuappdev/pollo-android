@@ -105,11 +105,12 @@ public class GroupFragment extends Fragment {
 
         @Override
         protected List<Group> doInBackground(Util.Triple... data) {
-            rootView = (View) data[0].x;
-            currentAdapter = (GroupRecyclerView) data[0].y;
+            final Util.Triple dataTriple = data[0];
+            rootView = (View) dataTriple.getX();
+            currentAdapter = (GroupRecyclerView) dataTriple.getY();
             List<Group> groups = new ArrayList<>();
             try {
-                groups = ((int) data[0].z) == 1 ? NetworkUtils.getAllGroupsAsMember(getContext())
+                groups = ((int) dataTriple.getZ()) == 1 ? NetworkUtils.getAllGroupsAsMember(getContext())
                         : NetworkUtils.getAllGroupsAsAdmin(getContext());
             } catch (IOException e) {
                 e.printStackTrace();
