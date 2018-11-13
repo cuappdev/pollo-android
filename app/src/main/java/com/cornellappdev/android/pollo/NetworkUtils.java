@@ -6,7 +6,7 @@ import com.cornellappdev.android.pollo.Models.Edges.GroupEdge;
 import com.cornellappdev.android.pollo.Models.GoogleCredentials;
 import com.cornellappdev.android.pollo.Models.Group;
 import com.cornellappdev.android.pollo.Models.Nodes.GeneratedCodeNode;
-import com.cornellappdev.android.pollo.Models.Nodes.GroupNode;
+import com.cornellappdev.android.pollo.Models.Nodes.GroupNodeResponse;
 import com.cornellappdev.android.pollo.Models.Nodes.UserSessionNode;
 import com.cornellappdev.android.pollo.Models.User;
 import com.cornellappdev.android.pollo.Models.UserSession;
@@ -110,8 +110,8 @@ final class NetworkUtils {
             if (responseBody != null) {
                 final String responseBodyString = responseBody.string();
                 final Gson responseBodyJSON = new Gson();
-                final GroupNode groupNode = responseBodyJSON.fromJson(responseBodyString, GroupNode.class);
-                return groupNode.getData();
+                final GroupNodeResponse groupNodeResponse = responseBodyJSON.fromJson(responseBodyString, GroupNodeResponse.class);
+                return groupNodeResponse.getData();
             }
         }
 
@@ -130,8 +130,8 @@ final class NetworkUtils {
             if (responseBody != null) {
                 final String responseBodyString = responseBody.string();
                 final Gson responseBodyJSON = new Gson();
-                final GroupNode groupNode = responseBodyJSON.fromJson(responseBodyString, GroupNode.class);
-                return groupNode.getData();
+                final GroupNodeResponse groupNodeResponse = responseBodyJSON.fromJson(responseBodyString, GroupNodeResponse.class);
+                return groupNodeResponse.getData();
             }
         }
 
