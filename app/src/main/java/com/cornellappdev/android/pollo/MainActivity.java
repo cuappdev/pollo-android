@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements GroupRecyclerView
             // Create the adapter that will return a fragment for each of the three
             // primary sections of the activity.
             mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
+          
             // Set up the ViewPager with the sections adapter.
             mViewPager = findViewById(R.id.container);
             mViewPager.setAdapter(mSectionsPagerAdapter);
