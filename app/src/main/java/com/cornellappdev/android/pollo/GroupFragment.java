@@ -34,6 +34,7 @@ import java.util.ListIterator;
  * create an instance of this fragment.
  */
 public class GroupFragment extends Fragment {
+
     private static final String ARG_SECTION_NUMBER = "section_number";
 
     private int sectionNumber;
@@ -49,8 +50,8 @@ public class GroupFragment extends Fragment {
      * number.
      */
     public static GroupFragment newInstance(int sectionNumber) {
-        GroupFragment fragment = new GroupFragment();
-        Bundle args = new Bundle();
+        final GroupFragment fragment = new GroupFragment();
+        final Bundle args = new Bundle();
         fragment.sectionNumber = sectionNumber;
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
@@ -65,8 +66,8 @@ public class GroupFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        RecyclerView groupRecyclerView = rootView.findViewById(R.id.group_list_recyclerView);
+        final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        final RecyclerView groupRecyclerView = rootView.findViewById(R.id.group_list_recyclerView);
         groupRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
 
         currentAdapter = new GroupRecyclerView(getContext(), new ArrayList<Group>());
@@ -92,33 +93,18 @@ public class GroupFragment extends Fragment {
         super.onDetach();
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
     class RetrieveGroupsTask extends AsyncTask<Util.Triple, Void, List<Group>> {
-        //TODO: For current debug display purposes only
-        int x;
 
         View rootView;
         GroupRecyclerView currentAdapter;
 
         @Override
         protected List<Group> doInBackground(Util.Triple... data) {
-            //TODO: Remove this, for current debug purposes only
-            this.x = ((int)data[0].z);
-
             rootView = (View)data[0].x;
             currentAdapter = (GroupRecyclerView)data[0].y;
             List<Group> groups = new ArrayList<>();
@@ -134,15 +120,11 @@ public class GroupFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Group> groups) {
             super.onPostExecute(groups);
-            //TODO: Remove when retrival is working
-            Log.d("debug", Arrays.toString(groups.toArray()));
 
             currentAdapter.addAll(groups);
             currentAdapter.notifyDataSetChanged();
             if(groups.size() > 0)
                 rootView.findViewById(R.id.no_groups_layout).setVisibility(View.GONE);
-
-            Log.d("debug", x + Arrays.toString(groups.toArray()));
         }
     }
 }
