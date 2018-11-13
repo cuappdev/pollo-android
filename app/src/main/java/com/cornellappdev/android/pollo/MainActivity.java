@@ -28,7 +28,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity implements GroupRecyclerView.ItemClickListener{
+public class MainActivity extends AppCompatActivity implements GroupRecyclerView.ItemClickListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -138,21 +138,6 @@ public class MainActivity extends AppCompatActivity implements GroupRecyclerView
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onItemClick(View view, int position) {
 
     }
@@ -160,6 +145,8 @@ public class MainActivity extends AppCompatActivity implements GroupRecyclerView
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
+     * <p>
+     * getItem is called to instantiate the fragment for the given page.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
@@ -169,14 +156,12 @@ public class MainActivity extends AppCompatActivity implements GroupRecyclerView
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
             return GroupFragment.newInstance(position + 1);
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            // Show 2 total pages.
             return 2;
         }
     }

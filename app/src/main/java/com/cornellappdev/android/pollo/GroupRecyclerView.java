@@ -58,9 +58,9 @@ public class GroupRecyclerView extends RecyclerView.Adapter<GroupRecyclerView.Vi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView groupName;
-        TextView groupSubtext;
-        TextView groupMenu;
+        final TextView groupName;
+        final TextView groupSubtext;
+        final TextView groupMenu;
 
         ViewHolder(View itemView) {
             super(itemView);
