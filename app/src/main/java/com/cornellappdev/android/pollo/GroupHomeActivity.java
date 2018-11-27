@@ -10,11 +10,20 @@ import java.net.URISyntaxException;
 public class GroupHomeActivity extends AppCompatActivity {
 
     private final String SERVER_POLL_END = "server/poll/end";
-    private final String SERVER_POLL_START = "";
-    private final String SERVER_POLL_RESULTS = "";
-    private final String SERVER_POLL_TALLY = "";
-    private final String SERVER_POLL_UPVOTE = "";
+    private final String SERVER_POLL_START = "server/poll/start";
+    private final String SERVER_POLL_RESULTS = "server/poll/results";
+    private final String SERVER_POLL_TALLY = "server/poll/tally";
+    private final String SERVER_POLL_UPVOTE = "server/poll/upvote";
 
+    private final String USER_POLL_START = "user/poll/start";
+    private final String USER_POLL_END = "user/poll/end";
+    private final String USER_POLL_RESULTS = "user/poll/results";
+    private final String USER_POLL_RESULTS_LIVE = "user/poll/results/live";
+    private final String USER_COUNT = "user/count";
+
+    private final String ADMIN_POLL_START = "admin/poll/start";
+    private final String ADMIN_POLL_UPDATE_TALLY = "admin/poll/updateTally";
+    private final String ADMIN_POLL_ENDED = "admin/poll/ended";
 
     private Socket mSocket;
     {
