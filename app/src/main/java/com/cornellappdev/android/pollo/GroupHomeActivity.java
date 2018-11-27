@@ -2,7 +2,6 @@ package com.cornellappdev.android.pollo;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.cornellappdev.android.pollo.Models.Socket.CurrentState;
 import com.cornellappdev.android.pollo.Models.Socket.Poll;
@@ -84,7 +83,7 @@ public class GroupHomeActivity extends AppCompatActivity {
             });
         }
     };
-    
+
     private Emitter.Listener onUserPollResults = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
