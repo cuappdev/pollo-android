@@ -71,6 +71,12 @@ public class GroupFragment extends Fragment {
         groupRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
 
         currentAdapter = new GroupRecyclerView(getContext(), new ArrayList<Group>());
+        currentAdapter.setClickListener(new GroupRecyclerView.ItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                ((MainActivity)getActivity()).onItemClick(view, position);
+            }
+        });
         groupRecyclerView.setAdapter(currentAdapter);
         new RetrieveGroupsTask().execute(new Util().new Triple(rootView, currentAdapter, this.sectionNumber));
         return rootView;

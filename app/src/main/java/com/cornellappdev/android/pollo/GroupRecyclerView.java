@@ -73,7 +73,7 @@ public class GroupRecyclerView extends RecyclerView.Adapter<GroupRecyclerView.Vi
 
         @Override
         public void onClick(View view) {
-
+            mClickListener.onItemClick(view, getAdapterPosition());
         }
     }
 
