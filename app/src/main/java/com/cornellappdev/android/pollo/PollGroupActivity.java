@@ -66,15 +66,13 @@ public class PollGroupActivity extends AppCompatActivity implements PollRecycler
     private Integer userCount;
     private CurrentState currentState;
     private Socket mSocket;
-    {
-        try {
-            mSocket = IO.socket(getString(R.string.deployed_backend));
-        } catch (URISyntaxException e) {}
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        try {
+            mSocket = IO.socket(getString(R.string.deployed_backend));
+        } catch (URISyntaxException e) {}
         setContentView(R.layout.activity_poll_group);
         mSocket.on(USER_POLL_START, onUserPollStart);
         mSocket.on(USER_POLL_END, onUserPollEnd);
