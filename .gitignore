@@ -1,10 +1,11 @@
+.idea
+keys.properties
 *.iml
 .gradle
-/local.properties
-/.idea/
+local.properties
 .DS_Store
-/build
-/captures
+build
+captures
 .externalNativeBuild
 app/src/main/res/values/secrets.xml
 

@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">@color/aquaMarine</color>
+    <color name="colorPrimary">#29C09E</color>
     <color name="colorPrimaryDark">@color/bluishGreen</color>
     <color name="colorAccent">@color/black</color>
 
     <color name="blueyGrey">#9ea7b3</color>
     <color name="paleGray">#f5f7f8</color>
     <color name="white">#f6f6f6</color>
+    <color name="actualWhite">#ffffff</color>
     <color name="black">#202020</color>
     <color name="black_60">#559EA7B3</color>
     <color name="aquaMarine">#42DBC5</color>
     <color name="bluishGreen">#0AA17F</color>
+    <color name="settings_detail">#9EA7B3</color>
+    <color name="settings_divider">#e1e1e1</color>
 </resources>

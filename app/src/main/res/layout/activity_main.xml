@@ -2,27 +2,27 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
     android:id="@+id/main_content"
-    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:layout_width="match_parent">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_width="match_parent"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
+            android:background="@color/white"
             android:layout_height="180dp
 "
-            android:background="@color/white">
+            android:layout_width="match_parent">
 
             <TextView
                 android:id="@+id/textView5"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
                 android:text="Pollo"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="@color/black"
@@ -37,10 +37,11 @@
 
             <TextView
                 android:id="@+id/textView6"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="12dp"
+                android:layout_width="wrap_content"
+                android:onClick="showSettings"
                 android:text="⚙"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="@color/black"
@@ -51,10 +52,10 @@
 
             <TextView
                 android:id="@+id/textView7"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginTop="12dp"
+                android:layout_width="wrap_content"
                 android:text="＋"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="@color/black"
@@ -66,23 +67,23 @@
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tabs"
-            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:tabTextAppearance="@style/TabItemNotAllCaps"
+            android:layout_width="match_parent"
             app:tabBackground="@color/white"
             app:tabSelectedTextColor="@color/colorAccent"
+            app:tabTextAppearance="@style/TabItemNotAllCaps"
             app:tabTextColor="@color/blueyGrey">
 
             <android.support.design.widget.TabItem
                 android:id="@+id/tabItem"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
                 android:text="@string/joined" />
 
             <android.support.design.widget.TabItem
                 android:id="@+id/tabItem2"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
                 android:text="@string/created" />
 
         </android.support.design.widget.TabLayout>
@@ -91,55 +92,55 @@
 
     <android.support.v4.view.ViewPager
         android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:layout_above="@+id/InnerRelativeLayout"
-        android:layout_below="@+id/appbar"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="0dp"
+        android:layout_below="@+id/appbar"
+        android:layout_height="match_parent"
         android:layout_marginBottom="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_width="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     </android.support.v4.view.ViewPager>
 
     <RelativeLayout
+        android:background="@color/black"
         android:id="@+id/InnerRelativeLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="64dp"
         android:layout_alignParentBottom="true"
+        android:layout_height="64dp"
         android:layout_marginBottom="0dp"
-        android:background="@color/black">
+        android:layout_width="wrap_content">
 
         <LinearLayout
-            android:id="@+id/EditText"
-            android:layout_width="match_parent"
-            android:layout_height="30pt"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="8dp"
             android:background="@drawable/rounded_container"
             android:descendantFocusability="beforeDescendants"
             android:elevation="0dp"
             android:focusableInTouchMode="true"
             android:gravity="end"
+            android:id="@+id/EditText"
+            android:layout_height="30pt"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/editText_joinPoll"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="12dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginBottom="6dp"
-                android:layout_weight="1"
                 android:background="@android:color/transparent"
                 android:cursorVisible="false"
                 android:ems="10"
                 android:focusedByDefault="false"
                 android:hint="Enter a code..."
+                android:id="@+id/editText_joinPoll"
                 android:inputType="textCapCharacters"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="6dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:maxLength="8"
                 android:textAlignment="viewStart"
                 android:textColor="@color/blueyGrey"
@@ -147,13 +148,13 @@
                 android:textCursorDrawable="@drawable/custom_cursor" />
 
             <Button
-                android:id="@+id/join_poll_group"
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:layout_marginTop="1pt"
-                android:layout_marginEnd="1pt"
-                android:layout_marginBottom="1pt"
                 android:background="@drawable/rounded_join_button"
+                android:id="@+id/join_poll_group"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="1pt"
+                android:layout_marginEnd="1pt"
+                android:layout_marginTop="1pt"
+                android:layout_width="100dp"
                 android:text="Join"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
@@ -168,14 +169,14 @@
     </RelativeLayout>
 
     <!--<android.support.design.widget.FloatingActionButton-->
-        <!--android:id="@+id/fab"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="end|bottom"-->
-        <!--android:layout_margin="@dimen/fab_margin"-->
-        <!--app:backgroundTint="@color/colorPrimaryDark"-->
-        <!--app:elevation="4dp"-->
-        <!--app:fabSize="normal"-->
-        <!--app:srcCompat="@drawable/ic_baseline_create_24px" />-->
+    <!--android:id="@+id/fab"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_gravity="end|bottom"-->
+    <!--android:layout_margin="@dimen/fab_margin"-->
+    <!--app:backgroundTint="@color/colorPrimaryDark"-->
+    <!--app:elevation="4dp"-->
+    <!--app:fabSize="normal"-->
+    <!--app:srcCompat="@drawable/ic_baseline_create_24px" />-->
 
 </RelativeLayout>

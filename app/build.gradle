@@ -1,3 +1,6 @@
+def keyPropertiesFile = rootProject.file("keys.properties")
+def keyProperties = new Properties()
+keyProperties.load(new FileInputStream(keyPropertiesFile))
 apply plugin: 'com.android.application'
 
 android {
@@ -9,6 +12,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "web_client_id", keyProperties['web_client_id'])
+        buildConfigField("String", "deployed_backend", keyProperties['deployed_backend'])
     }
     buildTypes {
         release {
@@ -34,3 +39,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
+
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'

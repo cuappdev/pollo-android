@@ -27,7 +27,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         final GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestProfile()
                 .requestEmail()
-                .requestIdToken(getString(R.string.web_client_id))
+                .requestIdToken(BuildConfig.web_client_id)
                 .build();
 
         SignInButton loginButton = (SignInButton) findViewById(R.id.sign_in_button);
@@ -35,6 +35,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setGoogleSignInButtonText(loginButton, "Continue with Google");
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // This is so when you are on the login activity and press the back button, you go to the home screen
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        super.onBackPressed();
     }
 
     @Override
@@ -113,9 +123,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            //Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
             //updateUI(null);
-            Log.d("Testing", "Logged In Failed: " + e.getStatusCode());
         }
     }
 }

@@ -106,6 +106,11 @@ public class MainActivity extends AppCompatActivity implements GroupRecyclerView
         }
     }
 
+    public void showSettings(View view){
+        Intent settings = new Intent(MainActivity.this, SettingsActivity.class);
+        startActivity(settings);
+    }
+
     class RetrieveUserSessionTask extends AsyncTask<GoogleSignInAccount, Void, UserSession> {
 
         @Override

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    tools:context=".SettingsActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:background="@color/white"
+            android:id="@+id/toolbar"
+            android:layout_height="?android:attr/actionBarSize"
+            android:layout_width="match_parent"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:titleTextColor="@color/black" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:background="@color/actualWhite"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context=".SettingsActivity"
+        tools:showIn="@layout/activity_settings">
+
+        <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="18dp"
+            android:layout_marginTop="20dp"
+            android:layout_width="fill_parent"
+            android:stretchColumns="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteY="0dp">
+
+            <TextView
+                android:layout_marginEnd="18dp"
+                android:text="Account"
+                android:textColor="@color/black"
+                android:textSize="@dimen/header_font_size"
+                android:textStyle="bold" />
+
+            <TextView
+                android:fontFamily="sans-serif-medium"
+                android:id="@+id/emailText"
+                android:layout_marginEnd="18dp"
+                android:layout_marginTop="5.5dp"
+                android:text="Unknown"
+                android:textColor="@color/settings_detail" />
+
+            <View
+                android:background="@color/settings_divider"
+                android:layout_height="1dp"
+                android:layout_marginTop="17.5dp" />
+
+            <TextView
+                android:layout_marginEnd="18dp"
+                android:layout_marginTop="14.5dp"
+                android:text="About"
+                android:textColor="@color/black"
+                android:textSize="@dimen/header_font_size"
+                android:textStyle="bold" />
+
+            <TextView
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginEnd="18dp"
+                android:layout_marginTop="5.5dp"
+                android:text="@string/settings_about"
+                android:textColor="@color/settings_detail"
+                android:textSize="16dp" />
+
+            <TextView
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginEnd="18dp"
+                android:layout_marginTop="18dp"
+                android:onClick="moreAppsButtonClicked"
+                android:text="More Apps"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/header_font_size" />
+
+            <TextView
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginEnd="18dp"
+                android:layout_marginTop="18dp"
+                android:onClick="visitOurWebsiteButtonClicked"
+                android:text="Visit Our Website"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/header_font_size" />
+
+            <View
+                android:background="@color/settings_divider"
+                android:layout_height="2dp"
+                android:layout_marginTop="19.5dp" />
+
+            <TextView
+                android:layout_marginEnd="18dp"
+                android:layout_marginTop="20dp"
+                android:text="More"
+                android:textColor="@color/black"
+                android:textSize="@dimen/header_font_size"
+                android:textStyle="bold" />
+
+            <TextView
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginEnd="18dp"
+                android:layout_marginTop="5.5dp"
+                android:text="@string/settings_more"
+                android:textColor="@color/settings_detail"
+                android:textSize="16sp" />
+
+            <TextView
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginEnd="18dp"
+                android:layout_marginTop="18dp"
+                android:onClick="sendFeedbackButtonClicked"
+                android:text="Send Feedback"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/header_font_size" />
+
+            <TextView
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginEnd="18dp"
+                android:layout_marginTop="18dp"
+                android:onClick="privacyPolicyButtonClicked"
+                android:text="Privacy Policy"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/header_font_size" />
+        </TableLayout>
+
+        <View
+            android:background="#e1e1e1"
+            android:layout_height="1dp"
+            android:layout_width="match_parent"
+            app:layout_constraintBottom_toTopOf="@id/button2" />
+
+        <Button
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:background="@color/actualWhite"
+            android:fontFamily="sans-serif-medium"
+            android:id="@+id/button2"
+            android:layout_height="58.5dp"
+            android:layout_marginBottom="0dp"
+            android:layout_width="match_parent"
+            android:onClick="logoutButtonClicked"
+            android:text="Log Out"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.design.widget.CoordinatorLayout>
