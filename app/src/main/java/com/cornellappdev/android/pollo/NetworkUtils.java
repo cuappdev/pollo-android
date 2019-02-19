@@ -2,6 +2,7 @@ package com.cornellappdev.android.pollo;
 
 import android.content.Context;
 
+import android.util.Log;
 import com.cornellappdev.android.pollo.Models.Edges.GroupEdge;
 import com.cornellappdev.android.pollo.Models.GoogleCredentials;
 import com.cornellappdev.android.pollo.Models.Group;
@@ -27,14 +28,14 @@ import okhttp3.ResponseBody;
 
 final class NetworkUtils {
 
-    private static final String AUTHORIZATION = "Authorization";
-    private static final String BEARER = "Bearer";
+    static final String AUTHORIZATION = "Authorization";
+    static final String BEARER = "Bearer";
     private static final OkHttpClient client = new OkHttpClient();
-    private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
     private static final String GENERATE_CODE_ROUTE = "/generate/code";
     private static final String MOBILE_AUTH_ROUTE = "/auth/mobile";
-    private static final String JOIN_GROUP_ROUTE = "/join/session";
+    static final String JOIN_GROUP_ROUTE = "/join/session";
     private static final String GET_GROUP_ROUTE = "/sessions/";
     private static final String GET_GROUPS_ROUTE = "/sessions/all";
 
@@ -51,7 +52,7 @@ final class NetworkUtils {
                 .url(endpoint)
                 .post(requestBody)
                 .build();
-
+        
         try (Response response = client.newCall(request).execute()) {
             final ResponseBody responseBody = response.body();
 
@@ -111,7 +112,7 @@ final class NetworkUtils {
                 final String responseBodyString = responseBody.string();
                 final Gson responseBodyJSON = new Gson();
                 final GroupNodeResponse groupNodeResponse = responseBodyJSON.fromJson(responseBodyString, GroupNodeResponse.class);
-                return groupNodeResponse.getData();
+                return groupNodeResponse.getData().getNode();
             }
         }
 
@@ -131,7 +132,7 @@ final class NetworkUtils {
                 final String responseBodyString = responseBody.string();
                 final Gson responseBodyJSON = new Gson();
                 final GroupNodeResponse groupNodeResponse = responseBodyJSON.fromJson(responseBodyString, GroupNodeResponse.class);
-                return groupNodeResponse.getData();
+                return groupNodeResponse.getData().getNode();
             }
         }
 

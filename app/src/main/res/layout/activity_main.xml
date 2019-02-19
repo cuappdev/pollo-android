@@ -109,13 +109,13 @@
         android:layout_alignParentBottom="true"
         android:layout_height="64dp"
         android:layout_marginBottom="0dp"
-        android:layout_width="wrap_content">
+        android:layout_width="wrap_content"
+        >
 
         <LinearLayout
             android:background="@drawable/rounded_container"
             android:descendantFocusability="beforeDescendants"
             android:elevation="0dp"
-            android:focusableInTouchMode="true"
             android:gravity="end"
             android:id="@+id/EditText"
             android:layout_height="30pt"
@@ -132,7 +132,7 @@
                 android:ems="10"
                 android:focusedByDefault="false"
                 android:hint="Enter a code..."
-                android:id="@+id/editText_joinPoll"
+                android:id="@+id/edit_text_join_poll"
                 android:inputType="textCapCharacters"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="6dp"
@@ -141,11 +141,12 @@
                 android:layout_marginTop="5dp"
                 android:layout_weight="1"
                 android:layout_width="0dp"
-                android:maxLength="8"
+                android:maxLength="6"
                 android:textAlignment="viewStart"
                 android:textColor="@color/blueyGrey"
                 android:textColorHint="@color/blueyGrey"
-                android:textCursorDrawable="@drawable/custom_cursor" />
+                android:textCursorDrawable="@drawable/custom_cursor"
+                />
 
             <Button
                 android:background="@drawable/rounded_join_button"
@@ -161,7 +162,9 @@
                 android:textColorHighlight="@color/black"
                 android:textSize="10pt"
                 android:textStyle="bold"
-                android:visibility="visible" />
+                android:visibility="visible"
+                android:clickable="true"
+                android:onClick="joinButtonClicked"/>
 
         </LinearLayout>
 

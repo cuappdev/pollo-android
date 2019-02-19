@@ -5,9 +5,9 @@ import com.cornellappdev.android.pollo.Models.Group;
 
 public class GroupNodeResponse extends ApiResponse {
 
-    private Group data;
+    private GroupNode data;
 
-    public Group getData() {
+    public GroupNode getData() {
         return data;
     }
 }
