@@ -78,7 +78,7 @@ public class GroupFragment extends Fragment {
             }
         });
         groupRecyclerView.setAdapter(currentAdapter);
-        new RetrieveGroupsTask().execute(new Util().new Triple(rootView, currentAdapter, this.sectionNumber));
+        // new RetrieveGroupsTask().execute(new Util().new Triple(rootView, currentAdapter, this.sectionNumber));
         return rootView;
     }
 

@@ -13,7 +13,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "web_client_id", keyProperties['web_client_id'])
-        buildConfigField("String", "deployed_backend", keyProperties['deployed_backend'])
+        buildConfigField("String", "BACKEND_URI", keyProperties['BACKEND_URI'])
     }
     buildTypes {
         release {
@@ -40,6 +40,9 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
     testImplementation 'junit:junit:4.12'
+    implementation ('io.socket:socket.io-client:1.0.0') {
+        exclude group: 'org.json', module: 'json'
+    }
 }
 
 apply plugin: 'kotlin-android'

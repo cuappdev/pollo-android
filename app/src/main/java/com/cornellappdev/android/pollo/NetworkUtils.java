@@ -47,7 +47,7 @@ final class NetworkUtils {
     static UserSession userAuthenticate(final Context context, final GoogleCredentials googleCredentials) throws IOException {
         final String googleCredentialsJSON = new Gson().toJson(googleCredentials, GoogleCredentials.class);
         final RequestBody requestBody = RequestBody.create(JSON, googleCredentialsJSON);
-        final String endpoint = BuildConfig.deployed_backend + MOBILE_AUTH_ROUTE;
+        final String endpoint = BuildConfig.BACKEND_URI + MOBILE_AUTH_ROUTE;
         final Request request = new Request.Builder()
                 .url(endpoint)
                 .post(requestBody)
@@ -59,6 +59,7 @@ final class NetworkUtils {
             if (responseBody != null) {
                 final String responseBodyString = responseBody.string();
                 final Gson responseBodyJSON = new Gson();
+                Log.d("Response from userAuth", responseBodyString);
                 final UserSessionNode userSessionNode = responseBodyJSON.fromJson(responseBodyString, UserSessionNode.class);
                 return userSessionNode.getData();
             }
@@ -68,7 +69,7 @@ final class NetworkUtils {
     }
 
     static String generateCode(final Context context) throws IOException {
-        final String endpoint = BuildConfig.deployed_backend + GENERATE_CODE_ROUTE;
+        final String endpoint = BuildConfig.BACKEND_URI + GENERATE_CODE_ROUTE;
         final Request request = new Request.Builder()
                 .url(endpoint)
                 .build();
@@ -99,7 +100,7 @@ final class NetworkUtils {
         } catch (JSONException e) {
             return null;
         }
-        final String endpoint = BuildConfig.deployed_backend + JOIN_GROUP_ROUTE;
+        final String endpoint = BuildConfig.BACKEND_URI + JOIN_GROUP_ROUTE;
         final RequestBody requestBody = RequestBody.create(JSON, codeJSON.toString());
         final Request request = new Request.Builder()
                 .url(endpoint)
@@ -120,7 +121,7 @@ final class NetworkUtils {
     }
 
     static Group getGroup(final Context context, final String id) throws IOException {
-        final String endpoint = BuildConfig.deployed_backend + GET_GROUP_ROUTE + id;
+        final String endpoint = BuildConfig.BACKEND_URI + GET_GROUP_ROUTE + id;
         final Request request = new Request.Builder()
                 .url(endpoint)
                 .addHeader(AUTHORIZATION, BEARER + " " + User.currentSession.getAccessToken())
@@ -148,7 +149,7 @@ final class NetworkUtils {
     }
 
     private static List<Group> getAllGroups(final Context context, final String roleEndpoint) throws IOException {
-        final String endpoint = BuildConfig.deployed_backend + GET_GROUPS_ROUTE + roleEndpoint;
+        final String endpoint = BuildConfig.BACKEND_URI + GET_GROUPS_ROUTE + roleEndpoint;
         final Request request = new Request.Builder()
                 .url(endpoint)
                 .addHeader(AUTHORIZATION, BEARER + " " + User.currentSession.getAccessToken())
@@ -168,7 +169,7 @@ final class NetworkUtils {
     }
 
     static boolean leaveGroup(final Context context, final String id) throws IOException {
-        final String endpoint = BuildConfig.deployed_backend + GET_GROUP_ROUTE + id + MEMBERS_ENDPOINT;
+        final String endpoint = BuildConfig.BACKEND_URI + GET_GROUP_ROUTE + id + MEMBERS_ENDPOINT;
         final Request request = new Request.Builder()
                 .url(endpoint)
                 .addHeader(AUTHORIZATION, BEARER + " " + User.currentSession.getAccessToken())

@@ -10,10 +10,11 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GroupEdge extends ApiResponse {
+public class GroupEdge {
 
     private JSONObject pageInfo;
     private List<GroupNode> data;
+    private Boolean success;
 
     public JSONObject getPageInfo() {
         return pageInfo;

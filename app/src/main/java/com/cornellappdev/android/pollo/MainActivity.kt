@@ -1,39 +1,33 @@
 package com.cornellappdev.android.pollo
 
+import android.app.Activity
 import android.content.Intent
-import android.os.AsyncTask
+import android.os.Bundle
 import android.support.design.widget.TabLayout
-import android.support.v7.app.AppCompatActivity
-
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
-import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
-
-import com.cornellappdev.android.pollo.Models.GoogleCredentials
+import com.cornellappdev.android.pollo.Models.ApiResponse
 import com.cornellappdev.android.pollo.Models.Nodes.GroupNodeResponse
+import com.cornellappdev.android.pollo.Models.Nodes.UserSessionNode
 import com.cornellappdev.android.pollo.Models.User
 import com.cornellappdev.android.pollo.Models.UserSession
-import com.cornellappdev.android.pollo.Networking.Endpoint
-import com.cornellappdev.android.pollo.Networking.Request
-import com.cornellappdev.android.pollo.Networking.joinGroupWithCode
+import com.cornellappdev.android.pollo.Networking.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
-import java.io.IOException
+import kotlinx.coroutines.withContext
+import java.util.*
 
 class MainActivity : AppCompatActivity(), GroupRecyclerView.ItemClickListener {
 
@@ -50,9 +44,15 @@ class MainActivity : AppCompatActivity(), GroupRecyclerView.ItemClickListener {
     /**
      * The [ViewPager] that will host the section contents.
      */
-    private var ViewPager: ViewPager? = null
+    private var viewPager: ViewPager? = null
 
     internal var userSession: UserSession? = null
+
+    private var socket: Socket? = null
+
+    private val preferencesHelper: PreferencesHelper by lazy {
+        PreferencesHelper(this)
+    }
 
     private val joinPollTextWatcher = object: TextWatcher {
 
@@ -88,17 +88,30 @@ class MainActivity : AppCompatActivity(), GroupRecyclerView.ItemClickListener {
 
         // Add listener for when join button is pressed
         join_poll_group.setOnClickListener { joinGroup(editText.text.toString()) }
-    }
 
-    override fun onStart() {
-        super.onStart()
         val account = GoogleSignIn.getLastSignedInAccount(this)
         // If account is null, attempt to sign in, if not, launch the normal activity. updateUI(account);
 
         if (account != null) {
-            RetrieveUserSessionTask().execute(account)
+            val expiresAt = preferencesHelper.expiresAt
+            val dateAccessTokenExpires = Date(expiresAt)
+            val currentDate = Date()
+            val isAccessTokenExpired = currentDate <= dateAccessTokenExpires
+            CoroutineScope(Dispatchers.Main).launch {
+                if (isAccessTokenExpired) {
+                    val refreshTokenEndpoint = Endpoint.userRefreshSession(preferencesHelper.refreshToken)
+                    val userSession = withContext(Dispatchers.IO) { Request.makeRequest<UserSessionNode>(refreshTokenEndpoint.okHttpRequest()) }.data
+                    User.currentSession = userSession
+                } else {
+                    User.currentSession = UserSession(preferencesHelper.accessToken, preferencesHelper.refreshToken, expiresAt, true)
+                }
+
+                finishAuthFlow()
+            }
             return
         }
+
+        // If account is null, we need to prompt them to login
         val signInIntent = Intent(this, LoginActivity::class.java)
         startActivityForResult(signInIntent, LOGIN_REQ_CODE)
     }
@@ -112,41 +125,53 @@ class MainActivity : AppCompatActivity(), GroupRecyclerView.ItemClickListener {
         val endpoint = Endpoint.joinGroupWithCode(code)
         CoroutineScope(Dispatchers.IO).launch {
             val groupNodeResponse = Request.makeRequest<GroupNodeResponse>(endpoint.okHttpRequest())
-            //TODO: The next step after we join the group
+            val allPollsEndpoint = Endpoint.getSortedPolls(groupNodeResponse.data.node.id)
+            Request.makeRequest<ApiResponse<List<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest())
+            // CURRENTLY BEING USED FOR TESTING SOCKETS
+            // startSocket(id=groupNodeResponse.data.node.id)
         }
     }
 
+    // CURRENTLY USED FOR TESTING SOCKETS
+    private fun startSocket(id: String) {
+        val account = GoogleSignIn.getLastSignedInAccount(this)
+        socket = Socket(id=id, googleUserID=account?.id ?: "")
+    }
 
-    internal inner class RetrieveUserSessionTask : AsyncTask<GoogleSignInAccount, Void, UserSession>() {
+    private fun finishAuthFlow() {
+        // Create the adapter that will return a fragment for each of the three
+        // primary sections of the activity.
+        mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
 
-        override fun doInBackground(vararg accounts: GoogleSignInAccount): UserSession? {
-            val account = accounts[0]
-            try {
-                userSession = NetworkUtils.userAuthenticate(baseContext, GoogleCredentials(account.idToken))
-            } catch (e: IOException) {
-                e.printStackTrace()
+        // Set up the ViewPager with the sections adapter.
+        viewPager = findViewById(R.id.container)
+        viewPager!!.adapter = mSectionsPagerAdapter
+
+        val tabLayout = findViewById<TabLayout>(R.id.tabs)
+
+        viewPager!!.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
+        tabLayout.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(viewPager))
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == LOGIN_REQ_CODE && resultCode == Activity.RESULT_OK) {
+            val idToken = data?.getStringExtra("idToken") ?: ""
+            val userAuthenticateEndpoint = Endpoint.userAuthenticate(idToken)
+            CoroutineScope(Dispatchers.Main).launch {
+                val userSession = withContext(Dispatchers.IO) { Request.makeRequest<UserSessionNode>(userAuthenticateEndpoint.okHttpRequest()) }.data
+
+                preferencesHelper.accessToken = userSession.accessToken
+                preferencesHelper.refreshToken = userSession.refreshToken
+                preferencesHelper.expiresAt = userSession.sessionExpiration
+
+                User.currentSession = userSession
+
+                 finishAuthFlow()
             }
-
-            return userSession
-        }
-
-        override fun onPostExecute(userSession: UserSession?) {
-            if (userSession == null) return
-            User.currentSession = userSession
-            // Create the adapter that will return a fragment for each of the three
-            // primary sections of the activity.
-            mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
-
-            // Set up the ViewPager with the sections adapter.
-            ViewPager = findViewById(R.id.container)
-            ViewPager!!.adapter = mSectionsPagerAdapter
-
-            val tabLayout = findViewById<TabLayout>(R.id.tabs)
-
-            ViewPager!!.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
-            tabLayout.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(ViewPager))
         }
     }
+
 
     override fun onItemClick(view: View, position: Int) {
         val pollActivity = Intent(this, PollGroupActivity::class.java)

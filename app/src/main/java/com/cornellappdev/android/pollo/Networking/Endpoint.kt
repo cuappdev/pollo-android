@@ -16,9 +16,9 @@ enum class EndpointMethod {
     GET, POST, DELETE, PUT
 }
 
-class Endpoint(private val path: String, private val headers: Map<String, String>, private val body: RequestBody?, private val method: EndpointMethod) {
+class Endpoint(private val path: String, private val headers: Map<String, String> = mapOf(), private val body: RequestBody? = null, private val method: EndpointMethod) {
 
-    private val host = BuildConfig.deployed_backend //localhost:3000/api/v2
+    private val host = "https://" + BuildConfig.BACKEND_URI + "/api/v2"
 
     companion object {}
 
@@ -30,7 +30,13 @@ class Endpoint(private val path: String, private val headers: Map<String, String
             EndpointMethod.POST -> {
                 return Request.Builder()
                         .url(endpoint)
-                        .post(body!!)
+                        .post(body ?: RequestBody.create(MediaType.get("application/json; charset=utf-8"), ""))
+                        .headers(headers)
+                        .build()
+            }
+            EndpointMethod.GET -> {
+                return Request.Builder()
+                        .url(endpoint)
                         .headers(headers)
                         .build()
             }
