@@ -11,4 +11,5 @@ public class GroupNodeResponse {
     public GroupNode getData() {
         return data;
     }
+    public boolean getSuccess() { return success; }
 }

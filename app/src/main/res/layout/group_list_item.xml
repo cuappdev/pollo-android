@@ -1,52 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="82dp">
+    android:layout_height="75dp">
 
     <TextView
         android:id="@+id/groupNameTextView"
-        android:layout_width="wrap_content"
+        android:layout_alignEnd="@id/groupDetailsButton"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="18dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="19dp"
+        android:layout_width="wrap_content"
         android:text="Group Name"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        android:textSize="18sp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignEnd="@id/groupDetailsButton"
-        />
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/groupLiveTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Last live 0 hours ago"
-        android:layout_marginTop="24dp"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="16dp"
+        android:textSize="16sp"
+        android:textColor="#9EA7B3"
+        android:layout_marginStart="18dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/groupNameTextView"
+        android:layout_marginTop="2dp"
         android:layout_alignTop="@id/groupNameTextView" />
 
-    <TextView
+    <ImageButton
         android:id="@+id/groupDetailsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="18dp"
-        android:text="&#8226;&#8226;&#8226;"
-        android:textSize="24sp"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true" />
+        android:src="@drawable/more_dots"
+        android:background="@color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="24dp"
+        android:layout_centerVertical="true"
+        />
 
     <ProgressBar
         android:id="@+id/groupLoadingIndicator"
         style="?android:attr/progressBarStyleSmall"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_alignParentRight="true"
-        android:layout_marginEnd="18dp"
-        android:layout_centerVertical="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="24dp"
         android:indeterminate="true"
         android:visibility="gone"
         />
@@ -54,9 +60,9 @@
     <View
         android:id="@+id/divider2"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="0.5dp"
         android:layout_marginStart="18dp"
         android:background="?android:attr/listDivider"
-        android:layout_alignParentBottom="true"/>
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

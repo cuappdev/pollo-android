@@ -1,7 +1,9 @@
 package com.cornellappdev.android.pollo
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
@@ -10,9 +12,11 @@ import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
+import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import com.cornellappdev.android.pollo.Models.ApiResponse
@@ -25,14 +29,12 @@ import com.cornellappdev.android.pollo.Networking.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.android.synthetic.main.manage_group_view.view.*
+import kotlinx.coroutines.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListener {
 
     /**
      * The [android.support.v4.view.PagerAdapter] that will provide
@@ -49,7 +51,7 @@ class MainActivity : AppCompatActivity() {
      */
     private var viewPager: ViewPager? = null
 
-    internal var userSession: UserSession? = null
+    private var groupSelected: Group? = null
 
     private var socket: Socket? = null
 
@@ -63,9 +65,10 @@ class MainActivity : AppCompatActivity() {
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            Log.d("Count", count.toString())
-            //join_poll_group.isEnabled = count == 6
-            //join_poll_group.isClickable = count == 6
+            val hasSixCharacters = s?.length == 6
+            join_poll_group.isEnabled = hasSixCharacters
+            val correctBackgroundColor = if (hasSixCharacters) R.color.colorPrimary else R.color.settings_detail
+            join_poll_group.setBackgroundColor(resources.getColor(correctBackgroundColor))
         }
     }
 
@@ -74,6 +77,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val editText = findViewById<EditText>(R.id.edit_text_join_poll)
+        editText.filters = editText.filters + InputFilter.AllCaps()
         editText.addTextChangedListener(joinPollTextWatcher)
         editText.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> editText.isCursorVisible = hasFocus }
         editText.setOnEditorActionListener { _, actionId, _ ->
@@ -89,13 +93,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        groupMenuOptionsView.closeButton.setOnClickListener {
+            val animate = TranslateAnimation(0f, 0f, 0f, groupMenuOptionsView.height.toFloat())
+            animate.duration = 300
+            animate.fillAfter = true
+            groupMenuOptionsView.startAnimation(animate)
+            groupMenuOptionsView.visibility = View.INVISIBLE
+        }
+
         // Add listener for when join button is pressed
         join_poll_group.setOnClickListener { joinGroup(editText.text.toString()) }
 
         val account = GoogleSignIn.getLastSignedInAccount(this)
         // If account is null, attempt to sign in, if not, launch the normal activity. updateUI(account);
-
-
 
         if (account != null) {
             val expiresAt = preferencesHelper.expiresAt
@@ -106,8 +116,13 @@ class MainActivity : AppCompatActivity() {
                 if (isAccessTokenExpired) {
                     val refreshTokenEndpoint = Endpoint.userRefreshSession(preferencesHelper.refreshToken)
                     val typeToken = object : TypeToken<UserSessionNode>() {}.type
-                    val userSession = withContext(Dispatchers.IO) { Request.makeRequest<UserSessionNode>(refreshTokenEndpoint.okHttpRequest(), typeToken) }.data
+                    val userSession = withContext(Dispatchers.IO) {
+                        Request.makeRequest<UserSessionNode>(refreshTokenEndpoint.okHttpRequest(), typeToken)
+                    }!!.data
                     User.currentSession = userSession
+                    preferencesHelper.refreshToken = userSession.refreshToken
+                    preferencesHelper.accessToken = userSession.accessToken
+                    preferencesHelper.expiresAt = userSession.sessionExpiration
                 } else {
                     User.currentSession = UserSession(preferencesHelper.accessToken, preferencesHelper.refreshToken, expiresAt, true)
                 }
@@ -122,9 +137,17 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(signInIntent, LOGIN_REQ_CODE)
     }
 
+    override fun onMoreButtonPressed(group: Group?) {
+        groupMenuOptionsView.visibility = View.VISIBLE
+        val animate = TranslateAnimation(0f, 0f, groupMenuOptionsView.height.toFloat(), 0f)
+        animate.duration = 300
+        animate.fillAfter = true
+        groupMenuOptionsView.startAnimation(animate)
+    }
+
     fun showSettings(view: View) {
         val settings = Intent(this@MainActivity, SettingsActivity::class.java)
-        startActivity(settings)
+        startActivityForResult(settings, SETTINGS_CODE)
     }
 
     fun joinGroup(code: String) {
@@ -133,15 +156,27 @@ class MainActivity : AppCompatActivity() {
             val typeTokenGroupNode = object : TypeToken<GroupNodeResponse>() {}.type
             val typeTokenSortedPolls = object : TypeToken<ApiResponse<ArrayList<GetSortedPollsResponse>>>() {}.type
             val groupNodeResponse = Request.makeRequest<GroupNodeResponse>(endpoint.okHttpRequest(), typeTokenGroupNode)
+
+            if(groupNodeResponse?.success == false || groupNodeResponse?.data == null) {
+                withContext(Dispatchers.Main) {
+                    AlertDialog.Builder(this@MainActivity)
+                        .setTitle("Code Not Valid")
+                        .setMessage("Failed to join session with code $code.\nTry again!")
+                        .setNeutralButton(android.R.string.ok, null)
+                        .show()
+                }
+                return@launch
+            }
+
             val allPollsEndpoint = Endpoint.getSortedPolls(groupNodeResponse.data.node.id)
             val sortedPolls = Request.makeRequest<ApiResponse<ArrayList<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest(), typeTokenSortedPolls)
+
+            if(sortedPolls?.success == false || sortedPolls?.data == null) return@launch
 
             val pollsDateActivity = Intent(this@MainActivity, PollsDateActivity::class.java)
             pollsDateActivity.putExtra("SORTED_POLLS", sortedPolls.data)
             pollsDateActivity.putExtra("GROUP_NODE", groupNodeResponse.data.node)
             startActivity(pollsDateActivity)
-            // CURRENTLY BEING USED FOR TESTING SOCKETS
-            // startSocket(id=groupNodeResponse.data.node.id)
         }
     }
 
@@ -168,12 +203,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == SETTINGS_CODE && resultCode == Activity.RESULT_OK) {
+            val signInIntent = Intent(this, LoginActivity::class.java)
+            startActivityForResult(signInIntent, LOGIN_REQ_CODE)
+        }
+
         if (requestCode == LOGIN_REQ_CODE && resultCode == Activity.RESULT_OK) {
             val idToken = data?.getStringExtra("idToken") ?: ""
             val userAuthenticateEndpoint = Endpoint.userAuthenticate(idToken)
             CoroutineScope(Dispatchers.Main).launch {
                 val typeToken = object : TypeToken<UserSessionNode>() {}.type
-                val userSession = withContext(Dispatchers.IO) { Request.makeRequest<UserSessionNode>(userAuthenticateEndpoint.okHttpRequest(), typeToken) }.data
+                val userSession = withContext(Dispatchers.IO) { Request.makeRequest<UserSessionNode>(userAuthenticateEndpoint.okHttpRequest(), typeToken) }!!.data
 
                 preferencesHelper.accessToken = userSession.accessToken
                 preferencesHelper.refreshToken = userSession.refreshToken
@@ -184,7 +225,7 @@ class MainActivity : AppCompatActivity() {
 
                 User.currentSession = userSession
 
-                 finishAuthFlow()
+                finishAuthFlow()
             }
         }
     }
@@ -198,7 +239,7 @@ class MainActivity : AppCompatActivity() {
     inner class SectionsPagerAdapter internal constructor(fm: FragmentManager): FragmentPagerAdapter(fm) {
 
         override fun getItem(position: Int): Fragment {
-            return GroupFragment.newInstance(position + 1)
+            return GroupFragment.newInstance(position + 1, this@MainActivity)
         }
 
         override fun getCount(): Int {
@@ -207,6 +248,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val LOGIN_REQ_CODE = 10031
+        private const val LOGIN_REQ_CODE = 10031
+        private const val SETTINGS_CODE = 10032
     }
 }

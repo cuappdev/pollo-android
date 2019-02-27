@@ -71,9 +71,9 @@ public class PollFragment extends Fragment {
         final RecyclerView pollRecyclerView = rootView.findViewById(R.id.poll_list_recyclerView);
         pollRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
 
-        currentAdapter = new GroupRecyclerAdapter(new ArrayList<Group>());
+        currentAdapter = new GroupRecyclerAdapter(new ArrayList<Group>(), null);
         pollRecyclerView.setAdapter(currentAdapter);
-        //new RetrieveGroupsTask().execute(new Util().new Triple(rootView, currentAdapter, this.sectionNumber));
+        // new RetrieveGroupsTask().execute(new Util().new Triple(rootView, currentAdapter, this.sectionNumber));
         return rootView;
     }
 

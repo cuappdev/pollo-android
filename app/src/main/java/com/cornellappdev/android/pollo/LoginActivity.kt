@@ -86,7 +86,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
-        Log.d("Testing", "Logged In")
         try {
             val account = completedTask.getResult(ApiException::class.java)
 
@@ -95,7 +94,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             data.putExtra("idToken", account.idToken)
             setResult(Activity.RESULT_OK, data)
             finish()
-            Log.d("Testing", "Logged In: Done")
         } catch (e: ApiException) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.

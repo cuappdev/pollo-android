@@ -34,7 +34,11 @@
             android:name=".SettingsActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".PollsDateActivity"
-            android:theme="@style/AppTheme.NoActionBar" ></activity>
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.cornellappdev.android.pollo.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

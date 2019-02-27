@@ -1,6 +1,7 @@
 package com.cornellappdev.android.pollo
 
 import android.content.Intent
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class GroupRecyclerAdapter(private val groups: ArrayList<Group>) : RecyclerView.Adapter<GroupRecyclerAdapter.ViewHolder>() {
+class GroupRecyclerAdapter(private val groups: ArrayList<Group>, val callback: GroupFragment.OnMoreButtonPressedListener?) : RecyclerView.Adapter<GroupRecyclerAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupRecyclerAdapter.ViewHolder {
         val inflatedView = parent.inflate(R.layout.group_list_item, false)
@@ -30,25 +31,27 @@ class GroupRecyclerAdapter(private val groups: ArrayList<Group>) : RecyclerView.
     }
 
 
-    inner class ViewHolder internal constructor(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener {
+    inner class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(v), View.OnClickListener {
 
-        private var view = v
+        private var view = view
         private var group: Group? = null
         private var isLoading = false
 
-
         init {
             v.setOnClickListener(this)
+
+            v.groupDetailsButton.setOnClickListener {
+                callback?.onMoreButtonPressed(group)
+            }
         }
 
-        override fun onClick(v: View) {
-
-            if(isLoading) return
+        override fun onClick(view: View) {
+            if (isLoading) return
 
             isLoading = true
 
-            v.groupDetailsButton.visibility = View.GONE
-            v.groupLoadingIndicator.visibility = View.VISIBLE
+            view.groupDetailsButton.visibility = View.GONE
+            view.groupLoadingIndicator.visibility = View.VISIBLE
 
 
             CoroutineScope(Dispatchers.Main).launch {
@@ -57,17 +60,17 @@ class GroupRecyclerAdapter(private val groups: ArrayList<Group>) : RecyclerView.
                 val typeTokenSortedPolls = object : TypeToken<ApiResponse<ArrayList<GetSortedPollsResponse>>>() {}.type
                 val groupNodeResponse = withContext(Dispatchers.Default) { Request.makeRequest<GroupNodeResponse>(endpoint.okHttpRequest(), typeTokenGroupNode) }
 
-                val allPollsEndpoint = Endpoint.getSortedPolls(groupNodeResponse.data.node.id)
+                val allPollsEndpoint = Endpoint.getSortedPolls(groupNodeResponse!!.data.node.id)
                 val sortedPolls = withContext(Dispatchers.Default) { Request.makeRequest<ApiResponse<ArrayList<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest(), typeTokenSortedPolls) }
 
-                val context = v.context
+                val context = view.context
                 val pollsDateActivity = Intent(context, PollsDateActivity::class.java)
-                pollsDateActivity.putExtra("SORTED_POLLS", sortedPolls.data)
+                pollsDateActivity.putExtra("SORTED_POLLS", sortedPolls!!.data)
                 pollsDateActivity.putExtra("GROUP_NODE", group)
                 context.startActivity(pollsDateActivity)
 
-                v.groupDetailsButton.visibility = View.VISIBLE
-                v.groupLoadingIndicator.visibility = View.GONE
+                view.groupDetailsButton.visibility = View.VISIBLE
+                view.groupLoadingIndicator.visibility = View.GONE
                 isLoading = false
             }
         }
@@ -76,20 +79,23 @@ class GroupRecyclerAdapter(private val groups: ArrayList<Group>) : RecyclerView.
             this.group = group
             view.groupNameTextView.text = group.name
 
-            //need == here because isLive is optional
-            if (group.isLive == true)
-                view.groupLiveTextView.text = "⚫ Live"
-            else {
+            if (group.isLive == true) {
+                view.groupLiveTextView.text = "• Live Now"
+                view.groupLiveTextView.setTextColor(ContextCompat.getColor(view.context, R.color.liveNow))
+            } else {
                 val unixTime = System.currentTimeMillis() / 1000L
                 val lastUpdated = java.lang.Long.parseLong(group.updatedAt)
-                var timeResult = ""
+                var timeResult = " "
                 val timeSplit = Util.splitToComponentTimes(unixTime - lastUpdated)
                 for (i in 0..6) {
                     timeResult = timeSplit[i].toString() + " " + TIME_LABELS[i]
-                    if (timeSplit[i] != 0)
-                        break
+                    if (timeSplit[i] != 0) break
                 }
-                view.groupLiveTextView.text = "Last live $timeResult ago"
+
+                if (timeResult[0] == '1') {
+                    timeResult = timeResult.removeRange(timeResult.length - 1, timeResult.length)
+                }
+                view.groupLiveTextView.text = "${group.code}  •  Last live $timeResult ago"
             }
         }
     }
@@ -103,9 +109,7 @@ class GroupRecyclerAdapter(private val groups: ArrayList<Group>) : RecyclerView.
         return groups[id]
     }
 
-
     companion object {
-
         internal val TIME_LABELS = arrayOf("years", "months", "weeks", "days", "hours", "minutes", "seconds")
     }
 }

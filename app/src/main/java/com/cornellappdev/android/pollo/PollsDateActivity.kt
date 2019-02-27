@@ -2,9 +2,12 @@ package com.cornellappdev.android.pollo
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.NavUtils
 import android.support.v7.app.ActionBar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.MenuItem
+import android.view.View
 import android.view.Window
 import com.cornellappdev.android.pollo.Models.Group
 import com.cornellappdev.android.pollo.Networking.GetSortedPollsResponse
@@ -12,9 +15,9 @@ import kotlinx.android.synthetic.main.activity_polls_date.*
 
 class PollsDateActivity : AppCompatActivity() {
 
-    private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var adapter: PollsDateRecyclerAdapter
     private lateinit var group: Group
+    private lateinit var linearLayoutManager: LinearLayoutManager
 
     private var sortedPolls = ArrayList<GetSortedPollsResponse>()
 
@@ -35,7 +38,7 @@ class PollsDateActivity : AppCompatActivity() {
         codeTextView.text = "Code: ${group.code}"
     }
 
-    override fun onStart() {
-        super.onStart()
+    fun goBack(view: View) {
+        finish()
     }
 }

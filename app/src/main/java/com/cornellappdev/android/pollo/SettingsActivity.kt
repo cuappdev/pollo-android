@@ -1,5 +1,6 @@
 package com.cornellappdev.android.pollo
 
+import android.app.Activity
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -49,6 +50,8 @@ class SettingsActivity : AppCompatActivity() {
                 .requestProfile()
                 .build()
         GoogleSignIn.getClient(this, gso).signOut()
+        val data = Intent()
+        setResult(Activity.RESULT_OK, data)
         finish()
     }
 }

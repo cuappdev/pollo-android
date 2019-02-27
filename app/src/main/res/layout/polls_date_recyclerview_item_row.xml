@@ -2,27 +2,60 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="54dp">
+    android:background="@drawable/rounded_polls_date_container"
+    android:layout_height="54dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp">
+
+    <TextView
+        android:id="@+id/liveIndicator"
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        android:text="•"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="10dp"
+        android:textColor="@color/liveNow"
+        android:visibility="invisible"/>
 
     <TextView
         android:id="@+id/pollDateTextView"
         android:layout_alignParentLeft="true"
-        android:layout_height="20dp"
+        android:layout_height="26dp"
         android:layout_marginLeft="26dp"
+        android:fontFamily="sans-serif-medium"
         android:layout_centerVertical="true"
         android:layout_width="100dp"
         android:textAlignment="textStart"
-        android:text="February 20" />
+        android:text="February 20"
+        android:textSize="16sp"
+        android:textColor="@color/white"/>
 
     <TextView
         android:id="@+id/numQuestionsTextView"
         android:layout_alignParentRight="true"
         android:layout_height="20dp"
         android:layout_centerVertical="true"
-        android:layout_marginRight="18dp"
+        android:layout_marginEnd="34dp"
         android:layout_width="100dp"
+        android:fontFamily="sans-serif-medium"
         android:textAlignment="textEnd"
+        android:textSize="12dp"
         android:text="10 Questions"
+        android:layout_alignEnd="@id/arrowIndicator"
+        android:textColor="@color/white"
         />
+
+    <ImageButton
+        android:id="@+id/arrowIndicator"
+        android:layout_width="11dp"
+        android:layout_height="11dp"
+        android:src="@drawable/arrow_back_small"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"
+        android:layout_centerVertical="true"
+        android:scaleX="-1"
+
+        />
+
 
 </RelativeLayout>
