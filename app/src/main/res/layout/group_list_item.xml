@@ -1,52 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="82dp">
 
     <TextView
-        android:id="@+id/textView_group"
+        android:id="@+id/groupNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="18dp"
         android:text="Group Name"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignEnd="@id/groupDetailsButton"
+        />
 
     <TextView
-        android:id="@+id/textView_group_live"
+        android:id="@+id/groupLiveTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Last live 0 hours ago"
-        app:layout_constraintStart_toStartOf="@+id/textView_group"
-        app:layout_constraintTop_toBottomOf="@+id/textView_group" />
+        android:layout_marginTop="24dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="16dp"
+        android:layout_alignTop="@id/groupNameTextView" />
 
     <TextView
-        android:id="@+id/textView_group_menu"
+        android:id="@+id/groupDetailsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:paddingTop="5dp"
+        android:layout_marginEnd="18dp"
         android:text="&#8226;&#8226;&#8226;"
         android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true" />
+
+    <ProgressBar
+        android:id="@+id/groupLoadingIndicator"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="18dp"
+        android:layout_centerVertical="true"
+        android:indeterminate="true"
+        android:visibility="gone"
+        />
 
     <View
         android:id="@+id/divider2"
-        android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="18dp"
         android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView_group_live" />
+        android:layout_alignParentBottom="true"/>
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

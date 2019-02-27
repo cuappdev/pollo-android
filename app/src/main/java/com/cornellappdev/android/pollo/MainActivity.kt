@@ -16,20 +16,23 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import com.cornellappdev.android.pollo.Models.ApiResponse
+import com.cornellappdev.android.pollo.Models.Group
 import com.cornellappdev.android.pollo.Models.Nodes.GroupNodeResponse
 import com.cornellappdev.android.pollo.Models.Nodes.UserSessionNode
 import com.cornellappdev.android.pollo.Models.User
 import com.cornellappdev.android.pollo.Models.UserSession
 import com.cornellappdev.android.pollo.Networking.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
+import kotlin.collections.ArrayList
 
-class MainActivity : AppCompatActivity(), GroupRecyclerView.ItemClickListener {
+class MainActivity : AppCompatActivity() {
 
     /**
      * The [android.support.v4.view.PagerAdapter] that will provide
@@ -92,15 +95,18 @@ class MainActivity : AppCompatActivity(), GroupRecyclerView.ItemClickListener {
         val account = GoogleSignIn.getLastSignedInAccount(this)
         // If account is null, attempt to sign in, if not, launch the normal activity. updateUI(account);
 
+
+
         if (account != null) {
             val expiresAt = preferencesHelper.expiresAt
-            val dateAccessTokenExpires = Date(expiresAt)
+            val dateAccessTokenExpires = Date(expiresAt * 1000)
             val currentDate = Date()
-            val isAccessTokenExpired = currentDate <= dateAccessTokenExpires
+            val isAccessTokenExpired = currentDate >= dateAccessTokenExpires
             CoroutineScope(Dispatchers.Main).launch {
                 if (isAccessTokenExpired) {
                     val refreshTokenEndpoint = Endpoint.userRefreshSession(preferencesHelper.refreshToken)
-                    val userSession = withContext(Dispatchers.IO) { Request.makeRequest<UserSessionNode>(refreshTokenEndpoint.okHttpRequest()) }.data
+                    val typeToken = object : TypeToken<UserSessionNode>() {}.type
+                    val userSession = withContext(Dispatchers.IO) { Request.makeRequest<UserSessionNode>(refreshTokenEndpoint.okHttpRequest(), typeToken) }.data
                     User.currentSession = userSession
                 } else {
                     User.currentSession = UserSession(preferencesHelper.accessToken, preferencesHelper.refreshToken, expiresAt, true)
@@ -124,9 +130,16 @@ class MainActivity : AppCompatActivity(), GroupRecyclerView.ItemClickListener {
     fun joinGroup(code: String) {
         val endpoint = Endpoint.joinGroupWithCode(code)
         CoroutineScope(Dispatchers.IO).launch {
-            val groupNodeResponse = Request.makeRequest<GroupNodeResponse>(endpoint.okHttpRequest())
+            val typeTokenGroupNode = object : TypeToken<GroupNodeResponse>() {}.type
+            val typeTokenSortedPolls = object : TypeToken<ApiResponse<ArrayList<GetSortedPollsResponse>>>() {}.type
+            val groupNodeResponse = Request.makeRequest<GroupNodeResponse>(endpoint.okHttpRequest(), typeTokenGroupNode)
             val allPollsEndpoint = Endpoint.getSortedPolls(groupNodeResponse.data.node.id)
-            Request.makeRequest<ApiResponse<List<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest())
+            val sortedPolls = Request.makeRequest<ApiResponse<ArrayList<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest(), typeTokenSortedPolls)
+
+            val pollsDateActivity = Intent(this@MainActivity, PollsDateActivity::class.java)
+            pollsDateActivity.putExtra("SORTED_POLLS", sortedPolls.data)
+            pollsDateActivity.putExtra("GROUP_NODE", groupNodeResponse.data.node)
+            startActivity(pollsDateActivity)
             // CURRENTLY BEING USED FOR TESTING SOCKETS
             // startSocket(id=groupNodeResponse.data.node.id)
         }
@@ -159,23 +172,21 @@ class MainActivity : AppCompatActivity(), GroupRecyclerView.ItemClickListener {
             val idToken = data?.getStringExtra("idToken") ?: ""
             val userAuthenticateEndpoint = Endpoint.userAuthenticate(idToken)
             CoroutineScope(Dispatchers.Main).launch {
-                val userSession = withContext(Dispatchers.IO) { Request.makeRequest<UserSessionNode>(userAuthenticateEndpoint.okHttpRequest()) }.data
+                val typeToken = object : TypeToken<UserSessionNode>() {}.type
+                val userSession = withContext(Dispatchers.IO) { Request.makeRequest<UserSessionNode>(userAuthenticateEndpoint.okHttpRequest(), typeToken) }.data
 
                 preferencesHelper.accessToken = userSession.accessToken
                 preferencesHelper.refreshToken = userSession.refreshToken
                 preferencesHelper.expiresAt = userSession.sessionExpiration
+
+                println(userSession.refreshToken)
+                println(userSession.sessionExpiration)
 
                 User.currentSession = userSession
 
                  finishAuthFlow()
             }
         }
-    }
-
-
-    override fun onItemClick(view: View, position: Int) {
-        val pollActivity = Intent(this, PollGroupActivity::class.java)
-        startActivity(pollActivity)
     }
 
     /**

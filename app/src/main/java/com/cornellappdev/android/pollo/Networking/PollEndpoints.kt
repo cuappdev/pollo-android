@@ -1,14 +1,21 @@
 package com.cornellappdev.android.pollo.Networking
 
+import android.os.Parcelable
 import com.cornellappdev.android.pollo.Models.User
+import kotlinx.android.parcel.Parcelize
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import org.json.JSONException
 import org.json.JSONObject
 
-data class GetSortedPollsResponse(val date: String, val polls: List<PollsResponse>)
-data class PollResult(val text: String, val count: Int)
-data class PollsResponse(val id: Int, val text: String, val results: Map<String, PollResult>, val shared: Boolean, val type: String, val correctAnswer: String?)
+@Parcelize
+data class GetSortedPollsResponse(val date: String, val polls: ArrayList<PollsResponse>): Parcelable
+
+@Parcelize
+data class PollResult(val text: String, val count: Int): Parcelable
+
+@Parcelize
+data class PollsResponse(val id: Int, val text: String, val results: Map<String, PollResult>, val shared: Boolean, val type: String, val correctAnswer: String?): Parcelable
 
 fun Endpoint.Companion.getSortedPolls(id: String): Endpoint {
     val accessToken = User.currentSession.accessToken

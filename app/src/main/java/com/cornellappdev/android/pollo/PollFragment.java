@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cornellappdev.android.pollo.Models.Group;
+import com.cornellappdev.android.pollo.Models.Nodes.GroupNode;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class PollFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
 
     private int sectionNumber;
-    private GroupRecyclerView currentAdapter;
+    private GroupRecyclerAdapter currentAdapter;
     private OnFragmentInteractionListener mListener;
 
     public PollFragment() {
@@ -70,9 +71,9 @@ public class PollFragment extends Fragment {
         final RecyclerView pollRecyclerView = rootView.findViewById(R.id.poll_list_recyclerView);
         pollRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
 
-        currentAdapter = new GroupRecyclerView(getContext(), new ArrayList<Group>());
+        currentAdapter = new GroupRecyclerAdapter(new ArrayList<Group>());
         pollRecyclerView.setAdapter(currentAdapter);
-        new RetrieveGroupsTask().execute(new Util().new Triple(rootView, currentAdapter, this.sectionNumber));
+        //new RetrieveGroupsTask().execute(new Util().new Triple(rootView, currentAdapter, this.sectionNumber));
         return rootView;
     }
 
@@ -98,32 +99,32 @@ public class PollFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    class RetrieveGroupsTask extends AsyncTask<Util.Triple, Void, List<Group>> {
-
-        View rootView;
-        GroupRecyclerView currentAdapter;
-
-        @Override
-        protected List<Group> doInBackground(Util.Triple... data) {
-            final Util.Triple dataTriple = data[0];
-            rootView = (View) dataTriple.getX();
-            currentAdapter = (GroupRecyclerView) dataTriple.getY();
-            List<Group> groups = new ArrayList<>();
-            try {
-                groups = ((int) dataTriple.getZ()) == 1 ? NetworkUtils.getAllGroupsAsMember(getContext())
-                        : NetworkUtils.getAllGroupsAsAdmin(getContext());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return groups;
-        }
-
-        @Override
-        protected void onPostExecute(List<Group> groups) {
-            super.onPostExecute(groups);
-
-            currentAdapter.addAll(groups);
-            currentAdapter.notifyDataSetChanged();
-        }
-    }
+//    class RetrieveGroupsTask extends AsyncTask<Util.Triple, Void, List<Group>> {
+//
+//        View rootView;
+//        GroupRecyclerView currentAdapter;
+//
+//        @Override
+//        protected List<Group> doInBackground(Util.Triple... data) {
+//            final Util.Triple dataTriple = data[0];
+//            rootView = (View) dataTriple.getX();
+//            currentAdapter = (GroupRecyclerView) dataTriple.getY();
+//            ArrayList<GroupNode> groups = new ArrayList<>();
+//            try {
+//                groups = ((int) dataTriple.getZ()) == 1 ? NetworkUtils.getAllGroupsAsMember(getContext())
+//                        : NetworkUtils.getAllGroupsAsAdmin(getContext());
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            return groups;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(List<Group> groups) {
+//            super.onPostExecute(groups);
+//
+//            currentAdapter.addAll(groups);
+//            currentAdapter.notifyDataSetChanged();
+//        }
+//    }
 }

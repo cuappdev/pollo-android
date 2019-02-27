@@ -2,6 +2,15 @@ def keyPropertiesFile = rootProject.file("keys.properties")
 def keyProperties = new Properties()
 keyProperties.load(new FileInputStream(keyPropertiesFile))
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}
+
 
 android {
     compileSdkVersion 26
@@ -21,7 +30,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    androidExtensions {
+        experimental = true
+    }
+
 }
+
 
 dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
@@ -40,15 +55,8 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
     testImplementation 'junit:junit:4.12'
-    implementation ('io.socket:socket.io-client:1.0.0') {
+    implementation('io.socket:socket.io-client:1.0.0') {
         exclude group: 'org.json', module: 'json'
     }
 }
 
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-kotlin {
-    experimental {
-        coroutines "enable"
-    }
-}

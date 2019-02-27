@@ -18,5 +18,5 @@ fun Endpoint.Companion.userAuthenticate(idToken: String): Endpoint {
 }
 
 fun Endpoint.Companion.userRefreshSession(refreshToken: String): Endpoint {
-    return Endpoint(path="/auth/mobile", headers=mapOf("Authorization" to "Bearer $refreshToken"), method=EndpointMethod.POST)
+    return Endpoint(path="/auth/refresh", headers=mapOf("Authorization" to "Bearer $refreshToken"), method=EndpointMethod.POST)
 }

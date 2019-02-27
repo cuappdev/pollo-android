@@ -17,3 +17,7 @@ fun Endpoint.Companion.joinGroupWithCode(code: String): Endpoint {
     return Endpoint(path="/join/session", headers=mapOf("Authorization" to "Bearer " + User.currentSession.accessToken), body=requestBody, method=EndpointMethod.POST)
 }
 
+fun Endpoint.Companion.getAllGroups(role: String): Endpoint {
+    return Endpoint("/sessions/all/$role", headers=mapOf("Authorization" to "Bearer " + User.currentSession.accessToken), method = EndpointMethod.GET)
+}
+

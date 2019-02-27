@@ -2,24 +2,32 @@ package com.cornellappdev.android.pollo.Networking
 
 import android.util.Log
 import com.cornellappdev.android.pollo.Models.ApiResponse
+import com.cornellappdev.android.pollo.Models.Nodes.UserSessionNode
+import com.cornellappdev.android.pollo.Models.User
+import com.cornellappdev.android.pollo.PreferencesHelper
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
 import okhttp3.*
 import java.io.IOException
+import java.lang.reflect.Type
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 object Request {
     val httpClient = OkHttpClient()
 
-    suspend inline fun<reified T> makeRequest(request: okhttp3.Request): T {
+    suspend inline fun<reified T> makeRequest(request: okhttp3.Request, typeToken: Type): T {
         val response = httpClient.newCall(request).await()
         val responseBody = response.body()
         val responseBodyString = responseBody?.string() ?: ""
         Log.d("NETWORK RESPONSE", responseBodyString)
+
+        //Invalid Session Token
+        if(response.code() == 401) {
+        }
         val responseBodyJSON = Gson()
-        return responseBodyJSON.fromJson(responseBodyString, T::class.java)
+        return responseBodyJSON.fromJson<T>(responseBodyString, typeToken)
     }
 }
 
