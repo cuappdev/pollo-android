@@ -136,7 +136,6 @@
                 android:layout_height="30dp"
                 android:layout_marginEnd="19dp"
                 android:layout_width="67dp"
-                android:onClick="joinButtonClicked"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"

@@ -28,7 +28,7 @@ class PollsDateRecyclerAdapter(private val polls: ArrayList<GetSortedPollsRespon
         private var poll: GetSortedPollsResponse? = null
 
         init {
-            v.setOnClickListener(this)
+            view.setOnClickListener(this)
         }
 
         override fun onClick(view: View) {

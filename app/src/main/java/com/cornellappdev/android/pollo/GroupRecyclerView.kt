@@ -31,16 +31,16 @@ class GroupRecyclerAdapter(private val groups: ArrayList<Group>, val callback: G
     }
 
 
-    inner class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(v), View.OnClickListener {
+    inner class ViewHolder internal constructor(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
 
         private var view = view
         private var group: Group? = null
         private var isLoading = false
 
         init {
-            v.setOnClickListener(this)
+            view.setOnClickListener(this)
 
-            v.groupDetailsButton.setOnClickListener {
+            view.groupDetailsButton.setOnClickListener {
                 callback?.onMoreButtonPressed(group)
             }
         }

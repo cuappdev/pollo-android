@@ -1,11 +1,9 @@
 package com.cornellappdev.android.pollo
 
 import android.annotation.SuppressLint
-import android.app.Fragment
-import android.content.Context
+import android.support.v4.app.Fragment
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -18,8 +16,8 @@ import com.cornellappdev.android.pollo.Models.Nodes.GroupNode
 import com.cornellappdev.android.pollo.Networking.Endpoint
 import com.cornellappdev.android.pollo.Networking.Request
 import com.cornellappdev.android.pollo.Networking.getAllGroups
-import com.cornellappdev.android.pollo.R.id.noGroupsView
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
