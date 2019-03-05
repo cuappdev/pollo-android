@@ -1,41 +1,21 @@
 package com.cornellappdev.android.pollo;
 
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.support.design.widget.TabLayout;
-import android.support.v7.app.AppCompatActivity;
-
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.MenuItem;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-
-import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-
-import com.cornellappdev.android.pollo.Models.GoogleCredentials;
 import com.cornellappdev.android.pollo.Models.Socket.CurrentState;
 import com.cornellappdev.android.pollo.Models.Socket.Poll;
-import com.cornellappdev.android.pollo.Models.User;
-import com.cornellappdev.android.pollo.Models.UserSession;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.gson.Gson;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 
 public class PollGroupActivity extends AppCompatActivity implements PollRecyclerView.ItemClickListener {
@@ -66,13 +46,81 @@ public class PollGroupActivity extends AppCompatActivity implements PollRecycler
     private Integer userCount;
     private CurrentState currentState;
     private Socket mSocket;
+    private Emitter.Listener onUserPollStart = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    Gson dataJSON = new Gson();
+                    poll = dataJSON.fromJson(data.toString(), Poll.class);
+                }
+            });
+        }
+    };
+    private Emitter.Listener onUserPollEnd = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    Gson dataJSON = new Gson();
+                    poll = dataJSON.fromJson(data.toString(), Poll.class);
+                }
+            });
+        }
+    };
+    private Emitter.Listener onUserPollResults = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    Gson dataJSON = new Gson();
+                    currentState = dataJSON.fromJson(data.toString(), CurrentState.class);
+                }
+            });
+        }
+    };
+    private Emitter.Listener onUserPollResultsLive = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    Gson dataJSON = new Gson();
+                    currentState = dataJSON.fromJson(data.toString(), CurrentState.class);
+                }
+            });
+        }
+    };
+    private Emitter.Listener onUserCount = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    try {
+                        userCount = data.getInt("count");
+                    } catch (JSONException e) {
+                    }
+                }
+            });
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
             mSocket = IO.socket(BuildConfig.BACKEND_URI);
-        } catch (URISyntaxException e) {}
+        } catch (URISyntaxException e) {
+        }
         setContentView(R.layout.activity_poll_group);
         mSocket.on(USER_POLL_START, onUserPollStart);
         mSocket.on(USER_POLL_END, onUserPollEnd);
@@ -105,75 +153,4 @@ public class PollGroupActivity extends AppCompatActivity implements PollRecycler
             return 2;
         }
     }
-
-    private Emitter.Listener onUserPollStart = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    JSONObject data = (JSONObject) args[0];
-                    Gson dataJSON = new Gson();
-                    poll = dataJSON.fromJson(data.toString(), Poll.class);
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener onUserPollEnd = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    JSONObject data = (JSONObject) args[0];
-                    Gson dataJSON = new Gson();
-                    poll = dataJSON.fromJson(data.toString(), Poll.class);
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener onUserPollResults = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    JSONObject data = (JSONObject) args[0];
-                    Gson dataJSON = new Gson();
-                    currentState = dataJSON.fromJson(data.toString(), CurrentState.class);
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener onUserPollResultsLive = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    JSONObject data = (JSONObject) args[0];
-                    Gson dataJSON = new Gson();
-                    currentState = dataJSON.fromJson(data.toString(), CurrentState.class);
-                }
-            });
-        }
-    };
-
-    private Emitter.Listener onUserCount = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    JSONObject data = (JSONObject) args[0];
-                    try {
-                        userCount = data.getInt("count");
-                    } catch (JSONException e) {}
-                }
-            });
-        }
-    };
 }

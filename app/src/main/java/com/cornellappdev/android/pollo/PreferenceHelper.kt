@@ -3,7 +3,7 @@ package com.cornellappdev.android.pollo
 import android.content.Context
 import android.preference.PreferenceManager
 
-class PreferencesHelper(context: Context){
+class PreferencesHelper(context: Context) {
 
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 

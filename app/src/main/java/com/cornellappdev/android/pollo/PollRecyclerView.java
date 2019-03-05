@@ -6,18 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.cornellappdev.android.pollo.Models.Group;
 
 import java.util.List;
 
 public class PollRecyclerView extends RecyclerView.Adapter<PollRecyclerView.ViewHolder> {
+    final static String[] TIME_LABELS = {"years", "months", "weeks", "days",
+            "hours", "minutes", "seconds"};
     private List<Group> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
-
-    final static String[] TIME_LABELS = {"years", "months", "weeks", "days",
-            "hours", "minutes", "seconds"};
 
     PollRecyclerView(Context context, List<Group> data) {
         this.mInflater = LayoutInflater.from(context);
@@ -43,6 +41,23 @@ public class PollRecyclerView extends RecyclerView.Adapter<PollRecyclerView.View
         return mData.size();
     }
 
+    public void addAll(List<Group> newList) {
+        mData.clear();
+        mData.addAll(newList);
+    }
+
+    Group getItem(int id) {
+        return mData.get(id);
+    }
+
+    void setClickListener(ItemClickListener itemClickListener) {
+        this.mClickListener = itemClickListener;
+    }
+
+    public interface ItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         final TextView pollOption;
         final TextView pollOptionMenu;
@@ -59,22 +74,5 @@ public class PollRecyclerView extends RecyclerView.Adapter<PollRecyclerView.View
         public void onClick(View view) {
 
         }
-    }
-
-    public void addAll(List<Group> newList) {
-        mData.clear();
-        mData.addAll(newList);
-    }
-
-    Group getItem(int id) {
-        return mData.get(id);
-    }
-
-    void setClickListener(ItemClickListener itemClickListener) {
-        this.mClickListener = itemClickListener;
-    }
-
-    public interface ItemClickListener {
-        void onItemClick(View view, int position);
     }
 }

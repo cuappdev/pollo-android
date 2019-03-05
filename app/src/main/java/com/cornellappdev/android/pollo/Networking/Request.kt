@@ -1,15 +1,12 @@
 package com.cornellappdev.android.pollo.Networking
 
 import android.util.Log
-import com.cornellappdev.android.pollo.Models.ApiResponse
-import com.cornellappdev.android.pollo.Models.Nodes.UserSessionNode
-import com.cornellappdev.android.pollo.Models.User
-import com.cornellappdev.android.pollo.PreferencesHelper
 import com.google.gson.Gson
-import com.google.gson.JsonParseException
-import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.*
-import okhttp3.*
+import kotlinx.coroutines.suspendCancellableCoroutine
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Response
 import java.io.IOException
 import java.lang.reflect.Type
 import kotlin.coroutines.resume

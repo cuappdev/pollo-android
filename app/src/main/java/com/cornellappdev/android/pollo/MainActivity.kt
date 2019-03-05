@@ -1,9 +1,9 @@
 package com.cornellappdev.android.pollo
 
+import android.animation.ObjectAnimator
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
@@ -14,7 +14,6 @@ import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
@@ -30,9 +29,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.manage_group_view.view.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListener {
 
@@ -50,16 +51,16 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
      * The [ViewPager] that will host the section contents.
      */
     private var viewPager: ViewPager? = null
-
     private var groupSelected: Group? = null
-
     private var socket: Socket? = null
+    private var joinedGroupFragment: GroupFragment? = null
+    private var createdGroupFragment: GroupFragment? = null
 
     private val preferencesHelper: PreferencesHelper by lazy {
         PreferencesHelper(this)
     }
 
-    private val joinPollTextWatcher = object: TextWatcher {
+    private val joinPollTextWatcher = object : TextWatcher {
 
         override fun afterTextChanged(s: Editable?) {}
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -67,8 +68,8 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             val hasSixCharacters = s?.length == 6
             join_poll_group.isEnabled = hasSixCharacters
-            val correctBackgroundColor = if (hasSixCharacters) R.color.colorPrimary else R.color.settings_detail
-            join_poll_group.setBackgroundColor(resources.getColor(correctBackgroundColor))
+            val correctBackground = if (hasSixCharacters) R.drawable.rounded_join_button_filled else R.drawable.rounded_join_button
+            join_poll_group.setBackgroundResource(correctBackground)
         }
     }
 
@@ -94,11 +95,19 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
         }
 
         groupMenuOptionsView.closeButton.setOnClickListener {
-            val animate = TranslateAnimation(0f, 0f, 0f, groupMenuOptionsView.height.toFloat())
-            animate.duration = 300
-            animate.fillAfter = true
-            groupMenuOptionsView.startAnimation(animate)
-            groupMenuOptionsView.visibility = View.INVISIBLE
+            dismissPopup()
+        }
+
+        groupMenuOptionsView.leaveGroup.setOnClickListener {
+            val groupId = groupSelected?.id ?: return@setOnClickListener
+            val leaveGroupEndpoint = Endpoint.leaveGroup(groupId)
+
+            CoroutineScope(Dispatchers.IO).launch {
+                val typeToken = object : TypeToken<ApiResponse<String>>() {}.type
+                Request.makeRequest<ApiResponse<String>>(leaveGroupEndpoint.okHttpRequest(), typeToken)
+            }
+            joinedGroupFragment?.removeGroup(groupId)
+            dismissPopup()
         }
 
         // Add listener for when join button is pressed
@@ -138,6 +147,9 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
     }
 
     override fun onMoreButtonPressed(group: Group?) {
+        manageDim(true)
+        groupSelected = group
+        groupMenuOptionsView.groupNameTextView.text = group?.name ?: "Pollo Group"
         groupMenuOptionsView.visibility = View.VISIBLE
         val animate = TranslateAnimation(0f, 0f, groupMenuOptionsView.height.toFloat(), 0f)
         animate.duration = 300
@@ -145,25 +157,44 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
         groupMenuOptionsView.startAnimation(animate)
     }
 
+    private fun dismissPopup() {
+        manageDim(false)
+        dimView.isClickable = false
+        dimView.isFocusable = false
+        val animate = TranslateAnimation(0f, 0f, 0f, groupMenuOptionsView.height.toFloat())
+        animate.duration = 300
+        animate.fillAfter = true
+        groupMenuOptionsView.startAnimation(animate)
+        groupMenuOptionsView.visibility = View.INVISIBLE
+        groupSelected = null
+    }
+
+    private fun manageDim(shouldDim: Boolean) {
+        val alphaValue = if (shouldDim) 0.5f else 1.0f
+        val dimAnimation = ObjectAnimator.ofFloat(dimView, "alpha", alphaValue)
+        dimAnimation.duration = 500
+        dimAnimation.start()
+    }
+
     fun showSettings(view: View) {
         val settings = Intent(this@MainActivity, SettingsActivity::class.java)
         startActivityForResult(settings, SETTINGS_CODE)
     }
 
-    fun joinGroup(code: String) {
+    private fun joinGroup(code: String) {
         val endpoint = Endpoint.joinGroupWithCode(code)
         CoroutineScope(Dispatchers.IO).launch {
             val typeTokenGroupNode = object : TypeToken<GroupNodeResponse>() {}.type
             val typeTokenSortedPolls = object : TypeToken<ApiResponse<ArrayList<GetSortedPollsResponse>>>() {}.type
             val groupNodeResponse = Request.makeRequest<GroupNodeResponse>(endpoint.okHttpRequest(), typeTokenGroupNode)
 
-            if(groupNodeResponse?.success == false || groupNodeResponse?.data == null) {
+            if (groupNodeResponse?.success == false || groupNodeResponse?.data == null) {
                 withContext(Dispatchers.Main) {
                     AlertDialog.Builder(this@MainActivity)
-                        .setTitle("Code Not Valid")
-                        .setMessage("Failed to join session with code $code.\nTry again!")
-                        .setNeutralButton(android.R.string.ok, null)
-                        .show()
+                            .setTitle("Code Not Valid")
+                            .setMessage("Failed to join session with code $code.\nTry again!")
+                            .setNeutralButton(android.R.string.ok, null)
+                            .show()
                 }
                 return@launch
             }
@@ -171,19 +202,13 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
             val allPollsEndpoint = Endpoint.getSortedPolls(groupNodeResponse.data.node.id)
             val sortedPolls = Request.makeRequest<ApiResponse<ArrayList<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest(), typeTokenSortedPolls)
 
-            if(sortedPolls?.success == false || sortedPolls?.data == null) return@launch
+            if (sortedPolls?.success == false || sortedPolls?.data == null) return@launch
 
             val pollsDateActivity = Intent(this@MainActivity, PollsDateActivity::class.java)
             pollsDateActivity.putExtra("SORTED_POLLS", sortedPolls.data)
             pollsDateActivity.putExtra("GROUP_NODE", groupNodeResponse.data.node)
             startActivity(pollsDateActivity)
         }
-    }
-
-    // CURRENTLY USED FOR TESTING SOCKETS
-    private fun startSocket(id: String) {
-        val account = GoogleSignIn.getLastSignedInAccount(this)
-        socket = Socket(id=id, googleUserID=account?.id ?: "")
     }
 
     private fun finishAuthFlow() {
@@ -236,10 +261,16 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
      *
      * getItem is called to instantiate the fragment for the given page.
      */
-    inner class SectionsPagerAdapter internal constructor(fm: FragmentManager): FragmentPagerAdapter(fm) {
+    inner class SectionsPagerAdapter internal constructor(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
         override fun getItem(position: Int): Fragment {
-            return GroupFragment.newInstance(position + 1, this@MainActivity)
+            if (position == 0) {
+                joinedGroupFragment = joinedGroupFragment ?: GroupFragment.newInstance(position + 1, this@MainActivity)
+                return joinedGroupFragment!!
+            }
+
+            createdGroupFragment = createdGroupFragment ?: GroupFragment.newInstance(position + 1, this@MainActivity)
+            return createdGroupFragment!!
         }
 
         override fun getCount(): Int {

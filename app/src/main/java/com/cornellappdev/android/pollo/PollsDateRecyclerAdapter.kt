@@ -4,10 +4,9 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import com.cornellappdev.android.pollo.Networking.GetSortedPollsResponse
-import kotlinx.android.synthetic.main.polls_date_recyclerview_item_row.*
 import kotlinx.android.synthetic.main.polls_date_recyclerview_item_row.view.*
 
-class PollsDateRecyclerAdapter(private val polls: ArrayList<GetSortedPollsResponse>):
+class PollsDateRecyclerAdapter(private val polls: ArrayList<GetSortedPollsResponse>) :
         RecyclerView.Adapter<PollsDateRecyclerAdapter.PollsHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PollsDateRecyclerAdapter.PollsHolder {
@@ -22,7 +21,7 @@ class PollsDateRecyclerAdapter(private val polls: ArrayList<GetSortedPollsRespon
         holder.bindPoll(itemPoll)
     }
 
-    class PollsHolder(view: View): RecyclerView.ViewHolder(view), View.OnClickListener {
+    class PollsHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
 
         private var view = view
         private var poll: GetSortedPollsResponse? = null

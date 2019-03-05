@@ -1,16 +1,15 @@
 package com.cornellappdev.android.pollo
 
 import android.annotation.SuppressLint
-import android.support.v4.app.Fragment
 import android.net.Uri
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.cornellappdev.android.pollo.Models.ApiResponse
-
 import com.cornellappdev.android.pollo.Models.Group
 import com.cornellappdev.android.pollo.Models.Nodes.GroupNode
 import com.cornellappdev.android.pollo.Networking.Endpoint
@@ -22,8 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
-import java.util.ArrayList
+import java.util.*
 
 /**
  * A simple [Fragment] subclass.
@@ -52,8 +50,8 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
 
             withContext(Dispatchers.Main.immediate) {
                 groups = ArrayList(getGroupsResponse!!.data.map { it.node })
-                currentAdapter!!.addAll(groups)
-                currentAdapter!!.notifyDataSetChanged()
+                currentAdapter?.addAll(groups)
+                currentAdapter?.notifyDataSetChanged()
                 if (noGroupsView != null) {
                     noGroupsView.visibility = if (groups.isNotEmpty()) View.GONE else View.VISIBLE
                 }
@@ -71,10 +69,17 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
         groupRecyclerView.adapter = currentAdapter
 
         if (noGroupsView != null) {
-            noGroupsView.visibility = if(groups.isNotEmpty()) View.GONE else View.VISIBLE
+            noGroupsView.visibility = if (groups.isNotEmpty()) View.GONE else View.VISIBLE
         }
 
         return rootView
+    }
+
+    fun removeGroup(id: String) {
+        groups = ArrayList(groups.filter { it.id != id })
+        currentAdapter?.addAll(groups)
+        currentAdapter?.notifyDataSetChanged()
+        noGroupsView.visibility = if (groups.isNotEmpty()) View.GONE else View.VISIBLE
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -83,7 +88,7 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
     }
 
 
-    public interface OnMoreButtonPressedListener {
+    interface OnMoreButtonPressedListener {
         fun onMoreButtonPressed(group: Group?)
     }
 

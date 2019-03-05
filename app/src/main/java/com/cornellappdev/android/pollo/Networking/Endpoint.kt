@@ -1,16 +1,10 @@
 package com.cornellappdev.android.pollo.Networking
 
-import android.util.Log
 import com.cornellappdev.android.pollo.BuildConfig
-import com.cornellappdev.android.pollo.Models.Nodes.GroupNodeResponse
-import com.cornellappdev.android.pollo.Models.User
-import com.google.gson.Gson
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import okhttp3.*
+import okhttp3.Headers
+import okhttp3.MediaType
 import okhttp3.Request
-import java.io.IOException
+import okhttp3.RequestBody
 
 enum class EndpointMethod {
     GET, POST, DELETE, PUT
@@ -20,7 +14,7 @@ class Endpoint(private val path: String, private val headers: Map<String, String
 
     private val host = "https://" + BuildConfig.BACKEND_URI + "/api/v2"
 
-    companion object {}
+    companion object
 
     fun okHttpRequest(): Request {
         val endpoint = host + path
@@ -38,10 +32,20 @@ class Endpoint(private val path: String, private val headers: Map<String, String
                 return Request.Builder()
                         .url(endpoint)
                         .headers(headers)
+                        .get()
                         .build()
             }
+
+            EndpointMethod.DELETE -> {
+                return Request.Builder()
+                        .url(endpoint)
+                        .headers(headers)
+                        .delete()
+                        .build()
+            }
+
             else -> {
-               throw IllegalArgumentException("NOT IMPLEMENTED")
+                throw IllegalArgumentException("NOT IMPLEMENTED")
             }
         }
     }

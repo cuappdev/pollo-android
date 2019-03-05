@@ -1,16 +1,13 @@
 package com.cornellappdev.android.pollo
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.app.NavUtils
-import android.support.v7.app.ActionBar
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.view.MenuItem
 import android.view.View
-import android.view.Window
 import com.cornellappdev.android.pollo.Models.Group
 import com.cornellappdev.android.pollo.Networking.GetSortedPollsResponse
+import com.cornellappdev.android.pollo.Networking.Socket
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import kotlinx.android.synthetic.main.activity_polls_date.*
 
 class PollsDateActivity : AppCompatActivity() {
@@ -18,6 +15,7 @@ class PollsDateActivity : AppCompatActivity() {
     private lateinit var adapter: PollsDateRecyclerAdapter
     private lateinit var group: Group
     private lateinit var linearLayoutManager: LinearLayoutManager
+    private lateinit var socket: Socket
 
     private var sortedPolls = ArrayList<GetSortedPollsResponse>()
 
@@ -36,6 +34,9 @@ class PollsDateActivity : AppCompatActivity() {
 
         groupNameTextView.text = group.name
         codeTextView.text = "Code: ${group.code}"
+
+        val account = GoogleSignIn.getLastSignedInAccount(this)
+        socket = Socket(id = group.id, googleUserID = account?.id ?: "")
     }
 
     fun goBack(view: View) {

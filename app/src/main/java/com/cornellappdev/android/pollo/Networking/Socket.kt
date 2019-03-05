@@ -2,13 +2,12 @@ package com.cornellappdev.android.pollo.Networking
 
 import android.util.Log
 import com.cornellappdev.android.pollo.BuildConfig
-import com.cornellappdev.android.pollo.Models.User
 import io.socket.client.IO
 import io.socket.client.Manager
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
-import okhttp3.*
-import okhttp3.Request
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
 
 class Socket(val id: String, val googleUserID: String) {
 
@@ -38,9 +37,9 @@ class Socket(val id: String, val googleUserID: String) {
 
     init {
         val urlBuilder = HttpUrl.Builder()
-            .scheme("https")
-            .host(BuildConfig.BACKEND_URI)
-            .build()
+                .scheme("https")
+                .host(BuildConfig.BACKEND_URI)
+                .build()
 
         Log.d("Socket URL", urlBuilder.url().toString())
         val socketOptions = IO.Options()

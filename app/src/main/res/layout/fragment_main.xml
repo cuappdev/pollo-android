@@ -25,7 +25,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/no_groups_emoji"
-                android:textSize="81sp" />
+                android:height="50dp"
+                android:background="@color/white"
+                android:width="50dp"
+                android:textSize="38sp"/>
 
             <TextView
                 android:layout_width="wrap_content"

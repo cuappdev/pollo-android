@@ -1,16 +1,14 @@
 package com.cornellappdev.android.pollo
 
 import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-
-import kotlinx.android.synthetic.main.activity_settings.*
-import android.content.Intent
-import android.net.Uri
-import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import kotlinx.android.synthetic.main.activity_settings.*
 
 
 class SettingsActivity : AppCompatActivity() {

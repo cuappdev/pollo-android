@@ -1,7 +1,6 @@
 package com.cornellappdev.android.pollo;
 
 import android.content.Context;
-
 import android.util.Log;
 import com.cornellappdev.android.pollo.Models.Edges.GroupEdge;
 import com.cornellappdev.android.pollo.Models.GoogleCredentials;
@@ -12,30 +11,22 @@ import com.cornellappdev.android.pollo.Models.Nodes.UserSessionNode;
 import com.cornellappdev.android.pollo.Models.User;
 import com.cornellappdev.android.pollo.Models.UserSession;
 import com.google.gson.Gson;
-
+import okhttp3.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
 
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-
 final class NetworkUtils {
 
     static final String AUTHORIZATION = "Authorization";
     static final String BEARER = "Bearer";
-    private static final OkHttpClient client = new OkHttpClient();
     static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-
+    static final String JOIN_GROUP_ROUTE = "/join/session";
+    private static final OkHttpClient client = new OkHttpClient();
     private static final String GENERATE_CODE_ROUTE = "/generate/code";
     private static final String MOBILE_AUTH_ROUTE = "/auth/mobile";
-    static final String JOIN_GROUP_ROUTE = "/join/session";
     private static final String GET_GROUP_ROUTE = "/sessions/";
     private static final String GET_GROUPS_ROUTE = "/sessions/all";
 
@@ -52,7 +43,7 @@ final class NetworkUtils {
                 .url(endpoint)
                 .post(requestBody)
                 .build();
-        
+
         try (Response response = client.newCall(request).execute()) {
             final ResponseBody responseBody = response.body();
 
