@@ -1,24 +1,46 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
+    <string name="action_settings">Settings</string>
+
     <string name="app_name">Pollo</string>
+
+    <string name="close_detail_menu_content_description">Close Detail Menu</string>
 
     <string name="created">Created</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="end_question_text">End question</string>
+
+    <string name="enter_a_code_placeholder">Enter a code…</string>
+
+    <string name="go_back_content_description">Go Back</string>
+
+    <string name="group_details_button_content_description">Group Details Button</string>
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string name="join_button_text">Join</string>
+
     <string name="joined">Joined</string>
+
+    <string name="leave_group_content_description">Leave Group</string>
+    <string name="leave_text">Leave</string>
+
+    <string name="live_indicator">•</string>
 
     <string name="no_groups_emoji">&#129335;</string>
     <string name="no_groups_subtext">Enter a code below to join a group</string>
     <string name="no_groups_title">No Groups Joined</string>
 
-    <string name="poll_groups">Poll Groups</string>
+    <string name="pollo">Pollo</string>
+    <string name="pollo_pronunciation">\'\'Poh-loh\'\'</string>
 
-    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="settings_about">Pollo is made by Cornell AppDev, an engineering project team at Cornell University.</string>
+    <string name="settings_icon">⚙</string>
+    <string name="settings_more">Let us know if you have any ideas, suggestions, or issues! Shake your phone to access the feedback form, or follow the link below.</string>
 
     <string name="title_activity_settings">Settings</string>
-    <string name="action_settings">Settings</string>
-    <string name="settings_about">Pollo is made by Cornell AppDev, an engineering project team at Cornell University.</string>
-    <string name="settings_more">Let us know if you have any ideas, suggestions, or issues! Shake your phone to access the feedback form, or follow the link below.</string>
+
+    <string name="view_polls_for_date_content_description">View Polls For Date</string>
+
+    <string name="welcome_to_text">Welcome to</string>
 </resources>

@@ -20,7 +20,6 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import com.cornellappdev.android.pollo.Models.ApiResponse
 import com.cornellappdev.android.pollo.Models.Group
-import com.cornellappdev.android.pollo.Models.Nodes.GroupNodeResponse
 import com.cornellappdev.android.pollo.Models.Nodes.UserSessionNode
 import com.cornellappdev.android.pollo.Models.User
 import com.cornellappdev.android.pollo.Models.UserSession
@@ -184,11 +183,11 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
     private fun joinGroup(code: String) {
         val endpoint = Endpoint.joinGroupWithCode(code)
         CoroutineScope(Dispatchers.IO).launch {
-            val typeTokenGroupNode = object : TypeToken<GroupNodeResponse>() {}.type
+            val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
             val typeTokenSortedPolls = object : TypeToken<ApiResponse<ArrayList<GetSortedPollsResponse>>>() {}.type
-            val groupNodeResponse = Request.makeRequest<GroupNodeResponse>(endpoint.okHttpRequest(), typeTokenGroupNode)
+            val groupResponse = Request.makeRequest<ApiResponse<Group>>(endpoint.okHttpRequest(), typeTokenGroupNode)
 
-            if (groupNodeResponse?.success == false || groupNodeResponse?.data == null) {
+            if (groupResponse?.success == false || groupResponse?.data == null) {
                 withContext(Dispatchers.Main) {
                     AlertDialog.Builder(this@MainActivity)
                             .setTitle("Code Not Valid")
@@ -199,14 +198,18 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
                 return@launch
             }
 
-            val allPollsEndpoint = Endpoint.getSortedPolls(groupNodeResponse.data.node.id)
+            withContext(Dispatchers.Main) {
+                joinedGroupFragment?.addGroup(groupResponse.data)
+            }
+
+            val allPollsEndpoint = Endpoint.getSortedPolls(groupResponse.data.id)
             val sortedPolls = Request.makeRequest<ApiResponse<ArrayList<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest(), typeTokenSortedPolls)
 
             if (sortedPolls?.success == false || sortedPolls?.data == null) return@launch
 
             val pollsDateActivity = Intent(this@MainActivity, PollsDateActivity::class.java)
             pollsDateActivity.putExtra("SORTED_POLLS", sortedPolls.data)
-            pollsDateActivity.putExtra("GROUP_NODE", groupNodeResponse.data.node)
+            pollsDateActivity.putExtra("GROUP_NODE", groupResponse.data)
             startActivity(pollsDateActivity)
         }
     }

@@ -21,9 +21,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <android.support.constraint.ConstraintLayout
         android:background="@color/actualWhite"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
@@ -31,7 +29,7 @@
         tools:context=".SettingsActivity"
         tools:showIn="@layout/activity_settings">
 
-        <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <TableLayout
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_width="fill_parent"
@@ -49,7 +47,8 @@
                 android:text="Account"
                 android:textColor="@color/black"
                 android:textSize="@dimen/header_font_size"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:fontFamily="sans-serif-medium"
@@ -59,7 +58,8 @@
                 android:layout_marginTop="8dp"
                 android:text="Unknown"
                 android:textColor="@color/settings_detail"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                tools:ignore="HardcodedText" />
 
             <View
                 android:background="@color/settings_divider"
@@ -73,7 +73,8 @@
                 android:text="About"
                 android:textColor="@color/black"
                 android:textSize="@dimen/header_font_size"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:fontFamily="sans-serif-medium"
@@ -82,7 +83,7 @@
                 android:layout_marginTop="8dp"
                 android:text="@string/settings_about"
                 android:textColor="@color/settings_detail"
-                android:textSize="16dp" />
+                android:textSize="16sp" />
 
             <TextView
                 android:clickable="true"
@@ -94,7 +95,8 @@
                 android:onClick="moreAppsButtonClicked"
                 android:text="More Apps"
                 android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/header_font_size" />
+                android:textSize="@dimen/header_font_size"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:clickable="true"
@@ -106,7 +108,8 @@
                 android:onClick="visitOurWebsiteButtonClicked"
                 android:text="Visit Our Website"
                 android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/header_font_size" />
+                android:textSize="@dimen/header_font_size"
+                tools:ignore="HardcodedText" />
 
             <View
                 android:background="@color/settings_divider"
@@ -120,7 +123,8 @@
                 android:text="More"
                 android:textColor="@color/black"
                 android:textSize="@dimen/header_font_size"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:fontFamily="sans-serif-medium"
@@ -141,7 +145,8 @@
                 android:onClick="sendFeedbackButtonClicked"
                 android:text="Send Feedback"
                 android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/header_font_size" />
+                android:textSize="@dimen/header_font_size"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:clickable="true"
@@ -153,7 +158,8 @@
                 android:onClick="privacyPolicyButtonClicked"
                 android:text="Privacy Policy"
                 android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/header_font_size" />
+                android:textSize="@dimen/header_font_size"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:clickable="true"
@@ -165,7 +171,8 @@
                 android:onClick="logoutButtonClicked"
                 android:text="Log Out"
                 android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/header_font_size" />
+                android:textSize="@dimen/header_font_size"
+                tools:ignore="HardcodedText" />
         </TableLayout>
 
     </android.support.constraint.ConstraintLayout>

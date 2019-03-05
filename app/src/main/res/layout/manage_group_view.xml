@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/white"
     android:layout_alignParentBottom="true"
     android:layout_height="174dp"
@@ -27,6 +28,7 @@
         android:layout_marginEnd="15dp"
         android:layout_marginTop="19.5dp"
         android:layout_width="16dp"
+        android:contentDescription="@string/close_detail_menu_content_description"
         android:src="@drawable/close_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -47,12 +49,14 @@
         android:layout_marginTop="15dp"
         android:layout_width="match_parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider">
+        app:layout_constraintTop_toBottomOf="@id/divider"
+        tools:ignore="UseCompoundDrawables">
 
         <ImageView
             android:layout_height="18dp"
             android:layout_marginStart="20dp"
             android:layout_width="19dp"
+            android:contentDescription="@string/leave_group_content_description"
             android:src="@drawable/leave_group_red" />
 
         <TextView
@@ -62,7 +66,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="-2.5dp"
             android:layout_width="45dp"
-            android:text="Leave"
+            android:text="@string/leave_text"
             android:textColor="@color/red"
             android:textSize="16sp" />
 

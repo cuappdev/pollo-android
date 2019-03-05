@@ -42,7 +42,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     override fun onBackPressed() {
         // Pressing the back button goes to the home screen
         val intent = Intent(Intent.ACTION_MAIN)
-        intent.addCategory(Intent.CATEGORY_HOME)
+            intent.addCategory(Intent.CATEGORY_HOME)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
         super.onBackPressed()
@@ -71,7 +71,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
-    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
@@ -85,11 +85,11 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {
-            val account = completedTask.getResult(ApiException::class.java)
+            val account: GoogleSignInAccount? = completedTask.getResult(ApiException::class.java)
 
             // Signed in successfully, show authenticated UI.
             val data = Intent()
-            data.putExtra("idToken", account.idToken)
+            data.putExtra("idToken", account?.idToken)
             setResult(Activity.RESULT_OK, data)
             finish()
         } catch (e: ApiException) {

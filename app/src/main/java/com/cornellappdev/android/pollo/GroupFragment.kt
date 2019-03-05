@@ -1,6 +1,7 @@
 package com.cornellappdev.android.pollo
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -45,11 +46,22 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
 
         CoroutineScope(Dispatchers.IO).launch {
             val getGroupsEndpoint = Endpoint.getAllGroups("member")
-            val typeTokenGroups = object : TypeToken<ApiResponse<ArrayList<GroupNode>>>() {}.type
-            val getGroupsResponse = Request.makeRequest<ApiResponse<ArrayList<GroupNode>>>(getGroupsEndpoint.okHttpRequest(), typeTokenGroups)
+            val typeTokenGroups = object : TypeToken<ApiResponse<ArrayList<Group>>>() {}.type
+            val getGroupsResponse = Request.makeRequest<ApiResponse<ArrayList<Group>>>(getGroupsEndpoint.okHttpRequest(), typeTokenGroups)
 
             withContext(Dispatchers.Main.immediate) {
-                groups = ArrayList(getGroupsResponse!!.data.map { it.node })
+                if (getGroupsResponse?.success == false || getGroupsResponse?.data == null) {
+                    withContext(Dispatchers.Main) {
+                        AlertDialog.Builder(context)
+                                .setTitle("Could Not Fetch Groups")
+                                .setMessage("Please try again later.")
+                                .setNeutralButton(android.R.string.ok, null)
+                                .show()
+                    }
+                    return@withContext
+                }
+
+                groups = getGroupsResponse.data
                 currentAdapter?.addAll(groups)
                 currentAdapter?.notifyDataSetChanged()
                 if (noGroupsView != null) {
@@ -59,8 +71,8 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View {
         val rootView = inflater!!.inflate(R.layout.fragment_main, container, false)
 
         val groupRecyclerView = rootView.findViewById<RecyclerView>(R.id.group_list_recyclerView)
@@ -77,6 +89,13 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
 
     fun removeGroup(id: String) {
         groups = ArrayList(groups.filter { it.id != id })
+        currentAdapter?.addAll(groups)
+        currentAdapter?.notifyDataSetChanged()
+        noGroupsView.visibility = if (groups.isNotEmpty()) View.GONE else View.VISIBLE
+    }
+
+    fun addGroup(group: Group) {
+        groups.add(group)
         currentAdapter?.addAll(groups)
         currentAdapter?.notifyDataSetChanged()
         noGroupsView.visibility = if (groups.isNotEmpty()) View.GONE else View.VISIBLE

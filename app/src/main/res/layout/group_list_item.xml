@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="75dp">
 
@@ -12,7 +11,6 @@
         android:layout_marginStart="18dp"
         android:layout_marginTop="19dp"
         android:layout_width="wrap_content"
-        android:text="Group Name"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,7 +20,6 @@
         android:id="@+id/groupLiveTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Last live 0 hours ago"
         android:textSize="16sp"
         android:textColor="#9EA7B3"
         android:layout_marginStart="18dp"
@@ -35,6 +32,7 @@
         android:id="@+id/groupDetailsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/group_details_button_content_description"
         android:src="@drawable/more_dots"
         android:background="@color/white"
         app:layout_constraintTop_toTopOf="parent"
