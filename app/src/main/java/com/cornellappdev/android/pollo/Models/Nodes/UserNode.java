@@ -1,6 +1,6 @@
-package com.cornellappdev.android.pollo.Models.Nodes;
+package com.cornellappdev.android.pollo.models.Nodes;
 
-import com.cornellappdev.android.pollo.Models.User;
+import com.cornellappdev.android.pollo.models.User;
 
 public class UserNode {
 

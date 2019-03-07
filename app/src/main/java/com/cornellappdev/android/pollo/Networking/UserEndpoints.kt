@@ -1,4 +1,4 @@
-package com.cornellappdev.android.pollo.Networking
+package com.cornellappdev.android.pollo.networking
 
 import okhttp3.MediaType
 import okhttp3.RequestBody

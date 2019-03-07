@@ -1,4 +1,4 @@
-package com.cornellappdev.android.pollo.Models;
+package com.cornellappdev.android.pollo.models;
 
 public class User {
 
@@ -10,6 +10,7 @@ public class User {
     private String givenName;
     private String familyName;
     private String email;
+
     public User(String id, String name, String givenName, String familyName, String email) {
         this.id = id;
         this.name = name;

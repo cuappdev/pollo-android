@@ -1,6 +1,6 @@
-package com.cornellappdev.android.pollo.Models.Nodes;
+package com.cornellappdev.android.pollo.models.Nodes;
 
-import com.cornellappdev.android.pollo.Models.Draft;
+import com.cornellappdev.android.pollo.models.Draft;
 
 public class DraftNode {
 

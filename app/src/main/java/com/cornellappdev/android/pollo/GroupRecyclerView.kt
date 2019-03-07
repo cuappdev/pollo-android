@@ -5,10 +5,9 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
-import com.cornellappdev.android.pollo.Models.ApiResponse
-import com.cornellappdev.android.pollo.Models.Group
-import com.cornellappdev.android.pollo.Models.Nodes.GroupNodeResponse
-import com.cornellappdev.android.pollo.Networking.*
+import com.cornellappdev.android.pollo.models.ApiResponse
+import com.cornellappdev.android.pollo.models.Group
+import com.cornellappdev.android.pollo.networking.*
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.group_list_item.view.*
 import kotlinx.coroutines.CoroutineScope
@@ -56,11 +55,11 @@ class GroupRecyclerAdapter(private val groups: ArrayList<Group>, val callback: G
 
             CoroutineScope(Dispatchers.Main).launch {
                 val endpoint = Endpoint.joinGroupWithCode(group?.code ?: "")
-                val typeTokenGroupNode = object : TypeToken<GroupNodeResponse>() {}.type
+                val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
                 val typeTokenSortedPolls = object : TypeToken<ApiResponse<ArrayList<GetSortedPollsResponse>>>() {}.type
-                val groupNodeResponse = withContext(Dispatchers.Default) { Request.makeRequest<GroupNodeResponse>(endpoint.okHttpRequest(), typeTokenGroupNode) }
+                val groupNodeResponse = withContext(Dispatchers.Default) { Request.makeRequest<ApiResponse<Group>>(endpoint.okHttpRequest(), typeTokenGroupNode) }
 
-                val allPollsEndpoint = Endpoint.getSortedPolls(groupNodeResponse!!.data.node.id)
+                val allPollsEndpoint = Endpoint.getSortedPolls(groupNodeResponse!!.data.id)
                 val sortedPolls = withContext(Dispatchers.Default) { Request.makeRequest<ApiResponse<ArrayList<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest(), typeTokenSortedPolls) }
 
                 val context = view.context

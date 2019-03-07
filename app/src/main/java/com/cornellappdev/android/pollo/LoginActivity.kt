@@ -42,7 +42,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     override fun onBackPressed() {
         // Pressing the back button goes to the home screen
         val intent = Intent(Intent.ACTION_MAIN)
-            intent.addCategory(Intent.CATEGORY_HOME)
+        intent.addCategory(Intent.CATEGORY_HOME)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
         super.onBackPressed()

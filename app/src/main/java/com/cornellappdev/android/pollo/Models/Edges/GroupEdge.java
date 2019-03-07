@@ -1,7 +1,7 @@
-package com.cornellappdev.android.pollo.Models.Edges;
+package com.cornellappdev.android.pollo.models.Edges;
 
-import com.cornellappdev.android.pollo.Models.Group;
-import com.cornellappdev.android.pollo.Models.Nodes.GroupNode;
+import com.cornellappdev.android.pollo.models.Group;
+import com.cornellappdev.android.pollo.models.Nodes.GroupNode;
 import org.json.JSONObject;
 
 import java.util.ArrayList;

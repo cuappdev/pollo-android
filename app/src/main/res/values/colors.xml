@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#29C09E</color>
+    <color name="colorPrimary">#74d6c0</color>
     <color name="colorPrimaryDark">@color/bluishGreen</color>
     <color name="colorAccent">@color/black</color>
 
     <color name="blueyGrey">#9ea7b3</color>
+    <color name="cardHeaderGray">#fafafa</color>
     <color name="paleGray">#f5f7f8</color>
     <color name="white">#f6f6f6</color>
     <color name="actualWhite">#ffffff</color>
@@ -19,4 +20,6 @@
     <color name="joinGroupGray">#9B9A9A</color>
     <color name="joinGroupUnderline">#85514F4F</color>
     <color name="pollsDateBackgroundColor">#3D3D3D</color>
+    <color name="multipleChoiceBorderColor">#9fa5b1</color>
+    <color name="multipleChoiceIncorrectAnswerColor">#c4c4c4</color>
 </resources>

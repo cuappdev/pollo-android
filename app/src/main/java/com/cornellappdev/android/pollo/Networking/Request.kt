@@ -1,4 +1,4 @@
-package com.cornellappdev.android.pollo.Networking
+package com.cornellappdev.android.pollo.networking
 
 import android.util.Log
 import com.google.gson.Gson

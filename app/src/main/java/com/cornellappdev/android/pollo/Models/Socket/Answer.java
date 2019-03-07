@@ -1,4 +1,4 @@
-package com.cornellappdev.android.pollo.Models.Socket;
+package com.cornellappdev.android.pollo.models.Socket;
 
 public class Answer {
 

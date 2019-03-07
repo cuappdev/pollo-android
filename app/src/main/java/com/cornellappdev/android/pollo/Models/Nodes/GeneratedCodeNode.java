@@ -1,4 +1,4 @@
-package com.cornellappdev.android.pollo.Models.Nodes;
+package com.cornellappdev.android.pollo.models.Nodes;
 
 import org.json.JSONObject;
 

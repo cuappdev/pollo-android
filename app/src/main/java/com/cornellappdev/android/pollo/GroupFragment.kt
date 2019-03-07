@@ -10,12 +10,11 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.cornellappdev.android.pollo.Models.ApiResponse
-import com.cornellappdev.android.pollo.Models.Group
-import com.cornellappdev.android.pollo.Models.Nodes.GroupNode
-import com.cornellappdev.android.pollo.Networking.Endpoint
-import com.cornellappdev.android.pollo.Networking.Request
-import com.cornellappdev.android.pollo.Networking.getAllGroups
+import com.cornellappdev.android.pollo.models.ApiResponse
+import com.cornellappdev.android.pollo.models.Group
+import com.cornellappdev.android.pollo.networking.Endpoint
+import com.cornellappdev.android.pollo.networking.Request
+import com.cornellappdev.android.pollo.networking.getAllGroups
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.coroutines.CoroutineScope

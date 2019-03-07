@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/pollsRecyclerViewCell"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:background="@drawable/rounded_poll_cell">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/questionHeaderView"
+        android:background="@drawable/rounded_poll_header"
+        android:layout_height="86dp"
+        android:layout_width="match_parent">
+
+        <TextView
+            android:fontFamily="sans-serif"
+            android:id="@+id/questionMCTextView"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:layout_width="match_parent"
+            android:letterSpacing="0.03"
+            android:maxLines="3"
+            android:text="Favorite Ice Cream"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:fontFamily="sans-serif-medium"
+            android:id="@+id/questionMCSubtitleText"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:text="Final Results  •  1 Vote"
+            android:textAlignment="center"
+            android:textColor="@color/settings_detail"
+            android:textSize="12sp"
+            android:textStyle="normal"
+            app:layout_constraintTop_toBottomOf="@id/questionMCTextView"
+            tools:ignore="HardcodedText" />
+
+        <View
+            android:background="@color/settings_divider"
+            android:id="@+id/headerDivider"
+            android:layout_height="1dp"
+            android:layout_width="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/questionFRHeaderView"
+        android:background="@drawable/rounded_poll_header"
+        android:layout_height="86dp"
+        android:layout_width="match_parent"
+        android:visibility="invisible">
+
+        <TextView
+            android:fontFamily="sans-serif"
+            android:id="@+id/questionFRTextView"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:layout_width="match_parent"
+            android:letterSpacing="0.03"
+            android:maxLines="3"
+            android:text="Favorite Ice Cream"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="HardcodedText" />
+        
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium"
+            android:textStyle="normal"
+            android:textColor="#c4c3c9"
+            android:letterSpacing="0.02"
+            android:hint="Type a response"
+            app:layout_constraintTop_toBottomOf="@id/questionFRTextView"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="30dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginTop="27dp"
+            android:visibility="invisible"
+            tools:ignore="HardcodedText,LabelFor"
+            android:inputType="text" />
+
+        <TextView
+            android:fontFamily="sans-serif-medium"
+            android:id="@+id/questionFRSubtitleText"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:text="Final Results  •  1 Vote"
+            android:textAlignment="center"
+            android:textColor="@color/settings_detail"
+            android:textSize="12sp"
+            android:textStyle="normal"
+            app:layout_constraintTop_toBottomOf="@id/questionFRTextView"
+            android:visibility="invisible"
+            tools:ignore="HardcodedText" />
+
+        <View
+            android:background="@color/settings_divider"
+            android:layout_height="1dp"
+            android:layout_width="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/pollsChoiceRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/questionHeaderView"/>
+
+</android.support.constraint.ConstraintLayout>

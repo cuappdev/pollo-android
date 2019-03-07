@@ -1,4 +1,4 @@
-package com.cornellappdev.android.pollo.Networking
+package com.cornellappdev.android.pollo.networking
 
 import com.cornellappdev.android.pollo.BuildConfig
 import okhttp3.Headers

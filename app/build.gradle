@@ -35,7 +35,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    
+
     lintOptions {
         xmlReport true
         abortOnError false
@@ -71,7 +71,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
     testImplementation 'junit:junit:4.12'
-    implementation ('io.socket:socket.io-client:1.0.0')
+    implementation('io.socket:socket.io-client:1.0.0')
 }
 repositories {
     mavenCentral()

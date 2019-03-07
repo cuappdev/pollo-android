@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.cornellappdev.android.pollo.Models.Group;
+import com.cornellappdev.android.pollo.models.Group;
 
 import java.util.List;
 

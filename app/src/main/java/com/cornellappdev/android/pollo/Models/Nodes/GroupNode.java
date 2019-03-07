@@ -1,6 +1,6 @@
-package com.cornellappdev.android.pollo.Models.Nodes;
+package com.cornellappdev.android.pollo.models.Nodes;
 
-import com.cornellappdev.android.pollo.Models.Group;
+import com.cornellappdev.android.pollo.models.Group;
 
 public class GroupNode {
 

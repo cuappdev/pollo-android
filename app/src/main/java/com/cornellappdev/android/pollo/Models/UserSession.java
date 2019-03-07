@@ -1,4 +1,4 @@
-package com.cornellappdev.android.pollo.Models;
+package com.cornellappdev.android.pollo.models;
 
 public class UserSession {
 

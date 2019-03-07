@@ -1,4 +1,4 @@
-package com.cornellappdev.android.pollo.Models
+package com.cornellappdev.android.pollo.models
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
