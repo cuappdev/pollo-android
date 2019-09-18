@@ -1,6 +1,6 @@
 package com.cornellappdev.android.pollo.polls
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import com.cornellappdev.android.pollo.networking.PollResult
@@ -16,7 +16,7 @@ data class PollsChoiceModel(val hasCorrectAnswer: Boolean, val correctAnswer: St
 
 class PollsChoiceRecyclerAdapter(private val pollChoices: Map<String, PollResult>, private val correctAnswer: String,
                                  private val shared: Boolean,
-                                 private val type: QuestionType) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                                 private val type: QuestionType) : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
 
     private val pollChoiceKeys = ArrayList(pollChoices.keys)
     private val hasCorrectAnswer = correctAnswer != ""
@@ -24,7 +24,7 @@ class PollsChoiceRecyclerAdapter(private val pollChoices: Map<String, PollResult
         pollResult.count
     }.sum()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
         return when (type) {
             QuestionType.MULTIPLE_CHOICE -> {
                 val inflatedView = parent.inflate(R.layout.poll_multiple_choice_item_row, false)
@@ -47,7 +47,7 @@ class PollsChoiceRecyclerAdapter(private val pollChoices: Map<String, PollResult
 
     override fun getItemCount(): Int = pollChoiceKeys.size
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, postion: Int) {
+    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, postion: Int) {
         val answerChoice = pollChoiceKeys[postion]
         val pollResult = pollChoices.getValue(answerChoice)
         val pollsChoiceModel = PollsChoiceModel(hasCorrectAnswer, correctAnswer, shared, type, answerChoice, pollResult, totalNumberOfResponses)
@@ -65,7 +65,7 @@ class PollsChoiceRecyclerAdapter(private val pollChoices: Map<String, PollResult
 
     }
 
-    class ChoiceHolder(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener {
+    class ChoiceHolder(v: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(v), View.OnClickListener {
 
         var view: View = v
         private var pollsChoiceModel: PollsChoiceModel? = null
@@ -108,7 +108,7 @@ class PollsChoiceRecyclerAdapter(private val pollChoices: Map<String, PollResult
         }
     }
 
-    class FreeResponseHolder(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener {
+    class FreeResponseHolder(v: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(v), View.OnClickListener {
 
         var view: View = v
         private var pollsChoiceModel: PollsChoiceModel? = null

@@ -13,13 +13,13 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent">
 
-        <android.support.design.widget.AppBarLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:theme="@style/AppTheme.AppBarOverlay">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:background="@color/white"
                 android:layout_height="180dp"
                 android:layout_width="match_parent">
@@ -55,9 +55,9 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <android.support.design.widget.TabLayout
+            <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabs"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
@@ -66,23 +66,23 @@
                 app:tabTextAppearance="@style/TabItemNotAllCaps"
                 app:tabTextColor="@color/blueyGrey">
 
-                <android.support.design.widget.TabItem
+                <com.google.android.material.tabs.TabItem
                     android:id="@+id/tabItem"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:text="@string/joined" />
 
-                <android.support.design.widget.TabItem
+                <com.google.android.material.tabs.TabItem
                     android:id="@+id/tabItem2"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:text="@string/created" />
 
-            </android.support.design.widget.TabLayout>
+            </com.google.android.material.tabs.TabLayout>
 
-        </android.support.design.widget.AppBarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
-        <android.support.v4.view.ViewPager
+        <androidx.viewpager.widget.ViewPager
             android:id="@+id/container"
             android:layout_above="@+id/InnerRelativeLayout"
             android:layout_alignParentStart="true"
@@ -94,7 +94,7 @@
             android:background="@color/white"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        </android.support.v4.view.ViewPager>
+        </androidx.viewpager.widget.ViewPager>
 
 
         <RelativeLayout
@@ -105,7 +105,7 @@
             android:layout_marginBottom="0dp"
             android:layout_width="wrap_content">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/EditText"
                 android:layout_height="match_parent"
                 android:layout_width="match_parent">
@@ -155,7 +155,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </RelativeLayout>

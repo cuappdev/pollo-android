@@ -1,8 +1,8 @@
 package com.cornellappdev.android.pollo
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.View
 import com.cornellappdev.android.pollo.models.Group
 import com.cornellappdev.android.pollo.networking.GetSortedPollsResponse
@@ -17,7 +17,7 @@ class PollsDateActivity : AppCompatActivity() {
 
     private lateinit var adapter: PollsDateRecyclerAdapter
     private lateinit var group: Group
-    private lateinit var linearLayoutManager: LinearLayoutManager
+    private lateinit var linearLayoutManager: androidx.recyclerview.widget.LinearLayoutManager
     private lateinit var socket: Socket
 
     private var sortedPolls = ArrayList<GetSortedPollsResponse>()
@@ -30,7 +30,7 @@ class PollsDateActivity : AppCompatActivity() {
         group = intent.getParcelableExtra("GROUP_NODE")
 
         // Use LinearLayoutManager because we just want one cell per row
-        linearLayoutManager = LinearLayoutManager(this)
+        linearLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         pollsDateRecyclerView.layoutManager = linearLayoutManager
         adapter = PollsDateRecyclerAdapter(sortedPolls, group.name, group.code)
         pollsDateRecyclerView.adapter = adapter

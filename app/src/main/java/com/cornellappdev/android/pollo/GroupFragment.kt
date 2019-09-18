@@ -4,9 +4,9 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -74,8 +74,8 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
                               savedInstanceState: Bundle?): View {
         val rootView = inflater!!.inflate(R.layout.fragment_main, container, false)
 
-        val groupRecyclerView = rootView.findViewById<RecyclerView>(R.id.group_list_recyclerView)
-        groupRecyclerView.layoutManager = LinearLayoutManager(rootView.context)
+        val groupRecyclerView = rootView.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.group_list_recyclerView)
+        groupRecyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(rootView.context)
         currentAdapter = GroupRecyclerAdapter(groups, callback)
         groupRecyclerView.adapter = currentAdapter
 
