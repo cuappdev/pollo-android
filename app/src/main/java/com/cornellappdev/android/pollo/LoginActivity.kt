@@ -3,7 +3,8 @@ package com.cornellappdev.android.pollo
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -96,6 +97,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             //updateUI(null);
+            Log.e("ApiException", "signInResult:failed code=" + e.statusCode)
+            e.printStackTrace()
         }
 
     }

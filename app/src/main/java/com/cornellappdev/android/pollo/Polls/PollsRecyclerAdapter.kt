@@ -1,8 +1,8 @@
 package com.cornellappdev.android.pollo.polls
 
 import android.content.res.Resources
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -11,9 +11,9 @@ import com.cornellappdev.android.pollo.R
 import com.cornellappdev.android.pollo.inflate
 import kotlinx.android.synthetic.main.poll_recyclerview_item_row.view.*
 
-class PollsRecyclerAdapter(private val polls: ArrayList<PollsResponse>) : RecyclerView.Adapter<PollsRecyclerAdapter.PollHolder>() {
+class PollsRecyclerAdapter(private val polls: ArrayList<PollsResponse>) : androidx.recyclerview.widget.RecyclerView.Adapter<PollsRecyclerAdapter.PollHolder>() {
 
-    private val viewPool = RecyclerView.RecycledViewPool()
+    private val viewPool = androidx.recyclerview.widget.RecyclerView.RecycledViewPool()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PollHolder {
         val inflatedView = parent.inflate(R.layout.poll_recyclerview_item_row, false)
@@ -24,7 +24,7 @@ class PollsRecyclerAdapter(private val polls: ArrayList<PollsResponse>) : Recycl
 
     override fun onBindViewHolder(holder: PollHolder, position: Int) {
 
-        holder.view.layoutParams = (holder.view.layoutParams as RecyclerView.LayoutParams).apply {
+        holder.view.layoutParams = (holder.view.layoutParams as androidx.recyclerview.widget.RecyclerView.LayoutParams).apply {
             val displayMetrics = Resources.getSystem().displayMetrics
 
             /* To show the edge of the next/previous card on the screen, we'll adjust the width of our MATCH_PARENT card to make
@@ -47,7 +47,7 @@ class PollsRecyclerAdapter(private val polls: ArrayList<PollsResponse>) : Recycl
         val questionType = QuestionType.create(poll.type) ?: QuestionType.MULTIPLE_CHOICE
         holder.bindPoll(poll, questionType)
 
-        val childLayoutManager = LinearLayoutManager(holder.view.pollsChoiceRecyclerView.context)
+        val childLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(holder.view.pollsChoiceRecyclerView.context)
         childLayoutManager.initialPrefetchItemCount = 4
         holder.view.pollsChoiceRecyclerView.apply {
             layoutManager = childLayoutManager
@@ -57,7 +57,7 @@ class PollsRecyclerAdapter(private val polls: ArrayList<PollsResponse>) : Recycl
 
     }
 
-    class PollHolder(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener {
+    class PollHolder(v: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(v), View.OnClickListener {
 
         var view: View = v
         private var poll: PollsResponse? = null
