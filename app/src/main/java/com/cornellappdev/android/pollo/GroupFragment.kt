@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.cornellappdev.android.pollo.models.ApiResponse
 import com.cornellappdev.android.pollo.models.Group
+import com.cornellappdev.android.pollo.models.User
 import com.cornellappdev.android.pollo.networking.Endpoint
 import com.cornellappdev.android.pollo.networking.Request
 import com.cornellappdev.android.pollo.networking.getAllGroups
@@ -44,7 +45,8 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
         super.onCreate(savedInstanceState)
 
         CoroutineScope(Dispatchers.IO).launch {
-            val getGroupsEndpoint = Endpoint.getAllGroups("member")
+            val groupRole = arguments?.getString(GroupFragment.GROUP_ROLE) ?: return@launch
+            val getGroupsEndpoint = Endpoint.getAllGroups(groupRole)
             val typeTokenGroups = object : TypeToken<ApiResponse<ArrayList<Group>>>() {}.type
             val getGroupsResponse = Request.makeRequest<ApiResponse<ArrayList<Group>>>(getGroupsEndpoint.okHttpRequest(), typeTokenGroups)
 
@@ -63,9 +65,7 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
                 groups = getGroupsResponse.data
                 currentAdapter?.addAll(groups)
                 currentAdapter?.notifyDataSetChanged()
-                if (noGroupsView != null) {
-                    noGroupsView.visibility = if (groups.isNotEmpty()) View.GONE else View.VISIBLE
-                }
+                setNoGroups()
             }
         }
     }
@@ -79,9 +79,7 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
         currentAdapter = GroupRecyclerAdapter(groups, callback)
         groupRecyclerView.adapter = currentAdapter
 
-        if (noGroupsView != null) {
-            noGroupsView.visibility = if (groups.isNotEmpty()) View.GONE else View.VISIBLE
-        }
+        setNoGroups()
 
         return rootView
     }
@@ -90,19 +88,34 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
         groups = ArrayList(groups.filter { it.id != id })
         currentAdapter?.addAll(groups)
         currentAdapter?.notifyDataSetChanged()
-        noGroupsView.visibility = if (groups.isNotEmpty()) View.GONE else View.VISIBLE
+        setNoGroups()
     }
 
     fun addGroup(group: Group) {
         groups.add(group)
         currentAdapter?.addAll(groups)
         currentAdapter?.notifyDataSetChanged()
-        noGroupsView.visibility = if (groups.isNotEmpty()) View.GONE else View.VISIBLE
+        setNoGroups()
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
         fragmentInteractionListener?.onFragmentInteraction(uri)
+    }
+
+    private fun setNoGroups() {
+        if (noGroupsView != null) {
+            noGroupsView.visibility = if (groups.isNotEmpty()) View.GONE else View.VISIBLE
+
+            if ((arguments?.getString(GroupFragment.GROUP_ROLE) ?: return) == "member") {
+                noGroupsTitle.text = getString(R.string.no_groups_joined_title)
+                noGroupsSubtext.text = getString(R.string.no_groups_joined_subtext)
+            } else {
+                noGroupsTitle.text = getString(R.string.no_groups_created_title)
+                noGroupsSubtext.text = getString(R.string.no_groups_created_subtext)
+            }
+
+        }
     }
 
 
@@ -119,16 +132,18 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
     companion object {
 
         private val ARG_SECTION_NUMBER = "section_number"
+        private val GROUP_ROLE = "group_role"
 
         /**
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        fun newInstance(sectionNumber: Int, callback: OnMoreButtonPressedListener): GroupFragment {
+        fun newInstance(sectionNumber: Int, callback: OnMoreButtonPressedListener, userRole: User.Role): GroupFragment {
             val fragment = GroupFragment(callback)
             val args = Bundle()
             fragment.sectionNumber = sectionNumber
             args.putInt(ARG_SECTION_NUMBER, sectionNumber)
+            args.putString(GROUP_ROLE, userRole.name.toLowerCase())
             fragment.arguments = args
             return fragment
         }
