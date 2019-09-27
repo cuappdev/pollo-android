@@ -268,11 +268,11 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
 
         override fun getItem(position: Int): Fragment {
             if (position == 0) {
-                joinedGroupFragment = joinedGroupFragment ?: GroupFragment.newInstance(position + 1, this@MainActivity)
+                joinedGroupFragment = joinedGroupFragment ?: GroupFragment.newInstance(position + 1, this@MainActivity, userRole = User.Role.MEMBER)
                 return joinedGroupFragment!!
             }
 
-            createdGroupFragment = createdGroupFragment ?: GroupFragment.newInstance(position + 1, this@MainActivity)
+            createdGroupFragment = createdGroupFragment ?: GroupFragment.newInstance(position + 1, this@MainActivity, userRole= User.Role.ADMIN)
             return createdGroupFragment!!
         }
 
