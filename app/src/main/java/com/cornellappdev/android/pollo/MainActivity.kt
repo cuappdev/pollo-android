@@ -217,6 +217,12 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
     private fun finishAuthFlow() {
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
+        if (mSectionsPagerAdapter != null) {
+            createdGroupFragment?.refreshGroups()
+            joinedGroupFragment?.refreshGroups()
+            return
+        }
+
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
 
         // Set up the ViewPager with the sections adapter.

@@ -43,7 +43,24 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        refreshGroups()
+    }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View {
+        val rootView = inflater!!.inflate(R.layout.fragment_main, container, false)
+
+        val groupRecyclerView = rootView.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.group_list_recyclerView)
+        groupRecyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(rootView.context)
+        currentAdapter = GroupRecyclerAdapter(groups, callback)
+        groupRecyclerView.adapter = currentAdapter
+
+        setNoGroups()
+
+        return rootView
+    }
+
+    public fun refreshGroups() {
         CoroutineScope(Dispatchers.IO).launch {
             val groupRole = arguments?.getString(GroupFragment.GROUP_ROLE) ?: return@launch
             val getGroupsEndpoint = Endpoint.getAllGroups(groupRole)
@@ -68,20 +85,6 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
                 setNoGroups()
             }
         }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        val rootView = inflater!!.inflate(R.layout.fragment_main, container, false)
-
-        val groupRecyclerView = rootView.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.group_list_recyclerView)
-        groupRecyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(rootView.context)
-        currentAdapter = GroupRecyclerAdapter(groups, callback)
-        groupRecyclerView.adapter = currentAdapter
-
-        setNoGroups()
-
-        return rootView
     }
 
     fun removeGroup(id: String) {
@@ -114,7 +117,6 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
                 noGroupsTitle.text = getString(R.string.no_groups_created_title)
                 noGroupsSubtext.text = getString(R.string.no_groups_created_subtext)
             }
-
         }
     }
 
