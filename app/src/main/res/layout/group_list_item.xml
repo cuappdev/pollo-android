@@ -2,15 +2,40 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="75dp">
+    android:layout_height="80dp">
+
+    <ImageButton
+        android:id="@+id/groupDetailsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="24dp"
+        android:background="@color/white"
+        android:contentDescription="@string/group_details_button_content_description"
+        android:src="@drawable/more_dots"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/groupLoadingIndicator"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="24dp"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/groupNameTextView"
-        android:layout_alignEnd="@id/groupDetailsButton"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="19dp"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@id/groupDetailsButton"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="12dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,40 +45,13 @@
         android:id="@+id/groupLiveTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textColor="#9EA7B3"
+        android:layout_alignTop="@id/groupNameTextView"
         android:layout_marginStart="18dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/groupNameTextView"
         android:layout_marginTop="2dp"
-        android:layout_alignTop="@id/groupNameTextView" />
-
-    <ImageButton
-        android:id="@+id/groupDetailsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/group_details_button_content_description"
-        android:src="@drawable/more_dots"
-        android:background="@color/white"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="24dp"
-        android:layout_centerVertical="true"
-        />
-
-    <ProgressBar
-        android:id="@+id/groupLoadingIndicator"
-        style="?android:attr/progressBarStyleSmall"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="24dp"
-        android:indeterminate="true"
-        android:visibility="gone"
-        />
+        android:textColor="#9EA7B3"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/groupNameTextView" />
 
     <View
         android:id="@+id/divider2"
@@ -61,6 +59,6 @@
         android:layout_height="0.5dp"
         android:layout_marginStart="18dp"
         android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

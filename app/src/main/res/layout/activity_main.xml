@@ -26,9 +26,11 @@
 
                 <TextView
                     android:id="@+id/textView5"
-                    android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
                     android:text="@string/pollo"
+                    android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textColor="@color/black"
                     android:textSize="36sp"
@@ -40,20 +42,26 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.66" />
 
-                <TextView
-                    android:id="@+id/textView6"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="12dp"
-                    android:layout_width="wrap_content"
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_plus_sign" />
+
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
                     android:onClick="showSettings"
-                    android:text="@string/settings_icon"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textColor="@color/black"
-                    android:textSize="30sp"
-                    android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_settings" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -111,19 +119,19 @@
                 android:layout_width="match_parent">
 
                 <EditText
+                    android:id="@+id/edit_text_join_poll"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="19dp"
+                    android:layout_marginEnd="35dp"
+                    android:layout_weight="1"
                     android:autofillHints="none"
                     android:backgroundTint="@color/joinGroupUnderline"
                     android:cursorVisible="false"
                     android:enabled="true"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="sans-serif"
                     android:hint="@string/enter_a_code_placeholder"
-                    android:id="@+id/edit_text_join_poll"
                     android:inputType="textCapCharacters"
-                    android:layout_height="50dp"
-                    android:layout_marginEnd="35dp"
-                    android:layout_marginStart="19dp"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
                     android:maxLength="6"
                     android:textAlignment="viewStart"
                     android:textColor="@color/joinGroupGray"
@@ -137,13 +145,14 @@
                     tools:ignore="UnusedAttribute" />
 
                 <Button
-                    android:background="@drawable/rounded_join_button"
-                    android:clickable="true"
                     android:id="@+id/join_poll_group"
+                    android:layout_width="68dp"
                     android:layout_height="32dp"
                     android:layout_marginEnd="19dp"
-                    android:layout_width="68dp"
+                    android:background="@drawable/rounded_join_button"
+                    android:clickable="true"
                     android:focusable="true"
+                    android:fontFamily="sans-serif"
                     android:text="@string/join_button_text"
                     android:textAllCaps="false"
                     android:textColor="@color/white"

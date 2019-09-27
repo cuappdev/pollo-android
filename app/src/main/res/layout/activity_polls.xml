@@ -26,10 +26,11 @@
 
         <TextView
             android:id="@+id/groupNameTextView"
-            android:layout_centerHorizontal="true"
-            android:layout_height="30dp"
-            android:layout_marginTop="14dp"
             android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="14dp"
+            android:fontFamily="sans-serif"
             android:text="Example Course"
             android:textAlignment="center"
             android:textColor="@color/white"
@@ -38,17 +39,16 @@
             tools:ignore="HardcodedText" />
 
         <TextView
+            android:id="@+id/codeTextView"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_below="@id/groupNameTextView"
             android:alpha="0.75"
             android:fontFamily="sans-serif-medium"
-            android:id="@+id/codeTextView"
-            android:layout_below="@id/groupNameTextView"
-            android:layout_height="20dp"
-            android:layout_width="match_parent"
             android:text="Code: 123ABC"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="14sp"
-            android:textStyle="bold"
             tools:ignore="HardcodedText" />
 
     </RelativeLayout>
