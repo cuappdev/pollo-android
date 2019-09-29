@@ -50,8 +50,8 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
                               savedInstanceState: Bundle?): View {
         val rootView = inflater!!.inflate(R.layout.fragment_main, container, false)
 
-        val groupRecyclerView = rootView.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.group_list_recyclerView)
-        groupRecyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(rootView.context)
+        val groupRecyclerView = rootView.findViewById<RecyclerView>(R.id.group_list_recyclerView)
+        groupRecyclerView.layoutManager = LinearLayoutManager(rootView.context)
         currentAdapter = GroupRecyclerAdapter(groups, callback)
         groupRecyclerView.adapter = currentAdapter
 
@@ -106,14 +106,20 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
         fragmentInteractionListener?.onFragmentInteraction(uri)
     }
 
+    /**
+     * Checks the number of groups and toggles the no groups view (empty state) if there are
+     * no groups. Should be called every time `groups` is modified.
+     */
     private fun setNoGroups() {
         if (noGroupsView != null) {
             noGroupsView.visibility = if (groups.isNotEmpty()) View.GONE else View.VISIBLE
 
             if ((arguments?.getString(GroupFragment.GROUP_ROLE) ?: return) == "member") {
+                noGroupsEmoji.text = getString(R.string.no_groups_joined_emoji)
                 noGroupsTitle.text = getString(R.string.no_groups_joined_title)
                 noGroupsSubtext.text = getString(R.string.no_groups_joined_subtext)
             } else {
+                noGroupsEmoji.text = getString(R.string.no_groups_created_emoji)
                 noGroupsTitle.text = getString(R.string.no_groups_created_title)
                 noGroupsSubtext.text = getString(R.string.no_groups_created_subtext)
             }

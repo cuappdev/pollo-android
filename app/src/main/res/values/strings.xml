@@ -27,7 +27,8 @@
 
     <string name="live_indicator">•</string>
 
-    <string name="no_groups_emoji">&#129335;</string>
+    <string name="no_groups_joined_emoji">&#129335;&#8205;&#9792;&#65039;</string>
+    <string name="no_groups_created_emoji">&#129335;&#8205;&#9794;&#65039;</string>
     <string name="no_groups_joined_title">No groups joined</string>
     <string name="no_groups_created_title">No groups created</string>
     <string name="no_groups_joined_subtext">Enter a code below to join a group!</string>
