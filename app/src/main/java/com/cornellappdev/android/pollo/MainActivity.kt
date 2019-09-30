@@ -217,6 +217,12 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
     private fun finishAuthFlow() {
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
+        if (mSectionsPagerAdapter != null) {
+            createdGroupFragment?.refreshGroups()
+            joinedGroupFragment?.refreshGroups()
+            return
+        }
+
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
 
         // Set up the ViewPager with the sections adapter.
@@ -268,11 +274,11 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
 
         override fun getItem(position: Int): Fragment {
             if (position == 0) {
-                joinedGroupFragment = joinedGroupFragment ?: GroupFragment.newInstance(position + 1, this@MainActivity)
+                joinedGroupFragment = joinedGroupFragment ?: GroupFragment.newInstance(position + 1, this@MainActivity, userRole = User.Role.MEMBER)
                 return joinedGroupFragment!!
             }
 
-            createdGroupFragment = createdGroupFragment ?: GroupFragment.newInstance(position + 1, this@MainActivity)
+            createdGroupFragment = createdGroupFragment ?: GroupFragment.newInstance(position + 1, this@MainActivity, userRole= User.Role.ADMIN)
             return createdGroupFragment!!
         }
 

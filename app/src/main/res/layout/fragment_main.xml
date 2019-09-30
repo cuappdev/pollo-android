@@ -22,26 +22,29 @@
             android:visibility="invisible">
 
             <TextView
+                android:id="@+id/noGroupsEmoji"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/no_groups_emoji"
+                android:text="@string/no_groups_joined_emoji"
                 android:height="50dp"
                 android:background="@color/white"
                 android:width="50dp"
                 android:textSize="38sp"/>
 
             <TextView
+                android:id="@+id/noGroupsTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/no_groups_title"
+                android:text="@string/no_groups_joined_title"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/noGroupsSubtext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:alpha=".9"
-                android:text="@string/no_groups_subtext" />
+                android:text="@string/no_groups_joined_subtext" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
