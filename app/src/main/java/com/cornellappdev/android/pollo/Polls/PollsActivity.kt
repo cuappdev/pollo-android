@@ -14,14 +14,14 @@ class PollsActivity : AppCompatActivity() {
     private var polls = ArrayList<PollsResponse>()
     private lateinit var name: String
     private lateinit var code: String
-    private lateinit var linearLayoutManager: androidx.recyclerview.widget.LinearLayoutManager
+    private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var adapter: PollsRecyclerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_polls)
 
-        val helper = androidx.recyclerview.widget.PagerSnapHelper()
+        val helper = PagerSnapHelper()
         helper.attachToRecyclerView(pollsRecyclerView)
 
         polls = intent.getParcelableArrayListExtra<PollsResponse>("POLLS")
@@ -31,7 +31,7 @@ class PollsActivity : AppCompatActivity() {
         groupNameTextView.text = name
         codeTextView.text = "Code: $code"
 
-        linearLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(this, androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL, false)
+        linearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         pollsRecyclerView.layoutManager = linearLayoutManager
         adapter = PollsRecyclerAdapter(polls)
         pollsRecyclerView.adapter = adapter
