@@ -76,3 +76,9 @@ fastlane/Preview.html
 fastlane/screenshots
 fastlane/test_output
 fastlane/readme.md
+
+*.jks
+
+app/debug/output.json
+
+app/release/output.json
