@@ -110,7 +110,10 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
         }
 
         // Add listener for when join button is pressed
-        join_poll_group.setOnClickListener { joinGroup(editText.text.toString()) }
+        join_poll_group.setOnClickListener {
+            joinGroup(editText.text.toString())
+            editText.setText("")
+        }
 
         val account = GoogleSignIn.getLastSignedInAccount(this)
         // If account is null, attempt to sign in, if not, launch the normal activity. updateUI(account);

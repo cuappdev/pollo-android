@@ -9,21 +9,21 @@ import com.cornellappdev.android.pollo.polls.PollsActivity
 import kotlinx.android.synthetic.main.polls_date_recyclerview_item_row.view.*
 
 class PollsDateRecyclerAdapter(private val polls: ArrayList<GetSortedPollsResponse>, private val code: String, private val name: String) :
-        androidx.recyclerview.widget.RecyclerView.Adapter<PollsDateRecyclerAdapter.PollsHolder>() {
+        RecyclerView.Adapter<PollsDateRecyclerAdapter.PollsHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PollsDateRecyclerAdapter.PollsHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PollsHolder {
         val inflatedView = parent.inflate(R.layout.polls_date_recyclerview_item_row, false)
         return PollsHolder(inflatedView)
     }
 
     override fun getItemCount() = polls.size
 
-    override fun onBindViewHolder(holder: PollsDateRecyclerAdapter.PollsHolder, position: Int) {
+    override fun onBindViewHolder(holder: PollsHolder, position: Int) {
         val itemPoll = polls[position]
         holder.bindPoll(itemPoll, code, name)
     }
 
-    class PollsHolder(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view), View.OnClickListener {
+    class PollsHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
 
         private var view = view
         private var poll: GetSortedPollsResponse? = null

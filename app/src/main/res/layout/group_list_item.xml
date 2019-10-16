@@ -13,6 +13,7 @@
         android:background="@color/white"
         android:contentDescription="@string/group_details_button_content_description"
         android:src="@drawable/more_dots"
+        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
