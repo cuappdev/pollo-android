@@ -29,8 +29,6 @@ class PollsDateActivity : AppCompatActivity() {
         sortedPolls = groupByDate(intent.getParcelableArrayListExtra<GetSortedPollsResponse>("SORTED_POLLS"))
         group = intent.getParcelableExtra("GROUP_NODE")
 
-        // OOF:
-
         // Use LinearLayoutManager because we just want one cell per row
         linearLayoutManager = LinearLayoutManager(this)
         pollsDateRecyclerView.layoutManager = linearLayoutManager

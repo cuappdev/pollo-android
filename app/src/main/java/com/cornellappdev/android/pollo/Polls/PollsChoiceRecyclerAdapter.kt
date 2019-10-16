@@ -77,7 +77,7 @@ class PollsChoiceRecyclerAdapter(private val pollChoices: Map<String, PollResult
         }
 
         override fun onClick(v: View) {
-            println("CLICKED")
+
         }
 
         fun bindPoll(pollsChoiceModel: PollsChoiceModel) {
@@ -120,7 +120,7 @@ class PollsChoiceRecyclerAdapter(private val pollChoices: Map<String, PollResult
         }
 
         override fun onClick(v: View) {
-            println("CLICKED CHOICE")
+
         }
 
         fun bindPoll(pollsChoiceModel: PollsChoiceModel) {
