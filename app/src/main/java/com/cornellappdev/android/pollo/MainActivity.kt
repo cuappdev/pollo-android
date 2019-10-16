@@ -210,6 +210,7 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
             val pollsDateActivity = Intent(this@MainActivity, PollsDateActivity::class.java)
             pollsDateActivity.putExtra("SORTED_POLLS", sortedPolls.data)
             pollsDateActivity.putExtra("GROUP_NODE", groupResponse.data)
+            pollsDateActivity.putExtra("USER_ROLE", 0)
             startActivity(pollsDateActivity)
         }
     }

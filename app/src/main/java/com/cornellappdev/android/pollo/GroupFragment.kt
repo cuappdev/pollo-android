@@ -49,10 +49,16 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         val rootView = inflater!!.inflate(R.layout.fragment_main, container, false)
+        val role: Int
+        if (arguments?.getString(GroupFragment.GROUP_ROLE) == "admin") {
+            role = 1
+        } else {
+            role = 0
+        }
 
         val groupRecyclerView = rootView.findViewById<RecyclerView>(R.id.group_list_recyclerView)
         groupRecyclerView.layoutManager = LinearLayoutManager(rootView.context)
-        currentAdapter = GroupRecyclerAdapter(groups, callback)
+        currentAdapter = GroupRecyclerAdapter(groups, callback, role)
         groupRecyclerView.adapter = currentAdapter
 
         setNoGroups()

@@ -14,7 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class GroupRecyclerAdapter(private val groups: ArrayList<Group>, val callback: GroupFragment.OnMoreButtonPressedListener?) : androidx.recyclerview.widget.RecyclerView.Adapter<GroupRecyclerAdapter.ViewHolder>() {
+class GroupRecyclerAdapter(private val groups: ArrayList<Group>, val callback: GroupFragment.OnMoreButtonPressedListener?, val role: Int) : androidx.recyclerview.widget.RecyclerView.Adapter<GroupRecyclerAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupRecyclerAdapter.ViewHolder {
         val inflatedView = parent.inflate(R.layout.group_list_item, false)
@@ -65,6 +65,7 @@ class GroupRecyclerAdapter(private val groups: ArrayList<Group>, val callback: G
                 val pollsDateActivity = Intent(context, PollsDateActivity::class.java)
                 pollsDateActivity.putExtra("SORTED_POLLS", sortedPolls!!.data)
                 pollsDateActivity.putExtra("GROUP_NODE", group)
+                pollsDateActivity.putExtra("USER_ROLE",role)
                 context.startActivity(pollsDateActivity)
 
                 view.groupDetailsButton.visibility = View.VISIBLE
