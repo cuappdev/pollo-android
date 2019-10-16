@@ -20,16 +20,18 @@
 
     <TextView
         android:id="@+id/pollDateTextView"
-        android:layout_alignParentStart="true"
+        android:layout_width="200dp"
         android:layout_height="26dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
         android:layout_marginStart="26dp"
         android:fontFamily="sans-serif-medium"
         android:layout_centerVertical="true"
         android:layout_width="120dp"
         android:gravity="center"
         android:textAlignment="textStart"
-        android:textSize="16sp"
-        android:textColor="@color/white"/>
+        android:textColor="@color/white"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/numQuestionsTextView"
