@@ -35,9 +35,12 @@ class PollsDateActivity : AppCompatActivity() {
 
         if (intent.getIntExtra("USER_ROLE", 0) == 1) {
             role = User.Role.ADMIN
+            noPollsTitle.setText(R.string.no_polls_created_title)
+            noPollsSubtext.setText(R.string.no_polls_created_subtext)
         } else {
             role = User.Role.MEMBER
             adminFooter.visibility = View.GONE
+            newPollImageButton.visibility = View.GONE
         }
 
         toggleEmptyState()
