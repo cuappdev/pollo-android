@@ -48,7 +48,7 @@
         android:layout_alignTop="@id/groupNameTextView"
         android:layout_marginStart="18dp"
         android:layout_marginTop="2dp"
-        android:textColor="#9EA7B3"
+        android:textColor="@color/settings_detail"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/groupNameTextView" />
