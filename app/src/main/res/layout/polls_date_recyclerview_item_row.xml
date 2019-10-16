@@ -25,7 +25,8 @@
         android:layout_marginStart="26dp"
         android:fontFamily="sans-serif-medium"
         android:layout_centerVertical="true"
-        android:layout_width="100dp"
+        android:layout_width="120dp"
+        android:gravity="center"
         android:textAlignment="textStart"
         android:textSize="16sp"
         android:textColor="@color/white"/>
@@ -38,6 +39,7 @@
         android:layout_marginEnd="34dp"
         android:layout_width="100dp"
         android:fontFamily="sans-serif-medium"
+        android:gravity="center"
         android:textAlignment="textEnd"
         android:textSize="12sp"
         android:layout_alignEnd="@id/arrowIndicator"

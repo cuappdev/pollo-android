@@ -30,9 +30,9 @@ class PollsDateActivity : AppCompatActivity() {
         group = intent.getParcelableExtra("GROUP_NODE")
 
         // Use LinearLayoutManager because we just want one cell per row
-        linearLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        linearLayoutManager = LinearLayoutManager(this)
         pollsDateRecyclerView.layoutManager = linearLayoutManager
-        adapter = PollsDateRecyclerAdapter(sortedPolls, group.name, group.code)
+        adapter = PollsDateRecyclerAdapter(sortedPolls, group.code, group.name)
         pollsDateRecyclerView.adapter = adapter
 
         groupNameTextView.text = group.name
