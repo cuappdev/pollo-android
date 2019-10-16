@@ -72,7 +72,7 @@
                 app:tabBackground="@color/white"
                 app:tabSelectedTextColor="@color/colorAccent"
                 app:tabTextAppearance="@style/TabItemNotAllCaps"
-                app:tabTextColor="@color/blueyGrey">
+                app:tabTextColor="@color/cool_grey">
 
                 <com.google.android.material.tabs.TabItem
                     android:id="@+id/tabItem"

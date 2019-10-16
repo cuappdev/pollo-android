@@ -27,12 +27,22 @@
 
     <string name="live_indicator">•</string>
 
+<!--Home Screen Empty State Strings-->
     <string name="no_groups_joined_emoji">&#129335;&#8205;&#9792;&#65039;</string>
     <string name="no_groups_created_emoji">&#129335;&#8205;&#9794;&#65039;</string>
     <string name="no_groups_joined_title">No groups joined</string>
     <string name="no_groups_created_title">No groups created</string>
     <string name="no_groups_joined_subtext">Enter a code below to join a group!</string>
     <string name="no_groups_created_subtext">Tap \"+\" above to create a group!</string>
+
+<!--Group Screen Strings-->
+    <string name="no_polls_emoji">&#128584;</string>
+    <string name="no_polls_title">Nothing to see yet</string>
+    <string name="no_polls_created_title">Nothing to see here</string>
+    <string name="no_polls_subtext">Waiting for the admin to post a poll…</string>
+    <string name="no_polls_created_subtext">You haven’t made any polls yet! Tap “+” above to try it out.</string>
+    <string name="view_all">View All</string>
+    <string name="export">Export</string>
 
     <string name="pollo">Pollo</string>
     <string name="pollo_pronunciation">\'\'Poh-loh\'\'</string>

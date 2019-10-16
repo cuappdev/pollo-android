@@ -5,11 +5,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.View
 import com.cornellappdev.android.pollo.models.Group
+import com.cornellappdev.android.pollo.models.User
 import com.cornellappdev.android.pollo.networking.GetSortedPollsResponse
 import com.cornellappdev.android.pollo.networking.PollsResponse
 import com.cornellappdev.android.pollo.networking.Socket
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import kotlinx.android.synthetic.main.activity_polls_date.*
+import kotlinx.android.synthetic.main.activity_polls_date.noPollsView
+import kotlinx.android.synthetic.main.fragment_main.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -18,6 +21,7 @@ class PollsDateActivity : AppCompatActivity() {
     private lateinit var adapter: PollsDateRecyclerAdapter
     private lateinit var group: Group
     private lateinit var linearLayoutManager: androidx.recyclerview.widget.LinearLayoutManager
+    private lateinit var role: User.Role
     private lateinit var socket: Socket
 
     private var sortedPolls = ArrayList<GetSortedPollsResponse>()
@@ -28,6 +32,15 @@ class PollsDateActivity : AppCompatActivity() {
         setContentView(R.layout.activity_polls_date)
         sortedPolls = groupByDate(intent.getParcelableArrayListExtra<GetSortedPollsResponse>("SORTED_POLLS"))
         group = intent.getParcelableExtra("GROUP_NODE")
+
+        if (intent.getIntExtra("USER_ROLE", 0) == 1) {
+            role = User.Role.ADMIN
+        } else {
+            role = User.Role.MEMBER
+            adminFooter.visibility = View.GONE
+        }
+
+        toggleEmptyState()
 
         // Use LinearLayoutManager because we just want one cell per row
         linearLayoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
@@ -44,6 +57,18 @@ class PollsDateActivity : AppCompatActivity() {
 
     fun goBack(view: View) {
         finish()
+    }
+
+    private fun toggleEmptyState() {
+        if (sortedPolls.count() == 0) {
+            noPollsView.visibility = View.VISIBLE
+            adminFooter.visibility = View.GONE
+        } else {
+            noPollsView.visibility = View.GONE
+            if (role == User.Role.ADMIN) {
+                adminFooter.visibility = View.VISIBLE
+            }
+        }
     }
 
     fun groupByDate(sortedPolls: ArrayList<GetSortedPollsResponse>): ArrayList<GetSortedPollsResponse> {
