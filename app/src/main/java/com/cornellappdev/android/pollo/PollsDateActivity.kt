@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.fragment_main.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class PollsDateActivity : AppCompatActivity() {
+class PollsDateActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var adapter: PollsDateRecyclerAdapter
     private lateinit var group: Group
@@ -33,14 +33,20 @@ class PollsDateActivity : AppCompatActivity() {
         sortedPolls = groupByDate(intent.getParcelableArrayListExtra<GetSortedPollsResponse>("SORTED_POLLS"))
         group = intent.getParcelableExtra("GROUP_NODE")
 
-        if (intent.getIntExtra("USER_ROLE", 0) == 1) {
-            role = User.Role.ADMIN
-            noPollsTitle.setText(R.string.no_polls_created_title)
-            noPollsSubtext.setText(R.string.no_polls_created_subtext)
-        } else {
-            role = User.Role.MEMBER
-            adminFooter.visibility = View.GONE
-            newPollImageButton.visibility = View.GONE
+        backButton.setOnClickListener(this)
+
+        // Customize page for role
+        role = intent.getSerializableExtra("USER_ROLE") as User.Role
+
+        when (role) {
+            User.Role.ADMIN -> {
+                noPollsTitle.setText(R.string.no_polls_created_title)
+                noPollsSubtext.setText(R.string.no_polls_created_subtext)
+            }
+            User.Role.MEMBER -> {
+                adminFooter.visibility = View.GONE
+                newPollImageButton.visibility = View.GONE
+            }
         }
 
         toggleEmptyState()
@@ -60,6 +66,11 @@ class PollsDateActivity : AppCompatActivity() {
 
     fun goBack(view: View) {
         finish()
+    }
+
+    override fun onClick(view: View) {
+        if (view.id == R.id.backButton)
+            goBack(view)
     }
 
     private fun toggleEmptyState() {

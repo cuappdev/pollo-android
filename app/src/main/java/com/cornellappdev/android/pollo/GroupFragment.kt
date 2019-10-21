@@ -49,13 +49,7 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         val rootView = inflater!!.inflate(R.layout.fragment_main, container, false)
-        val role: Int
-        if (arguments?.getString(GroupFragment.GROUP_ROLE) == "admin") {
-            role = 1
-        } else {
-            role = 0
-        }
-
+        val role = arguments?.getSerializable(GroupFragment.GROUP_ROLE) as User.Role
         val groupRecyclerView = rootView.findViewById<RecyclerView>(R.id.group_list_recyclerView)
         groupRecyclerView.layoutManager = LinearLayoutManager(rootView.context)
         currentAdapter = GroupRecyclerAdapter(groups, callback, role)
@@ -68,8 +62,8 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
 
     public fun refreshGroups() {
         CoroutineScope(Dispatchers.IO).launch {
-            val groupRole = arguments?.getString(GroupFragment.GROUP_ROLE) ?: return@launch
-            val getGroupsEndpoint = Endpoint.getAllGroups(groupRole)
+            val groupRole = arguments?.getSerializable(GroupFragment.GROUP_ROLE) as User.Role? ?: return@launch
+            val getGroupsEndpoint = Endpoint.getAllGroups(groupRole.name.toLowerCase())
             val typeTokenGroups = object : TypeToken<ApiResponse<ArrayList<Group>>>() {}.type
             val getGroupsResponse = Request.makeRequest<ApiResponse<ArrayList<Group>>>(getGroupsEndpoint.okHttpRequest(), typeTokenGroups)
 
@@ -120,14 +114,17 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
         if (noGroupsView != null) {
             noGroupsView.visibility = if (groups.isNotEmpty()) View.GONE else View.VISIBLE
 
-            if ((arguments?.getString(GroupFragment.GROUP_ROLE) ?: return) == "member") {
-                noGroupsEmoji.text = getString(R.string.no_groups_joined_emoji)
-                noGroupsTitle.text = getString(R.string.no_groups_joined_title)
-                noGroupsSubtext.text = getString(R.string.no_groups_joined_subtext)
-            } else {
-                noGroupsEmoji.text = getString(R.string.no_groups_created_emoji)
-                noGroupsTitle.text = getString(R.string.no_groups_created_title)
-                noGroupsSubtext.text = getString(R.string.no_groups_created_subtext)
+            when (arguments?.getSerializable(GroupFragment.GROUP_ROLE) as User.Role) {
+                User.Role.MEMBER -> {
+                    noGroupsEmoji.text = getString(R.string.no_groups_joined_emoji)
+                    noGroupsTitle.text = getString(R.string.no_groups_joined_title)
+                    noGroupsSubtext.text = getString(R.string.no_groups_joined_subtext)
+                }
+                User.Role.ADMIN -> {
+                    noGroupsEmoji.text = getString(R.string.no_groups_created_emoji)
+                    noGroupsTitle.text = getString(R.string.no_groups_created_title)
+                    noGroupsSubtext.text = getString(R.string.no_groups_created_subtext)
+                }
             }
         }
     }
@@ -157,7 +154,7 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
             val args = Bundle()
             fragment.sectionNumber = sectionNumber
             args.putInt(ARG_SECTION_NUMBER, sectionNumber)
-            args.putString(GROUP_ROLE, userRole.name.toLowerCase())
+            args.putSerializable(GROUP_ROLE, userRole)
             fragment.arguments = args
             return fragment
         }

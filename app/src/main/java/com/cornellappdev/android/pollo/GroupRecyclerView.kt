@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.cornellappdev.android.pollo.models.ApiResponse
 import com.cornellappdev.android.pollo.models.Group
+import com.cornellappdev.android.pollo.models.User
 import com.cornellappdev.android.pollo.networking.*
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.group_list_item.view.*
@@ -14,7 +15,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class GroupRecyclerAdapter(private val groups: ArrayList<Group>, val callback: GroupFragment.OnMoreButtonPressedListener?, val role: Int) : androidx.recyclerview.widget.RecyclerView.Adapter<GroupRecyclerAdapter.ViewHolder>() {
+class GroupRecyclerAdapter(
+        private val groups: ArrayList<Group>,
+        val callback: GroupFragment.OnMoreButtonPressedListener?,
+        val role: User.Role
+) : androidx.recyclerview.widget.RecyclerView.Adapter<GroupRecyclerAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupRecyclerAdapter.ViewHolder {
         val inflatedView = parent.inflate(R.layout.group_list_item, false)
