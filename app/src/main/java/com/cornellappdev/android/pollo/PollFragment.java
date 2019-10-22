@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.cornellappdev.android.pollo.models.Group;
+import com.cornellappdev.android.pollo.models.User;
 
 import java.util.ArrayList;
 
@@ -58,7 +59,7 @@ public class PollFragment extends Fragment {
         final RecyclerView pollRecyclerView = rootView.findViewById(R.id.poll_list_recyclerView);
         pollRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
 
-        currentAdapter = new GroupRecyclerAdapter(new ArrayList<Group>(), null);
+        currentAdapter = new GroupRecyclerAdapter(new ArrayList<Group>(), null, User.Role.MEMBER);
         pollRecyclerView.setAdapter(currentAdapter);
         // new RetrieveGroupsTask().execute(new Util().new Triple(rootView, currentAdapter, this.sectionNumber));
         return rootView;
