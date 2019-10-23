@@ -93,6 +93,29 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
             }
         }
 
+        container.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+            }
+            override fun onPageSelected(position: Int) {
+                when (position) {
+                    0 -> {
+
+                    }
+                    1 -> {
+                        join_poll_group.setText(R.string.create_button_text)
+                        edit_text_join_poll.setText(R.string.create_a_group_placeholder)
+                        // todo: set to grayed out, edit the watch funciton above
+                        // resize button
+                    }
+                }
+            }
+
+        })
+
         groupMenuOptionsView.closeButton.setOnClickListener {
             dismissPopup()
         }

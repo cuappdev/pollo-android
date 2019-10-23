@@ -11,6 +11,7 @@
     <string name="end_question_text">End question</string>
 
     <string name="enter_a_code_placeholder">Enter a code…</string>
+    <string name="create_a_group_placeholder">Enter a new group name...</string>
 
     <string name="go_back_content_description">Go Back</string>
 
@@ -19,6 +20,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="join_button_text">Join</string>
+    <string name="create_button_text">Create</string>
 
     <string name="joined">Joined</string>
 
