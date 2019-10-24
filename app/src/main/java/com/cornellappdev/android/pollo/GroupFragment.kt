@@ -87,7 +87,7 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
         }
     }
 
-    fun removeGroup(id: String) {
+    fun removeGroup(id: Int) {
         groups = ArrayList(groups.filter { it.id != id })
         currentAdapter?.addAll(groups)
         currentAdapter?.notifyDataSetChanged()

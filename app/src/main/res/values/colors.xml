@@ -17,6 +17,7 @@
     <color name="liveNow">#64C5AF</color>
     <color name="lightGrayDivider">#AEAEAE</color>
     <color name="red">#E76366</color>
+    <color name="darkGray">#6c6c6c</color>
     <color name="joinGroupGray">#9B9A9A</color>
     <color name="joinGroupUnderline">#85514F4F</color>
     <color name="pollsDateBackgroundColor">#3D3D3D</color>

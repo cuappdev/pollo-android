@@ -26,8 +26,6 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="26dp"
         android:fontFamily="sans-serif-medium"
-        android:layout_centerVertical="true"
-        android:layout_width="120dp"
         android:gravity="center"
         android:textAlignment="textStart"
         android:textColor="@color/white"
