@@ -126,16 +126,16 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
             CoroutineScope(Dispatchers.Main).launch {
                 if (isAccessTokenExpired) {
                     val refreshTokenEndpoint = Endpoint.userRefreshSession(preferencesHelper.refreshToken)
-                    val typeToken = object : TypeToken<UserSessionNode>() {}.type
+                    val typeToken = object : TypeToken<ApiResponse<UserSession>>() {}.type
                     val userSession = withContext(Dispatchers.IO) {
-                        Request.makeRequest<UserSessionNode>(refreshTokenEndpoint.okHttpRequest(), typeToken)
+                        Request.makeRequest<ApiResponse<UserSession>>(refreshTokenEndpoint.okHttpRequest(), typeToken)
                     }!!.data
                     User.currentSession = userSession
                     preferencesHelper.refreshToken = userSession.refreshToken
                     preferencesHelper.accessToken = userSession.accessToken
-                    preferencesHelper.expiresAt = userSession.sessionExpiration
+                    preferencesHelper.expiresAt = userSession.sessionExpiration.toLong()
                 } else {
-                    User.currentSession = UserSession(preferencesHelper.accessToken, preferencesHelper.refreshToken, expiresAt, true)
+                    User.currentSession = UserSession(preferencesHelper.accessToken, preferencesHelper.refreshToken, expiresAt.toString(), true)
                 }
 
                 finishAuthFlow()
@@ -251,12 +251,12 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
             val idToken = data?.getStringExtra("idToken") ?: ""
             val userAuthenticateEndpoint = Endpoint.userAuthenticate(idToken)
             CoroutineScope(Dispatchers.Main).launch {
-                val typeToken = object : TypeToken<UserSessionNode>() {}.type
-                val userSession = withContext(Dispatchers.IO) { Request.makeRequest<UserSessionNode>(userAuthenticateEndpoint.okHttpRequest(), typeToken) }!!.data
+                val typeToken = object : TypeToken<ApiResponse<UserSession>>() {}.type
+                val userSession = withContext(Dispatchers.IO) { Request.makeRequest<ApiResponse<UserSession>>(userAuthenticateEndpoint.okHttpRequest(), typeToken) }!!.data
 
                 preferencesHelper.accessToken = userSession.accessToken
                 preferencesHelper.refreshToken = userSession.refreshToken
-                preferencesHelper.expiresAt = userSession.sessionExpiration
+                preferencesHelper.expiresAt = userSession.sessionExpiration.toLong()
 
                 println(userSession.refreshToken)
                 println(userSession.sessionExpiration)
