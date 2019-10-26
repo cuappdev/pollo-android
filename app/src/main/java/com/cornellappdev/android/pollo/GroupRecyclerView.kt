@@ -64,8 +64,9 @@ class GroupRecyclerAdapter(
                 val groupNodeResponse = withContext(Dispatchers.Default) { Request.makeRequest<ApiResponse<Group>>(endpoint.okHttpRequest(), typeTokenGroupNode) }
 
                 val allPollsEndpoint = Endpoint.getSortedPolls(groupNodeResponse!!.data.id)
-                val sortedPolls = withContext(Dispatchers.Default) { Request.makeRequest<ApiResponse<ArrayList<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest(), typeTokenSortedPolls) }
-
+                val sortedPolls = withContext(Dispatchers.Default) {
+                    Request.makeRequest<ApiResponse<ArrayList<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest(), typeTokenSortedPolls)
+                }
                 val context = view.context
                 val pollsDateActivity = Intent(context, PollsDateActivity::class.java)
                 pollsDateActivity.putExtra("SORTED_POLLS", sortedPolls!!.data)

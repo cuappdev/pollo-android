@@ -5,7 +5,6 @@ import android.util.Log;
 import com.cornellappdev.android.pollo.models.Edges.GroupEdge;
 import com.cornellappdev.android.pollo.models.GoogleCredentials;
 import com.cornellappdev.android.pollo.models.Group;
-import com.cornellappdev.android.pollo.models.Nodes.GeneratedCodeNode;
 import com.cornellappdev.android.pollo.models.Nodes.GroupNodeResponse;
 import com.cornellappdev.android.pollo.models.Nodes.UserSessionNode;
 import com.cornellappdev.android.pollo.models.User;
@@ -57,31 +56,6 @@ final class NetworkUtils {
         }
 
         return null;
-    }
-
-    static String generateCode(final Context context) throws IOException {
-        final String endpoint = BuildConfig.BACKEND_URI + GENERATE_CODE_ROUTE;
-        final Request request = new Request.Builder()
-                .url(endpoint)
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            final ResponseBody responseBody = response.body();
-
-            if (responseBody != null) {
-                final String responseBodyString = responseBody.string();
-                final Gson responseBodyJSON = new Gson();
-                final GeneratedCodeNode generatedCodeNode = responseBodyJSON.fromJson(responseBodyString, GeneratedCodeNode.class);
-                try {
-                    return generatedCodeNode.getData().getString("code");
-                } catch (JSONException e) {
-                    return null;
-                }
-            }
-        }
-
-        return null;
-
     }
 
     static Group joinGroup(final Context context, final String code) throws IOException {

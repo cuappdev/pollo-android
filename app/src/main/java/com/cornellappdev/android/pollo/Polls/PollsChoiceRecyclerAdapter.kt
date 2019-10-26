@@ -1,38 +1,35 @@
 package com.cornellappdev.android.pollo.polls
 
-import androidx.recyclerview.widget.RecyclerView
+import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
-import com.cornellappdev.android.pollo.networking.PollResult
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.cornellappdev.android.pollo.R
 import com.cornellappdev.android.pollo.inflate
+import com.cornellappdev.android.pollo.models.Poll
+import com.cornellappdev.android.pollo.models.PollChoice
+import com.cornellappdev.android.pollo.models.PollState
+import com.cornellappdev.android.pollo.models.PollType
 import kotlinx.android.synthetic.main.poll_free_response_item_row.view.*
 import kotlinx.android.synthetic.main.poll_multiple_choice_item_row.view.*
-import kotlinx.android.synthetic.main.poll_recyclerview_item_row.view.*
+import com.cornellappdev.android.pollo.networking.Socket
 import kotlin.math.roundToInt
 
-data class PollsChoiceModel(val hasCorrectAnswer: Boolean, val correctAnswer: String,
-                            val shared: Boolean, val type: QuestionType, val answerChoice: String,
-                            val pollResult: PollResult, val totalNumberOfResponses: Int)
 
-class PollsChoiceRecyclerAdapter(private val pollChoices: Map<String, PollResult>, private val correctAnswer: String,
-                                 private val shared: Boolean,
-                                 private val type: QuestionType) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PollsChoiceRecyclerAdapter(private val poll: Poll,
+                                 private val googleId: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val pollChoiceKeys = ArrayList(pollChoices.keys)
-    private val hasCorrectAnswer = correctAnswer != ""
-    private val totalNumberOfResponses = pollChoices.map { (_, pollResult) ->
-        pollResult.count
-    }.sum()
+    private var positionSelected = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (type) {
-            QuestionType.MULTIPLE_CHOICE -> {
+        return when (poll.type) {
+            PollType.multipleChoice -> {
                 val inflatedView = parent.inflate(R.layout.poll_multiple_choice_item_row, false)
                 ChoiceHolder(inflatedView)
             }
 
-            QuestionType.FREE_RESPONSE -> {
+            PollType.freeResponse -> {
                 val inflatedView = parent.inflate(R.layout.poll_free_response_item_row, false)
                 FreeResponseHolder(inflatedView)
             }
@@ -40,69 +37,120 @@ class PollsChoiceRecyclerAdapter(private val pollChoices: Map<String, PollResult
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when (type) {
-            QuestionType.MULTIPLE_CHOICE -> 0
-            QuestionType.FREE_RESPONSE -> 1
+        return when (poll.type) {
+            PollType.multipleChoice -> 0
+            PollType.freeResponse -> 1
         }
     }
 
-    override fun getItemCount(): Int = pollChoiceKeys.size
+    override fun getItemCount(): Int = poll.answerChoices.size
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, postion: Int) {
-        val answerChoice = pollChoiceKeys[postion]
-        val pollResult = pollChoices.getValue(answerChoice)
-        val pollsChoiceModel = PollsChoiceModel(hasCorrectAnswer, correctAnswer, shared, type, answerChoice, pollResult, totalNumberOfResponses)
-        when (type) {
-            QuestionType.MULTIPLE_CHOICE -> {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when(poll.type) {
+            PollType.multipleChoice -> {
                 val choiceHolder = holder as ChoiceHolder
-                choiceHolder.bindPoll(pollsChoiceModel)
+                choiceHolder.bindPoll(poll, googleId)
+                if (poll.state == PollState.live) {
+                    choiceHolder.view.setOnClickListener { view ->
+                        positionSelected = position
+                        val answerSelected = poll.answerChoices[position]
+                        poll.userAnswers?.set(googleId, arrayListOf(PollChoice(letter = answerSelected.letter, text = answerSelected.text)))
+                        notifyDataSetChanged()
+                        sendAnswer(position)
+                    }
+                }
             }
 
-            QuestionType.FREE_RESPONSE -> {
+            PollType.freeResponse -> {
                 val choiceHolder = holder as FreeResponseHolder
-                choiceHolder.bindPoll(pollsChoiceModel)
+                choiceHolder.bindPoll(poll, googleId)
+                choiceHolder.view.upvoteImageView.setOnClickListener { view ->
+                    println("CLICKED ON UPVOTE")
+                }
             }
         }
-
     }
 
-    class ChoiceHolder(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener {
+    private fun sendAnswer(index: Int) {
+        val answerSelected = poll.answerChoices[index];
+        val pollChoice = PollChoice(letter = answerSelected.letter, text = answerSelected.text)
+        Socket.sendMCAnswer(pollChoice)
+    }
+
+    class ChoiceHolder(v: View) : RecyclerView.ViewHolder(v) {
 
         var view: View = v
-        var live: Boolean = false
-        private var pollsChoiceModel: PollsChoiceModel? = null
+        private var poll: Poll? = null
+        private var isQuestionLive = false
+        private var totalNumberOfResponses = 0
 
-        init {
-            v.setOnClickListener(this)
-        }
+        fun bindPoll(poll: Poll, googleId: String) {
+            this.poll = poll
+            this.totalNumberOfResponses = poll.answerChoices.map { it.count ?: 0}.sum()
 
-        override fun onClick(v: View) {
+            when (poll.state) {
+                PollState.live -> {
+                    view.answerTextView.text = poll.answerChoices[adapterPosition].text
+                    view.answerTextView.setTextColor(ContextCompat.getColor(view.context, R.color.black))
+                    view.answerCountTextView.visibility = View.INVISIBLE
 
-        }
+                    val potentialUserAnswer = poll.userAnswers?.get(googleId)
 
-        fun bindPoll(pollsChoiceModel: PollsChoiceModel) {
-            this.pollsChoiceModel = pollsChoiceModel
-            view.answerTextView.text = pollsChoiceModel.pollResult.text
-            view.answerCountTextView.text = "${pollsChoiceModel.pollResult.count}"
-
-            if (pollsChoiceModel.hasCorrectAnswer) {
-                if (pollsChoiceModel.correctAnswer == pollsChoiceModel.answerChoice) {
-                    view.progressBarWrapper.background.level = 10000
-                    val whiteColor = view.context.resources.getColor(R.color.white)
-                    view.answerTextView.setTextColor(whiteColor)
-                    view.answerCountTextView.setTextColor(whiteColor)
-                } else {
-                    val grayColor = view.context.resources.getColor(R.color.multipleChoiceIncorrectAnswerColor)
-                    view.answerTextView.setTextColor(grayColor)
-                    view.answerCountTextView.setTextColor(grayColor)
+                    if (potentialUserAnswer == null || potentialUserAnswer.size < 1) {
+                        view.progressBarWrapper.background.level = 0
+                    } else {
+                        val level = if (potentialUserAnswer.first().letter == poll.answerChoices[adapterPosition].letter) 10000 else 0
+                        view.progressBarWrapper.background.level = level
+                    }
                 }
-            } else {
-                if (pollsChoiceModel.totalNumberOfResponses != 0) {
-                    /* We need to set how much the background is filled based off the % of people that answered this.
-                    the level property goes from 0 to 10000 */
-                    view.progressBarWrapper.background.level = ((pollsChoiceModel.pollResult.count.toDouble() / pollsChoiceModel.totalNumberOfResponses.toDouble()) * 10000).roundToInt()
+
+                PollState.ended -> {
+                    setupFinishedPoll()
+                    view.answerCountTextView.text = ""
+                    val potentialUserAnswer = poll.userAnswers?.get(googleId)
+                    if (potentialUserAnswer == null || potentialUserAnswer.size < 1) {
+                        view.progressBarWrapper.background.level = 0
+                        view.answerTextView.setTextColor(ContextCompat.getColor(view.context, R.color.multipleChoiceIncorrectAnswerColor))
+                    } else {
+                        val isSelectedAnswer = potentialUserAnswer.first().letter == poll.answerChoices[adapterPosition].letter
+                        val level = if (isSelectedAnswer) 10000 else 0
+                        view.progressBarWrapper.background.level = level
+                        if (isSelectedAnswer) {
+                            view.answerTextView.setTextColor(ContextCompat.getColor(view.context, R.color.actualWhite))
+                        } else {
+                            view.answerTextView.setTextColor(ContextCompat.getColor(view.context, R.color.multipleChoiceIncorrectAnswerColor))
+                        }
+                    }
+                }
+
+                PollState.shared -> {
+                    setupFinishedPoll()
+                    val darkGrayColor = ContextCompat.getColor(view.context, R.color.darkGray)
+                    view.answerTextView.setTextColor(darkGrayColor)
+                    view.answerCountTextView.setTextColor(darkGrayColor)
+                    val count = poll.answerChoices[adapterPosition].count ?: 0
+                    view.answerCountTextView.visibility = View.VISIBLE
+                    view.answerCountTextView.text = "${(count / totalNumberOfResponses) * 100}%"
+                    val correctAnswer = poll.correctAnswer
+                    if(correctAnswer == "") {
+                        /* We need to set how much the background is filled based off the % of people that answered this.
+                        the level property goes from 0 to 10000 */
+                        view.progressBarWrapper.background.level = ((count.toDouble() / totalNumberOfResponses.toDouble()) * 10000).roundToInt()
+                    } else {
+                        if (poll.answerChoices[adapterPosition].letter == correctAnswer) {
+                            view.progressBarWrapper.background.level = 10000
+                        } else {
+                            view.progressBarWrapper.background.level = 0
+                        }
+                    }
                 }
             }
+        }
+
+        private fun setupFinishedPoll() {
+            val currPoll = poll ?: return
+            view.answerTextView.text = currPoll.answerChoices[adapterPosition].text
+
         }
 
         companion object {
@@ -110,23 +158,30 @@ class PollsChoiceRecyclerAdapter(private val pollChoices: Map<String, PollResult
         }
     }
 
-    class FreeResponseHolder(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener {
+    class FreeResponseHolder(v: View) : RecyclerView.ViewHolder(v) {
 
         var view: View = v
-        private var pollsChoiceModel: PollsChoiceModel? = null
+        private var poll: Poll? = null
 
-        init {
-            v.setOnClickListener(this)
-        }
+        fun bindPoll(poll: Poll, googleId: String) {
+            this.poll = poll
 
-        override fun onClick(v: View) {
+            when(poll.state) {
+                PollState.live -> {
+                    view.optionTextView.text = poll.answerChoices[adapterPosition].text
+                }
 
-        }
+                PollState.ended -> {
 
-        fun bindPoll(pollsChoiceModel: PollsChoiceModel) {
-            this.pollsChoiceModel = pollsChoiceModel
-            view.optionTextView.text = pollsChoiceModel.pollResult.text
-            view.numberOfUpvotesTextView.text = "${pollsChoiceModel.pollResult.count}"
+                }
+
+                PollState.shared -> {
+                    view.optionTextView.text = poll.answerChoices[adapterPosition].text
+                    view.numberOfUpvotesTextView.text = "${poll.answerChoices[adapterPosition].count ?: 0}"
+                }
+            }
+
+
         }
 
         companion object {

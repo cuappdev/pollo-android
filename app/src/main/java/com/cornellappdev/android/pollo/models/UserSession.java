@@ -4,10 +4,10 @@ public class UserSession {
 
     private String accessToken;
     private String refreshToken;
-    private Long sessionExpiration;
+    private String sessionExpiration;
     private boolean isActive;
 
-    public UserSession(String accessToken, String refreshToken, Long sessionExpiration, boolean isActive) {
+    public UserSession(String accessToken, String refreshToken, String sessionExpiration, boolean isActive) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.sessionExpiration = sessionExpiration;
@@ -22,7 +22,7 @@ public class UserSession {
         return refreshToken;
     }
 
-    public Long getSessionExpiration() {
+    public String getSessionExpiration() {
         return sessionExpiration;
     }
 
