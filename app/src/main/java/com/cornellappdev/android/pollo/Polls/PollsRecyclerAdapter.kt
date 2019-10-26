@@ -80,7 +80,6 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
             adapter = PollsChoiceRecyclerAdapter(poll, googleId)
             setRecycledViewPool(viewPool)
         }
-
     }
 
     override fun sendAnswer(position: Int, answer: String) {

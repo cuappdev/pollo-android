@@ -130,12 +130,13 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
                     view.answerCountTextView.setTextColor(darkGrayColor)
                     val count = poll.answerChoices[adapterPosition].count ?: 0
                     view.answerCountTextView.visibility = View.VISIBLE
-                    view.answerCountTextView.text = "${(count / totalNumberOfResponses) * 100}%"
+                    view.answerCountTextView.text = if (totalNumberOfResponses != 0) "${(count / totalNumberOfResponses) * 100}%" else "0%"
                     val correctAnswer = poll.correctAnswer
                     if(correctAnswer == "") {
                         /* We need to set how much the background is filled based off the % of people that answered this.
                         the level property goes from 0 to 10000 */
-                        view.progressBarWrapper.background.level = ((count.toDouble() / totalNumberOfResponses.toDouble()) * 10000).roundToInt()
+                        view.progressBarWrapper.background.level =
+                                if (totalNumberOfResponses != 0) ((count.toDouble() / totalNumberOfResponses.toDouble()) * 10000).roundToInt() else 0
                     } else {
                         if (poll.answerChoices[adapterPosition].letter == correctAnswer) {
                             view.progressBarWrapper.background.level = 10000
