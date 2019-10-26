@@ -18,7 +18,6 @@ import android.util.Log
 import android.view.View
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
-import android.widget.EditText
 import com.cornellappdev.android.pollo.models.ApiResponse
 import com.cornellappdev.android.pollo.models.Group
 import com.cornellappdev.android.pollo.models.GroupCode
@@ -67,9 +66,22 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             val hasSixCharacters = s?.length == 6
-            join_poll_group.isEnabled = hasSixCharacters
+            join_group_button.isEnabled = hasSixCharacters
             val correctBackground = if (hasSixCharacters) R.drawable.rounded_join_button_filled else R.drawable.rounded_join_button
-            join_poll_group.setBackgroundResource(correctBackground)
+            join_group_button.setBackgroundResource(correctBackground)
+        }
+    }
+
+    private val createPollTextWatcher = object : TextWatcher {
+
+        override fun afterTextChanged(s: Editable?) {}
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            val hasText = s?.length != 0
+            create_group_button.isEnabled = hasText
+            val correctBackground = if (hasText) R.drawable.rounded_join_button_filled else R.drawable.rounded_join_button
+            create_group_button.setBackgroundResource(correctBackground)
         }
     }
 
@@ -77,22 +89,40 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val editText = findViewById<EditText>(R.id.edit_text_join_poll)
-        editText.filters = editText.filters + InputFilter.AllCaps()
-        editText.addTextChangedListener(joinPollTextWatcher)
-        editText.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> editText.isCursorVisible = hasFocus }
-        editText.setOnEditorActionListener { _, actionId, _ ->
+        edit_text_join_group.filters = edit_text_join_group.filters + InputFilter.AllCaps()
+        edit_text_join_group.addTextChangedListener(joinPollTextWatcher)
+        edit_text_join_group.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> edit_text_join_group.isCursorVisible = hasFocus }
+        edit_text_join_group.setOnEditorActionListener { _, actionId, _ ->
             when (actionId) {
                 EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_SEARCH -> {
-                    editText.isCursorVisible = false
+                    edit_text_join_group.isCursorVisible = false
                     true
                 }
                 else -> {
-                    editText.isCursorVisible = true
+                    edit_text_join_group.isCursorVisible = true
                     false
                 }
             }
         }
+
+        edit_text_create_group.addTextChangedListener(createPollTextWatcher)
+        edit_text_create_group.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> edit_text_create_group.isCursorVisible = hasFocus }
+        edit_text_create_group.setOnEditorActionListener { _, actionId, _ ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_SEARCH -> {
+                    edit_text_create_group.isCursorVisible = false
+                    true
+                }
+                else -> {
+                    edit_text_create_group.isCursorVisible = true
+                    false
+                }
+            }
+        }
+
+
+        edit_text_create_group.visibility = View.GONE
+        create_group_button.visibility = View.GONE
 
         container.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
 
@@ -104,18 +134,16 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
             override fun onPageSelected(position: Int) {
                 when (position) {
                     0 -> {
-                        join_poll_group.setText(R.string.join_button_text)
-                        join_poll_group.setOnClickListener {
-                            joinGroup(editText.text.toString())
-                            editText.setText("")
-                        }
+                        edit_text_create_group.visibility = View.GONE
+                        create_group_button.visibility = View.GONE
+                        edit_text_join_group.visibility = View.VISIBLE
+                        join_group_button.visibility = View.VISIBLE
                     }
                     1 -> {
-                        join_poll_group.setText(R.string.create_button_text)
-                        join_poll_group.setOnClickListener {
-                            createGroup(editText.text.toString())
-                            editText.setText("")
-                        }
+                        edit_text_create_group.visibility = View.VISIBLE
+                        create_group_button.visibility = View.VISIBLE
+                        edit_text_join_group.visibility = View.GONE
+                        join_group_button.visibility = View.GONE
                     }
                 }
             }
@@ -138,10 +166,14 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
             dismissPopup()
         }
 
-        // Add listener for when join button is pressed
-        join_poll_group.setOnClickListener {
-            joinGroup(editText.text.toString())
-            editText.setText("")
+        // Add listener for when join and create buttons are pressed
+        join_group_button.setOnClickListener {
+            joinGroup(edit_text_join_group.text.toString())
+            edit_text_join_group.setText("")
+        }
+        create_group_button.setOnClickListener {
+            createGroup(edit_text_create_group.text.toString())
+            edit_text_create_group.setText("")
         }
 
         val account = GoogleSignIn.getLastSignedInAccount(this)

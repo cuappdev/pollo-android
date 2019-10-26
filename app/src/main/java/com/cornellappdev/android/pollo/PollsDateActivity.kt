@@ -19,10 +19,11 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
-class PollsDateActivity : AppCompatActivity(), SocketDelegate {
+class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListener {
     private lateinit var adapter: PollsDateRecyclerAdapter
     private lateinit var group: Group
     private lateinit  var linearLayoutManager: LinearLayoutManager
+    private lateinit var role: User.Role
     private var currentUserCount = 0
 
     private val dateFormatter = SimpleDateFormat("MMMM dd yyyy", Locale.US)
@@ -34,6 +35,23 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate {
         setContentView(R.layout.activity_polls_date)
         sortedPolls = groupByDate(intent.getParcelableArrayListExtra<GetSortedPollsResponse>("SORTED_POLLS"))
         group = intent.getParcelableExtra("GROUP_NODE")
+
+        backButton.setOnClickListener(this)
+
+        // Customize page for role
+        role = intent.getSerializableExtra("USER_ROLE") as User.Role
+        when (role) {
+            User.Role.ADMIN -> {
+                noPollsTitle.setText(R.string.no_polls_created_title)
+                noPollsSubtext.setText(R.string.no_polls_created_subtext)
+            }
+            User.Role.MEMBER -> {
+                adminFooter.visibility = View.GONE
+                newPollImageButton.visibility = View.GONE
+            }
+        }
+
+        toggleEmptyState()
 
         val account = GoogleSignIn.getLastSignedInAccount(this)
 
@@ -60,6 +78,23 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate {
     fun goBack(view: View) {
         finish()
         Socket.disconnect()
+    }
+
+    override fun onClick(view: View) {
+        if (view.id == R.id.backButton)
+            goBack(view)
+    }
+
+    private fun toggleEmptyState() {
+        if (sortedPolls.count() == 0) {
+            noPollsView.visibility = View.VISIBLE
+            adminFooter.visibility = View.GONE
+        } else {
+            noPollsView.visibility = View.GONE
+            if (role == User.Role.ADMIN) {
+                adminFooter.visibility = View.VISIBLE
+            }
+        }
     }
 
     fun groupByDate(sortedPolls: ArrayList<GetSortedPollsResponse>): ArrayList<GetSortedPollsResponse> {
