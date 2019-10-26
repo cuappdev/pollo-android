@@ -14,13 +14,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import com.cornellappdev.android.pollo.models.ApiResponse
 import com.cornellappdev.android.pollo.models.Group
-import com.cornellappdev.android.pollo.models.Nodes.UserSessionNode
+import com.cornellappdev.android.pollo.models.GroupCode
 import com.cornellappdev.android.pollo.models.User
 import com.cornellappdev.android.pollo.models.UserSession
 import com.cornellappdev.android.pollo.networking.*
@@ -92,6 +93,34 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
                 }
             }
         }
+
+        container.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+            }
+            override fun onPageSelected(position: Int) {
+                when (position) {
+                    0 -> {
+                        join_poll_group.setText(R.string.join_button_text)
+                        join_poll_group.setOnClickListener {
+                            joinGroup(editText.text.toString())
+                            editText.setText("")
+                        }
+                    }
+                    1 -> {
+                        join_poll_group.setText(R.string.create_button_text)
+                        join_poll_group.setOnClickListener {
+                            createGroup(editText.text.toString())
+                            editText.setText("")
+                        }
+                    }
+                }
+            }
+
+        })
 
         groupMenuOptionsView.closeButton.setOnClickListener {
             dismissPopup()
@@ -216,6 +245,50 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
             pollsDateActivity.putExtra("USER_ROLE", User.Role.MEMBER)
             startActivity(pollsDateActivity)
         }
+    }
+
+    private fun createGroup(name: String) {
+        val typeTokenGroupCode = object : TypeToken<ApiResponse<GroupCode>>() {}.type
+        val generateCodeEndpoint = Endpoint.generateCode()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = Request.makeRequest<ApiResponse<GroupCode>>(generateCodeEndpoint.okHttpRequest(),typeTokenGroupCode)
+
+            if (result?.success == true) {
+                val code = result.data.code
+
+                val joinSessionEndpoint = Endpoint.startSession(code, name)
+                val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
+                val typeTokenSortedPolls = object : TypeToken<ApiResponse<ArrayList<GetSortedPollsResponse>>>() {}.type
+                val groupResponse = Request.makeRequest<ApiResponse<Group>>(joinSessionEndpoint.okHttpRequest(), typeTokenGroupNode)
+
+                if (groupResponse?.success == false || groupResponse?.data == null) {
+                    return@launch
+                }
+
+
+                withContext(Dispatchers.Main) {
+                    createdGroupFragment?.addGroup(groupResponse.data)
+                }
+
+                val allPollsEndpoint = Endpoint.getSortedPolls(groupResponse.data.id)
+                val sortedPolls = Request.makeRequest<ApiResponse<ArrayList<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest(), typeTokenSortedPolls)
+
+                if (sortedPolls?.success == false || sortedPolls?.data == null) return@launch
+
+                val pollsDateActivity = Intent(this@MainActivity, PollsDateActivity::class.java)
+                pollsDateActivity.putExtra("SORTED_POLLS", sortedPolls.data)
+                pollsDateActivity.putExtra("GROUP_NODE", groupResponse.data)
+                pollsDateActivity.putExtra("USER_ROLE", User.Role.ADMIN)
+                startActivity(pollsDateActivity)
+
+            } else {
+                Log.e("failure","backend response failed to generate code")
+                return@launch
+            }
+        }
+
+
     }
 
     private fun finishAuthFlow() {
