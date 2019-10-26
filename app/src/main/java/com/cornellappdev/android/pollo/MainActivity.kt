@@ -14,12 +14,16 @@ import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
-import com.cornellappdev.android.pollo.models.*
-import com.cornellappdev.android.pollo.models.Nodes.UserSessionNode
+import com.cornellappdev.android.pollo.models.ApiResponse
+import com.cornellappdev.android.pollo.models.Group
+import com.cornellappdev.android.pollo.models.GroupCode
+import com.cornellappdev.android.pollo.models.User
+import com.cornellappdev.android.pollo.models.UserSession
 import com.cornellappdev.android.pollo.networking.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.gson.reflect.TypeToken
@@ -279,7 +283,7 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
                 startActivity(pollsDateActivity)
 
             } else {
-                println("failed to generate code")
+                Log.e("failure","backend response failed to generate code")
                 return@launch
             }
         }

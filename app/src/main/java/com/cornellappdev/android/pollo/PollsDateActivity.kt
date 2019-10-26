@@ -58,7 +58,6 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate {
     }
 
     fun goBack(view: View) {
-        socket.disconnect()
         finish()
         Socket.disconnect()
     }
