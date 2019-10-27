@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/create_poll_fragment"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/poll_question"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="@string/ask_question"/>
+
+    <ListView
+        android:id="@+id/poll_options"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:id="@+id/create_poll_option"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/cardHeaderGray">
+
+        <ImageButton
+            android:id="@+id/add_poll_option_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_plus_sign"/>
+
+        <TextEdit
+            android:id="@+id/add_poll_option_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/add_option"/>
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+        <Button
+            android:id="@+id/save_draft"
+            android:layout_width="68dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="19dp"
+            android:background="@drawable/rounded_join_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif"
+            android:text="@string/save_as_draft"
+            android:textAllCaps="false"
+            android:textColor="@color/polloGreen"
+            android:textColorHighlight="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/start_poll"
+            android:layout_width="68dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="19dp"
+            android:background="@drawable/rounded_join_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="sans-serif"
+            android:text="@string/start_poll"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textColorHighlight="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
