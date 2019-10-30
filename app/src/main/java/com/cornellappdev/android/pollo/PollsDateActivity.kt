@@ -91,9 +91,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
             adminFooter.visibility = View.GONE
         } else {
             noPollsView.visibility = View.GONE
-            if (role == User.Role.ADMIN) {
-                adminFooter.visibility = View.VISIBLE
-            }
+            if (role == User.Role.ADMIN) adminFooter.visibility = View.VISIBLE
         }
     }
 

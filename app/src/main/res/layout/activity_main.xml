@@ -119,7 +119,7 @@
                 android:layout_width="match_parent">
 
                 <EditText
-                    android:id="@+id/edit_text_join_group"
+                    android:id="@+id/editTextJoinGroup"
                     android:layout_width="0dp"
                     android:layout_height="50dp"
                     android:layout_marginStart="19dp"
@@ -139,13 +139,13 @@
                     android:textCursorDrawable="@drawable/custom_cursor"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/join_group_button"
+                    app:layout_constraintEnd_toStartOf="@id/joinGroupButton"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:ignore="UnusedAttribute" />
 
                 <EditText
-                    android:id="@+id/edit_text_create_group"
+                    android:id="@+id/editTextCreateGroup"
                     android:layout_width="0dp"
                     android:layout_height="50dp"
                     android:layout_marginStart="19dp"
@@ -163,13 +163,13 @@
                     android:textCursorDrawable="@drawable/custom_cursor"
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/create_group_button"
+                    app:layout_constraintEnd_toStartOf="@id/createGroupButton"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:ignore="UnusedAttribute" />
 
                 <Button
-                    android:id="@+id/join_group_button"
+                    android:id="@+id/joinGroupButton"
                     android:layout_width="68dp"
                     android:layout_height="32dp"
                     android:layout_marginEnd="19dp"
@@ -189,7 +189,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
-                    android:id="@+id/create_group_button"
+                    android:id="@+id/createGroupButton"
                     android:layout_width="84dp"
                     android:layout_height="32dp"
                     android:layout_marginEnd="19dp"
