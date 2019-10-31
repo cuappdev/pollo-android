@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/white"
     android:layout_alignParentBottom="true"
-    android:layout_height="174dp"
-    android:layout_marginTop="174dp"
+    android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:visibility="invisible">
 
@@ -37,16 +36,110 @@
         android:background="@color/lightGrayDivider"
         android:id="@+id/divider"
         android:layout_height="0.5dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         app:layout_constraintTop_toBottomOf="@id/closeButton" />
 
     <LinearLayout
+        android:id="@+id/editGroupName"
         android:clickable="true"
         android:focusable="true"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="21dp"
+        android:layout_width="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider"
+        tools:ignore="UseCompoundDrawables">
+
+
+        <ImageView
+            android:layout_height="19dp"
+            android:layout_width="19dp"
+            android:layout_marginStart="20dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_plus_sign"/>
+
+        <TextView
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center_vertical"
+            android:layout_marginStart="31dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/edit_group_name"
+            android:textColor="@color/black"
+            android:textSize="18sp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/endPoll"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="21dp"
+        android:layout_width="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editGroupName"
+        tools:ignore="UseCompoundDrawables">
+
+        <ImageView
+            android:layout_height="18dp"
+            android:layout_width="18dp"
+            android:layout_marginStart="20dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_plus_sign" />
+
+        <TextView
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center_vertical"
+            android:layout_marginStart="31dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/end_poll"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:clickable="true"
+        android:focusable="true"
+        android:id="@+id/deleteGroup"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="21dp"
+        android:paddingBottom="21dp"
+        android:layout_width="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/endPoll"
+        tools:ignore="UseCompoundDrawables">
+
+        <ImageView
+            android:layout_height="18dp"
+            android:layout_width="16dp"
+            android:layout_marginStart="22dp"
+            android:layout_gravity="center_vertical"
+            android:rotation="180"
+            android:src="@drawable/leave_group_red" />
+
+        <TextView
+            android:fontFamily="sans-serif-medium"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="31dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/delete_group"
+            android:textColor="@color/red"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/leaveGroup"
-        android:layout_height="18dp"
-        android:layout_marginTop="15dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="21dp"
+        android:paddingBottom="21dp"
         android:layout_width="match_parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/divider"
@@ -54,21 +147,22 @@
 
         <ImageView
             android:layout_height="18dp"
+            android:layout_width="16dp"
             android:layout_marginStart="20dp"
-            android:layout_width="19dp"
+            android:layout_gravity="center_vertical"
+            android:rotation="180"
             android:contentDescription="@string/leave_group_content_description"
             android:src="@drawable/leave_group_red" />
 
         <TextView
             android:fontFamily="sans-serif-medium"
-            android:gravity="center_vertical"
-            android:layout_height="match_parent"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="-2.5dp"
-            android:layout_width="45dp"
-            android:text="@string/leave_text"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="31dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/leave_group"
             android:textColor="@color/red"
-            android:textSize="16sp" />
+            android:textSize="18sp" />
 
     </LinearLayout>
 

@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.res.Resources
 import android.os.Bundle
 import com.google.android.material.tabs.TabLayout
 import androidx.fragment.app.Fragment
@@ -27,6 +28,7 @@ import com.cornellappdev.android.pollo.networking.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.manage_group_view.*
 import kotlinx.android.synthetic.main.manage_group_view.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -88,6 +90,7 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Joining group bottom bar setup
         editTextJoinGroup.filters = editTextJoinGroup.filters + InputFilter.AllCaps()
         editTextJoinGroup.addTextChangedListener(joinPollTextWatcher)
         editTextJoinGroup.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> editTextJoinGroup.isCursorVisible = hasFocus }
@@ -104,6 +107,7 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
             }
         }
 
+        // Creating group bottom bar setup
         editTextCreateGroup.addTextChangedListener(createPollTextWatcher)
         editTextCreateGroup.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> editTextCreateGroup.isCursorVisible = hasFocus }
         editTextCreateGroup.setOnEditorActionListener { _, actionId, _ ->
@@ -121,6 +125,13 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
 
         editTextCreateGroup.visibility = View.GONE
         createGroupButton.visibility = View.GONE
+        editGroupName.visibility = View.GONE
+        endPoll.visibility = View.GONE
+        deleteGroup.visibility = View.GONE
+        leaveGroup.visibility = View.VISIBLE
+
+        joinGroupButton.isEnabled = false
+        createGroupButton.isEnabled = false
 
         container.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
 
@@ -136,12 +147,24 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
                         createGroupButton.visibility = View.GONE
                         editTextJoinGroup.visibility = View.VISIBLE
                         joinGroupButton.visibility = View.VISIBLE
+
+                        editGroupName.visibility = View.GONE
+                        endPoll.visibility = View.GONE
+                        deleteGroup.visibility = View.GONE
+                        leaveGroup.visibility = View.VISIBLE
                     }
                     1 -> {
                         editTextCreateGroup.visibility = View.VISIBLE
                         createGroupButton.visibility = View.VISIBLE
                         editTextJoinGroup.visibility = View.GONE
                         joinGroupButton.visibility = View.GONE
+
+                        editGroupName.visibility = View.VISIBLE
+                        endPoll.visibility = View.VISIBLE
+                        deleteGroup.visibility = View.VISIBLE
+                        leaveGroup.visibility = View.GONE
+
+//                        groupMenuOptionsView.y = groupMenuOptionsView.y + (589 - 325)
                     }
                 }
             }
