@@ -88,6 +88,12 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
         Socket.sendMCAnswer(pollChoice)
     }
 
+    override fun sendAnswer(position: Int, answer: String) {
+        val poll = polls[position]
+        val pollChoice = PollChoice(letter = null, text = answer)
+        Socket.sendMCAnswer(pollChoice)
+    }
+
     class PollHolder(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener {
 
         var view: View = v
