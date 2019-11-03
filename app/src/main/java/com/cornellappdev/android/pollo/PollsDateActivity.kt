@@ -144,6 +144,6 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate {
 
     fun createNewPoll(view: View) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.create_poll_fragment, CreatePollFragment()).commit()
+            .add(R.id.create_poll_fragment, CreatePollFragment()).commit()
     }
 }

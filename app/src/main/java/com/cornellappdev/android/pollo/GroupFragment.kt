@@ -141,7 +141,6 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
 
 
     companion object {
-
         private val ARG_SECTION_NUMBER = "section_number"
         private val GROUP_ROLE = "group_role"
 
