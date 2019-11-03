@@ -5,12 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.create_poll_options_list_item.view.*
 import kotlinx.android.synthetic.main.fragment_create_poll.view.*
 
 @SuppressLint("ValidFragment")
@@ -22,8 +20,8 @@ class CreatePollFragment: Fragment() {
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
-    ): View {
-        val rootView = inflater!!.inflate(R.layout.fragment_create_poll, container, false)
+    ): View? {
+        val rootView = inflater?.inflate(R.layout.fragment_create_poll, container, false)
 
         adapter = CreatePollAdapter(context!!, options)
         options = arrayListOf("Option A", "Option B")
