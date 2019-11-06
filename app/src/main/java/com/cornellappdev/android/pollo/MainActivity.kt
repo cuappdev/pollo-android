@@ -4,7 +4,6 @@ import android.animation.ObjectAnimator
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.content.res.Resources
 import android.os.Bundle
 import com.google.android.material.tabs.TabLayout
 import androidx.fragment.app.Fragment
@@ -123,6 +122,7 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
             }
         }
 
+        // Setup for toggling admin/member switch
         editTextCreateGroup.visibility = View.GONE
         createGroupButton.visibility = View.GONE
         editGroupName.visibility = View.GONE
@@ -163,14 +163,13 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
                         endPoll.visibility = View.VISIBLE
                         deleteGroup.visibility = View.VISIBLE
                         leaveGroup.visibility = View.GONE
-
-//                        groupMenuOptionsView.y = groupMenuOptionsView.y + (589 - 325)
                     }
                 }
             }
 
         })
 
+        // Setup options menu for groups
         groupMenuOptionsView.closeButton.setOnClickListener {
             dismissPopup()
         }
@@ -181,10 +180,58 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
 
             CoroutineScope(Dispatchers.IO).launch {
                 val typeToken = object : TypeToken<ApiResponse<String>>() {}.type
-                Request.makeRequest<ApiResponse<String>>(leaveGroupEndpoint.okHttpRequest(), typeToken)
+                val response = Request.makeRequest<ApiResponse<String>>(leaveGroupEndpoint.okHttpRequest(), typeToken)
+
+                if (response?.success ?: return@launch) {
+                    withContext(Dispatchers.Main) {
+                        joinedGroupFragment?.removeGroup(groupId)
+                        dismissPopup()
+                    }
+                }
             }
-            joinedGroupFragment?.removeGroup(groupId)
-            dismissPopup()
+        }
+
+        groupMenuOptionsView.editGroupName.setOnClickListener {
+            // TODO
+        }
+
+        groupMenuOptionsView.endPoll.setOnClickListener {
+            // TODO
+        }
+
+        groupMenuOptionsView.deleteGroup.setOnClickListener {
+            val groupId = groupSelected?.id ?: return@setOnClickListener
+            val deleteGroupEndpoint = Endpoint.deleteGroup(groupId)
+
+            CoroutineScope(Dispatchers.IO).launch {
+                val typeToken = object : TypeToken<ApiResponse<String>>() {}.type
+                val response = Request.makeRequest<ApiResponse<String>>(deleteGroupEndpoint.okHttpRequest(), typeToken)
+
+                if (response?.success ?: return@launch) {
+                    withContext(Dispatchers.Main) {
+                        createdGroupFragment?.removeGroup(groupId)
+                        dismissPopup()
+                    }
+                }
+            }
+        }
+
+        groupMenuOptionsView.addOnLayoutChangeListener { view, _, top, _, _, _, oldTop, _, _ ->
+            // Need to change the position of the view when the tabs change since it changes size
+            // If not, the top of the view will appear when we switch to the created tab
+
+            // Don't do anything if this is the initial layout
+            if ( oldTop == 0 ) return@addOnLayoutChangeListener
+
+            // Only reset the view's position if we're changing tabs
+            // If we're not, there will be an animation that has not ended
+            if ( view.animation==null || view.animation.hasEnded()) {
+                if (oldTop > top) {
+                    view.top = view.top + (oldTop - top)
+                } else {
+                    view.top = view.top + (top - oldTop)
+                }
+            }
         }
 
         // Add listener for when join and create buttons are pressed
