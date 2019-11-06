@@ -142,8 +142,15 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate {
         println(pollFilter.filter)
     }
 
-    fun createNewPoll(view: View) {
+    fun openNewPollFragment(view: View) {
         supportFragmentManager.beginTransaction()
             .add(R.id.create_poll_fragment, CreatePollFragment()).commit()
     }
+
+//    fun createNewPoll(view: View) {
+//        val endpoint = Endpoint.startPoll(text, answerChoices, correctAnswer, type)
+//        CoroutineScope(Dispatchers.IO).launch {
+//
+//        }
+//    }
 }
