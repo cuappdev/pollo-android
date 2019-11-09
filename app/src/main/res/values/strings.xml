@@ -28,7 +28,7 @@
 
 <!--Home Screen Edit Group Strings-->
     <string name="leave_group_content_description">Leave Group</string>
-    <string name="leave_group">Leave</string>
+    <string name="leave_group">Leave Group</string>
     <string name="delete_group">Delete Group</string>
     <string name="edit_group_name">Edit Name</string>
     <string name="end_poll">End Poll</string>

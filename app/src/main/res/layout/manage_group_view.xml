@@ -57,7 +57,7 @@
             android:layout_width="19dp"
             android:layout_marginStart="20dp"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_plus_sign"/>
+            android:src="@drawable/ic_edit_pencil"/>
 
         <TextView
             android:fontFamily="sans-serif-medium"
@@ -72,36 +72,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/endPoll"
-        android:clickable="true"
-        android:focusable="true"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="21dp"
-        android:layout_width="match_parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editGroupName"
-        tools:ignore="UseCompoundDrawables">
-
-        <ImageView
-            android:layout_height="18dp"
-            android:layout_width="18dp"
-            android:layout_marginStart="20dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_plus_sign" />
-
-        <TextView
-            android:fontFamily="sans-serif-medium"
-            android:gravity="center_vertical"
-            android:layout_marginStart="31dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/end_poll"
-            android:textColor="@color/black"
-            android:textSize="18sp" />
-
-    </LinearLayout>
-
-    <LinearLayout
         android:clickable="true"
         android:focusable="true"
         android:id="@+id/deleteGroup"
@@ -110,7 +80,7 @@
         android:paddingBottom="21dp"
         android:layout_width="match_parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/endPoll"
+        app:layout_constraintTop_toBottomOf="@id/editGroupName"
         tools:ignore="UseCompoundDrawables">
 
         <ImageView
@@ -119,7 +89,7 @@
             android:layout_marginStart="22dp"
             android:layout_gravity="center_vertical"
             android:rotation="180"
-            android:src="@drawable/leave_group_red" />
+            android:src="@drawable/ic_trash_can" />
 
         <TextView
             android:fontFamily="sans-serif-medium"
@@ -146,8 +116,8 @@
         tools:ignore="UseCompoundDrawables">
 
         <ImageView
-            android:layout_height="18dp"
-            android:layout_width="16dp"
+            android:layout_height="22dp"
+            android:layout_width="20dp"
             android:layout_marginStart="20dp"
             android:layout_gravity="center_vertical"
             android:rotation="180"

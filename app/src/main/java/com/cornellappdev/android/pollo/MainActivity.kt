@@ -126,7 +126,6 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
         editTextCreateGroup.visibility = View.GONE
         createGroupButton.visibility = View.GONE
         editGroupName.visibility = View.GONE
-        endPoll.visibility = View.GONE
         deleteGroup.visibility = View.GONE
         leaveGroup.visibility = View.VISIBLE
 
@@ -149,7 +148,6 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
                         joinGroupButton.visibility = View.VISIBLE
 
                         editGroupName.visibility = View.GONE
-                        endPoll.visibility = View.GONE
                         deleteGroup.visibility = View.GONE
                         leaveGroup.visibility = View.VISIBLE
                     }
@@ -160,7 +158,6 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
                         joinGroupButton.visibility = View.GONE
 
                         editGroupName.visibility = View.VISIBLE
-                        endPoll.visibility = View.VISIBLE
                         deleteGroup.visibility = View.VISIBLE
                         leaveGroup.visibility = View.GONE
                     }
@@ -192,11 +189,7 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
         }
 
         groupMenuOptionsView.editGroupName.setOnClickListener {
-            // TODO
-        }
-
-        groupMenuOptionsView.endPoll.setOnClickListener {
-            // TODO
+            // TODO(#40)
         }
 
         groupMenuOptionsView.deleteGroup.setOnClickListener {
@@ -225,8 +218,8 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
 
             // Only reset the view's position if we're changing tabs
             // If we're not, there will be an animation that has not ended
-            if ( view.animation==null || view.animation.hasEnded()) {
-                if (oldTop > top) {
+            if ( view.animation==null || view.animation.hasEnded() ) {
+                if ( oldTop > top ) {
                     view.top = view.top + (oldTop - top)
                 } else {
                     view.top = view.top + (top - oldTop)
