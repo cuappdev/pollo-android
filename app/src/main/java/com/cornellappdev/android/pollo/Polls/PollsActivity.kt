@@ -110,7 +110,7 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
         renderPoll(poll)
     }
 
-    override fun onPollDelete(pollID: Int) {
+    override fun onPollDelete(pollID: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

@@ -20,7 +20,7 @@ interface SocketDelegate {
     fun freeResponseSubmissionSuccessful()
     fun freeResponseSubmissionFailed(pollFilter: com.cornellappdev.android.pollo.networking.Socket.PollFilter)
     fun freeResponseUpdates(poll: Poll)
-    fun onPollDelete(pollID: Int)
+    fun onPollDelete(pollID: String)
     fun onPollDeleteLive()
 }
 
@@ -91,7 +91,7 @@ object Socket {
 
     private val onPollDelete = Emitter.Listener { args ->
         if (args.isEmpty()) return@Listener
-        val pollID = args[0] as Int
+        val pollID = args[0] as String
         delegates.forEach { it.onPollDelete(pollID) }
     }
 
@@ -100,7 +100,7 @@ object Socket {
     }
 
 
-    fun connect(id: Int, accessToken: String) {
+    fun connect(id: String, accessToken: String) {
         val urlBuilder = HttpUrl.Builder()
                 .scheme("https")
                 .host(BuildConfig.BACKEND_URI)

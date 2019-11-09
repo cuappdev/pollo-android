@@ -46,8 +46,8 @@ public class PollRecyclerView extends RecyclerView.Adapter<PollRecyclerView.View
         mData.addAll(newList);
     }
 
-    Group getItem(int id) {
-        return mData.get(id);
+    Group getItem(int index) {
+        return mData.get(index);
     }
 
     void setClickListener(ItemClickListener itemClickListener) {
