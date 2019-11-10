@@ -110,8 +110,8 @@ class GroupRecyclerAdapter(
         groups.addAll(newList)
     }
 
-    internal fun getItem(id: Int): Group {
-        return groups[id]
+    internal fun getItem(index: Int): Group {
+        return groups[index]
     }
 
     companion object {

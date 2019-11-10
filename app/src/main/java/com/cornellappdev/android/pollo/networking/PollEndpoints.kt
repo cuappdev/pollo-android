@@ -12,9 +12,9 @@ data class GetSortedPollsResponse(val date: String, var polls: ArrayList<Poll>, 
 data class PollResult(val text: String, val count: Int) : Parcelable
 
 @Parcelize
-data class PollsResponse(val id: Int, val text: String, val results: Map<String, PollResult>, val shared: Boolean, val type: String, val correctAnswer: String) : Parcelable
+data class PollsResponse(val id: String, val text: String, val results: Map<String, PollResult>, val shared: Boolean, val type: String, val correctAnswer: String) : Parcelable
 
-fun Endpoint.Companion.getSortedPolls(id: Int): Endpoint {
+fun Endpoint.Companion.getSortedPolls(id: String): Endpoint {
     val accessToken = User.currentSession.accessToken
     return Endpoint(path = "/sessions/$id/polls", headers = mapOf("Authorization" to "Bearer $accessToken"), body = null, method = EndpointMethod.GET)
 }

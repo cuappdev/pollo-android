@@ -60,7 +60,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
             val groupTypeToken = object : TypeToken<ApiResponse<Group>>() {}.type
             val groupResponse = Request.makeRequest<ApiResponse<Group>>(joinGroupEndpoint.okHttpRequest(), groupTypeToken)
             withContext(Dispatchers.Main) {
-                Socket.connect(groupResponse?.data?.id ?: 0, User.currentSession.accessToken)
+                Socket.connect(groupResponse?.data?.id ?: "", User.currentSession.accessToken)
                 Socket.add(this@PollsDateActivity)
             }
         }
@@ -157,7 +157,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
 
     override fun freeResponseUpdates(poll: Poll) { }
 
-    override fun onPollDelete(pollID: Int) { }
+    override fun onPollDelete(pollID: String) { }
 
     override fun onPollDeleteLive() { }
 
