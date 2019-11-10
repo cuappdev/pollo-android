@@ -16,7 +16,6 @@ import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
 import com.cornellappdev.android.pollo.models.ApiResponse
 import com.cornellappdev.android.pollo.models.Group
@@ -27,15 +26,13 @@ import com.cornellappdev.android.pollo.networking.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.manage_group_view.*
-import kotlinx.android.synthetic.main.manage_group_view.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
-class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListener {
+class MainActivity : AppCompatActivity() {
 
     /**
      * The [android.support.v4.view.PagerAdapter] that will provide
@@ -125,9 +122,6 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
         // Setup for toggling admin/member switch
         editTextCreateGroup.visibility = View.GONE
         createGroupButton.visibility = View.GONE
-        editGroupName.visibility = View.GONE
-        deleteGroup.visibility = View.GONE
-        leaveGroup.visibility = View.VISIBLE
 
         joinGroupButton.isEnabled = false
         createGroupButton.isEnabled = false
@@ -146,86 +140,37 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
                         createGroupButton.visibility = View.GONE
                         editTextJoinGroup.visibility = View.VISIBLE
                         joinGroupButton.visibility = View.VISIBLE
-
-                        editGroupName.visibility = View.GONE
-                        deleteGroup.visibility = View.GONE
-                        leaveGroup.visibility = View.VISIBLE
                     }
                     1 -> {
                         editTextCreateGroup.visibility = View.VISIBLE
                         createGroupButton.visibility = View.VISIBLE
                         editTextJoinGroup.visibility = View.GONE
                         joinGroupButton.visibility = View.GONE
-
-                        editGroupName.visibility = View.VISIBLE
-                        deleteGroup.visibility = View.VISIBLE
-                        leaveGroup.visibility = View.GONE
                     }
                 }
             }
 
         })
 
-        // Setup options menu for groups
-        groupMenuOptionsView.closeButton.setOnClickListener {
-            dismissPopup()
-        }
 
-        groupMenuOptionsView.leaveGroup.setOnClickListener {
-            val groupId = groupSelected?.id ?: return@setOnClickListener
-            val leaveGroupEndpoint = Endpoint.leaveGroup(groupId)
 
-            CoroutineScope(Dispatchers.IO).launch {
-                val typeToken = object : TypeToken<ApiResponse<String>>() {}.type
-                val response = Request.makeRequest<ApiResponse<String>>(leaveGroupEndpoint.okHttpRequest(), typeToken)
-
-                if (response?.success ?: return@launch) {
-                    withContext(Dispatchers.Main) {
-                        joinedGroupFragment?.removeGroup(groupId)
-                        dismissPopup()
-                    }
-                }
-            }
-        }
-
-        groupMenuOptionsView.editGroupName.setOnClickListener {
-            // TODO(#40)
-        }
-
-        groupMenuOptionsView.deleteGroup.setOnClickListener {
-            val groupId = groupSelected?.id ?: return@setOnClickListener
-            val deleteGroupEndpoint = Endpoint.deleteGroup(groupId)
-
-            CoroutineScope(Dispatchers.IO).launch {
-                val typeToken = object : TypeToken<ApiResponse<String>>() {}.type
-                val response = Request.makeRequest<ApiResponse<String>>(deleteGroupEndpoint.okHttpRequest(), typeToken)
-
-                if (response?.success ?: return@launch) {
-                    withContext(Dispatchers.Main) {
-                        createdGroupFragment?.removeGroup(groupId)
-                        dismissPopup()
-                    }
-                }
-            }
-        }
-
-        groupMenuOptionsView.addOnLayoutChangeListener { view, _, top, _, _, _, oldTop, _, _ ->
-            // Need to change the position of the view when the tabs change since it changes size
-            // If not, the top of the view will appear when we switch to the created tab
-
-            // Don't do anything if this is the initial layout
-            if ( oldTop == 0 ) return@addOnLayoutChangeListener
-
-            // Only reset the view's position if we're changing tabs
-            // If we're not, there will be an animation that has not ended
-            if ( view.animation==null || view.animation.hasEnded() ) {
-                if ( oldTop > top ) {
-                    view.top = view.top + (oldTop - top)
-                } else {
-                    view.top = view.top + (top - oldTop)
-                }
-            }
-        }
+//        groupMenuOptionsView.addOnLayoutChangeListener { view, _, top, _, _, _, oldTop, _, _ ->
+//            // Need to change the position of the view when the tabs change since it changes size
+//            // If not, the top of the view will appear when we switch to the created tab
+//
+//            // Don't do anything if this is the initial layout
+//            if ( oldTop == 0 ) return@addOnLayoutChangeListener
+//
+//            // Only reset the view's position if we're changing tabs
+//            // If we're not, there will be an animation that has not ended
+//            if ( view.animation==null || view.animation.hasEnded() ) {
+//                if ( oldTop > top ) {
+//                    view.top = view.top + (oldTop - top)
+//                } else {
+//                    view.top = view.top + (top - oldTop)
+//                }
+//            }
+//        }
 
         // Add listener for when join and create buttons are pressed
         joinGroupButton.setOnClickListener {
@@ -268,29 +213,6 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
         // If account is null, we need to prompt them to login
         val signInIntent = Intent(this, LoginActivity::class.java)
         startActivityForResult(signInIntent, LOGIN_REQ_CODE)
-    }
-
-    override fun onMoreButtonPressed(group: Group?) {
-        manageDim(true)
-        groupSelected = group
-        groupMenuOptionsView.groupNameTextView.text = group?.name ?: "Pollo Group"
-        groupMenuOptionsView.visibility = View.VISIBLE
-        val animate = TranslateAnimation(0f, 0f, groupMenuOptionsView.height.toFloat(), 0f)
-        animate.duration = 300
-        animate.fillAfter = true
-        groupMenuOptionsView.startAnimation(animate)
-    }
-
-    private fun dismissPopup() {
-        manageDim(false)
-        dimView.isClickable = false
-        dimView.isFocusable = false
-        val animate = TranslateAnimation(0f, 0f, 0f, groupMenuOptionsView.height.toFloat())
-        animate.duration = 300
-        animate.fillAfter = true
-        groupMenuOptionsView.startAnimation(animate)
-        groupMenuOptionsView.visibility = View.INVISIBLE
-        groupSelected = null
     }
 
     private fun manageDim(shouldDim: Boolean) {
@@ -444,11 +366,11 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
 
         override fun getItem(position: Int): Fragment {
             if (position == 0) {
-                joinedGroupFragment = joinedGroupFragment ?: GroupFragment.newInstance(position + 1, this@MainActivity, userRole = User.Role.MEMBER)
+                joinedGroupFragment = joinedGroupFragment ?: GroupFragment.newInstance(position + 1, userRole = User.Role.MEMBER)
                 return joinedGroupFragment!!
             }
 
-            createdGroupFragment = createdGroupFragment ?: GroupFragment.newInstance(position + 1, this@MainActivity, userRole= User.Role.ADMIN)
+            createdGroupFragment = createdGroupFragment ?: GroupFragment.newInstance(position + 1, userRole= User.Role.ADMIN)
             return createdGroupFragment!!
         }
 

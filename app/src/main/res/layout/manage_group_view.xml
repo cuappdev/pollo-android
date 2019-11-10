@@ -88,7 +88,6 @@
             android:layout_width="16dp"
             android:layout_marginStart="22dp"
             android:layout_gravity="center_vertical"
-            android:rotation="180"
             android:src="@drawable/ic_trash_can" />
 
         <TextView

@@ -2,6 +2,7 @@ package com.cornellappdev.android.pollo
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -10,14 +11,15 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.TranslateAnimation
 import com.cornellappdev.android.pollo.models.ApiResponse
 import com.cornellappdev.android.pollo.models.Group
 import com.cornellappdev.android.pollo.models.User
-import com.cornellappdev.android.pollo.networking.Endpoint
-import com.cornellappdev.android.pollo.networking.Request
-import com.cornellappdev.android.pollo.networking.getAllGroups
+import com.cornellappdev.android.pollo.networking.*
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.activity_main.dimView
 import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.android.synthetic.main.manage_group_view.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,13 +35,14 @@ import java.util.*
  * create an instance of this fragment.
  */
 @SuppressLint("ValidFragment")
-class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
+class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListener {
 
     private var sectionNumber: Int = 0
     private var currentAdapter: GroupRecyclerAdapter? = null
     private val fragmentInteractionListener: OnFragmentInteractionListener? = null
 
     private var groups = ArrayList<Group>()
+    private var groupSelected: Group? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,17 +55,84 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
         val role = arguments?.getSerializable(GroupFragment.GROUP_ROLE) as User.Role
         val groupRecyclerView = rootView.findViewById<RecyclerView>(R.id.group_list_recyclerView)
         groupRecyclerView.layoutManager = LinearLayoutManager(rootView.context)
-        currentAdapter = GroupRecyclerAdapter(groups, callback, role)
+        currentAdapter = GroupRecyclerAdapter(groups, this, role)
         groupRecyclerView.adapter = currentAdapter
-
-        setNoGroups()
 
         return rootView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setNoGroups()
+
+        val groupRole = arguments?.getSerializable(GROUP_ROLE) as User.Role? ?: return
+
+        when (groupRole) {
+            User.Role.MEMBER -> {
+                groupMenuOptionsView.editGroupName.visibility = View.GONE
+                groupMenuOptionsView.deleteGroup.visibility = View.GONE
+                groupMenuOptionsView.leaveGroup.visibility = View.VISIBLE
+            }
+            User.Role.ADMIN -> {
+                groupMenuOptionsView.editGroupName.visibility = View.VISIBLE
+                groupMenuOptionsView.deleteGroup.visibility = View.VISIBLE
+                groupMenuOptionsView.leaveGroup.visibility = View.GONE
+            }
+        }
+
+        // Setup options menu for groups
+        groupMenuOptionsView.closeButton.setOnClickListener {
+            dismissPopup()
+        }
+
+        groupMenuOptionsView.leaveGroup.setOnClickListener {
+            val groupId = groupSelected?.id ?: return@setOnClickListener
+            val leaveGroupEndpoint = Endpoint.leaveGroup(groupId)
+
+            CoroutineScope(Dispatchers.IO).launch {
+                val typeToken = object : TypeToken<ApiResponse<String>>() {}.type
+                val response = Request.makeRequest<ApiResponse<String>>(leaveGroupEndpoint.okHttpRequest(), typeToken)
+
+                if (response?.success ?: return@launch) {
+                    withContext(Dispatchers.Main) {
+                        removeGroup(groupId)
+                        dismissPopup()
+                    }
+                }
+            }
+        }
+
+        groupMenuOptionsView.editGroupName.setOnClickListener {
+            // TODO(#40)
+        }
+
+        groupMenuOptionsView.deleteGroup.setOnClickListener {
+            val groupId = groupSelected?.id ?: return@setOnClickListener
+            val deleteGroupEndpoint = Endpoint.deleteGroup(groupId)
+
+            CoroutineScope(Dispatchers.IO).launch {
+                val typeToken = object : TypeToken<ApiResponse<String>>() {}.type
+                val response = Request.makeRequest<ApiResponse<String>>(deleteGroupEndpoint.okHttpRequest(), typeToken)
+
+                if (response?.success ?: return@launch) {
+                    withContext(Dispatchers.Main) {
+                        removeGroup(groupId)
+                        dismissPopup()
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        // TODO: setup delegation to MainActivity
+    }
+
     public fun refreshGroups() {
         CoroutineScope(Dispatchers.IO).launch {
-            val groupRole = arguments?.getSerializable(GroupFragment.GROUP_ROLE) as User.Role? ?: return@launch
+            val groupRole = arguments?.getSerializable(GROUP_ROLE) as User.Role? ?: return@launch
             val getGroupsEndpoint = Endpoint.getAllGroups(groupRole.name.toLowerCase())
             val typeTokenGroups = object : TypeToken<ApiResponse<ArrayList<Group>>>() {}.type
             val getGroupsResponse = Request.makeRequest<ApiResponse<ArrayList<Group>>>(getGroupsEndpoint.okHttpRequest(), typeTokenGroups)
@@ -114,7 +184,7 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
         if (noGroupsView != null) {
             noGroupsView.visibility = if (groups.isNotEmpty()) View.GONE else View.VISIBLE
 
-            when (arguments?.getSerializable(GroupFragment.GROUP_ROLE) as User.Role) {
+            when (arguments?.getSerializable(GROUP_ROLE) as User.Role) {
                 User.Role.MEMBER -> {
                     noGroupsEmoji.text = getString(R.string.no_groups_joined_emoji)
                     noGroupsTitle.text = getString(R.string.no_groups_joined_title)
@@ -129,14 +199,32 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
         }
     }
 
-
-    interface OnMoreButtonPressedListener {
-        fun onMoreButtonPressed(group: Group?)
-    }
-
     interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
+    }
+
+    override fun onMoreButtonPressed(group: Group?) {
+//        manageDim(true)
+        groupSelected = group
+        groupMenuOptionsView.groupNameTextView.text = group?.name ?: "Pollo Group"
+        groupMenuOptionsView.visibility = View.VISIBLE
+        val animate = TranslateAnimation(0f, 0f, groupMenuOptionsView.height.toFloat(), 0f)
+        animate.duration = 300
+        animate.fillAfter = true
+        groupMenuOptionsView.startAnimation(animate)
+    }
+
+    private fun dismissPopup() {
+//        manageDim(false)
+//        dimView.isClickable = false
+//        dimView.isFocusable = false
+        val animate = TranslateAnimation(0f, 0f, 0f, groupMenuOptionsView.height.toFloat())
+        animate.duration = 300
+        animate.fillAfter = true
+        groupMenuOptionsView.startAnimation(animate)
+        groupMenuOptionsView.visibility = View.INVISIBLE
+        groupSelected = null
     }
 
 
@@ -149,8 +237,8 @@ class GroupFragment(val callback: OnMoreButtonPressedListener) : Fragment() {
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        fun newInstance(sectionNumber: Int, callback: OnMoreButtonPressedListener, userRole: User.Role): GroupFragment {
-            val fragment = GroupFragment(callback)
+        fun newInstance(sectionNumber: Int, userRole: User.Role): GroupFragment {
+            val fragment = GroupFragment()
             val args = Bundle()
             fragment.sectionNumber = sectionNumber
             args.putInt(ARG_SECTION_NUMBER, sectionNumber)

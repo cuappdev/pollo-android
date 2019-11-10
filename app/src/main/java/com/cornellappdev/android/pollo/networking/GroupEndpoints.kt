@@ -25,7 +25,7 @@ fun Endpoint.Companion.leaveGroup(id: String): Endpoint {
     return Endpoint("/sessions/$id/members", headers = mapOf("Authorization" to "Bearer ${User.currentSession.accessToken}"), method = EndpointMethod.DELETE)
 }
 
-fun Endpoint.Companion.deleteGroup(id: Int): Endpoint {
+fun Endpoint.Companion.deleteGroup(id: String): Endpoint {
     return Endpoint("/sessions/$id", headers = mapOf("Authorization" to "Bearer ${User.currentSession.accessToken}"), method = EndpointMethod.DELETE)
 }
 

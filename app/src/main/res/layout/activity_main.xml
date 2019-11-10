@@ -43,16 +43,6 @@
                     app:layout_constraintVertical_bias="0.66" />
 
                 <ImageView
-                    android:id="@+id/imageView2"
-                    android:layout_width="22dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginEnd="20dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_plus_sign" />
-
-                <ImageView
                     android:id="@+id/imageView3"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
@@ -213,8 +203,4 @@
 
         </RelativeLayout>
     </RelativeLayout>
-
-    <include
-        layout="@layout/manage_group_view"
-        android:id="@+id/groupMenuOptionsView"/>
 </RelativeLayout>
