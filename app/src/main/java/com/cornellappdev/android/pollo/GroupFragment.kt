@@ -17,7 +17,6 @@ import com.cornellappdev.android.pollo.models.Group
 import com.cornellappdev.android.pollo.models.User
 import com.cornellappdev.android.pollo.networking.*
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.activity_main.dimView
 import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.manage_group_view.view.*
 import kotlinx.coroutines.CoroutineScope
@@ -41,22 +40,28 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     private var currentAdapter: GroupRecyclerAdapter? = null
     private val fragmentInteractionListener: OnFragmentInteractionListener? = null
 
+    private var role: User.Role? = null
     private var groups = ArrayList<Group>()
     private var groupSelected: Group? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        refreshGroups()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        val rootView = inflater!!.inflate(R.layout.fragment_main, container, false)
-        val role = arguments?.getSerializable(GroupFragment.GROUP_ROLE) as User.Role
+        val rootView = inflater.inflate(R.layout.fragment_main, container, false)
+        role = arguments?.getSerializable(GROUP_ROLE) as User.Role
+
         val groupRecyclerView = rootView.findViewById<RecyclerView>(R.id.group_list_recyclerView)
         groupRecyclerView.layoutManager = LinearLayoutManager(rootView.context)
-        currentAdapter = GroupRecyclerAdapter(groups, this, role)
-        groupRecyclerView.adapter = currentAdapter
+
+        if (role != null) {
+            currentAdapter = GroupRecyclerAdapter(groups, this, role!!)
+            groupRecyclerView.adapter = currentAdapter
+        }
+
+        refreshGroups()
 
         return rootView
     }
@@ -66,18 +71,17 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
 
         setNoGroups()
 
-        val groupRole = arguments?.getSerializable(GROUP_ROLE) as User.Role? ?: return
-
-        when (groupRole) {
+        when (role) {
             User.Role.MEMBER -> {
                 groupMenuOptionsView.editGroupName.visibility = View.GONE
-                groupMenuOptionsView.deleteGroup.visibility = View.GONE
-                groupMenuOptionsView.leaveGroup.visibility = View.VISIBLE
+                groupMenuOptionsView.removeGroup.removeGroupImage.rotation = 180f
+                groupMenuOptionsView.removeGroup.removeGroupImage.setImageResource(R.drawable.leave_group_red)
+                groupMenuOptionsView.removeGroup.removeGroupText.setText(R.string.leave_group)
             }
             User.Role.ADMIN -> {
                 groupMenuOptionsView.editGroupName.visibility = View.VISIBLE
-                groupMenuOptionsView.deleteGroup.visibility = View.VISIBLE
-                groupMenuOptionsView.leaveGroup.visibility = View.GONE
+                groupMenuOptionsView.removeGroup.removeGroupImage.setImageResource(R.drawable.ic_trash_can)
+                groupMenuOptionsView.removeGroup.removeGroupText.setText(R.string.delete_group)
             }
         }
 
@@ -86,42 +90,12 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
             dismissPopup()
         }
 
-        groupMenuOptionsView.leaveGroup.setOnClickListener {
-            val groupId = groupSelected?.id ?: return@setOnClickListener
-            val leaveGroupEndpoint = Endpoint.leaveGroup(groupId)
-
-            CoroutineScope(Dispatchers.IO).launch {
-                val typeToken = object : TypeToken<ApiResponse<String>>() {}.type
-                val response = Request.makeRequest<ApiResponse<String>>(leaveGroupEndpoint.okHttpRequest(), typeToken)
-
-                if (response?.success ?: return@launch) {
-                    withContext(Dispatchers.Main) {
-                        removeGroup(groupId)
-                        dismissPopup()
-                    }
-                }
-            }
-        }
-
         groupMenuOptionsView.editGroupName.setOnClickListener {
             // TODO(#40)
         }
 
-        groupMenuOptionsView.deleteGroup.setOnClickListener {
-            val groupId = groupSelected?.id ?: return@setOnClickListener
-            val deleteGroupEndpoint = Endpoint.deleteGroup(groupId)
-
-            CoroutineScope(Dispatchers.IO).launch {
-                val typeToken = object : TypeToken<ApiResponse<String>>() {}.type
-                val response = Request.makeRequest<ApiResponse<String>>(deleteGroupEndpoint.okHttpRequest(), typeToken)
-
-                if (response?.success ?: return@launch) {
-                    withContext(Dispatchers.Main) {
-                        removeGroup(groupId)
-                        dismissPopup()
-                    }
-                }
-            }
+        groupMenuOptionsView.removeGroup.setOnClickListener {
+            removeGroup()
         }
     }
 
@@ -132,8 +106,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
 
     public fun refreshGroups() {
         CoroutineScope(Dispatchers.IO).launch {
-            val groupRole = arguments?.getSerializable(GROUP_ROLE) as User.Role? ?: return@launch
-            val getGroupsEndpoint = Endpoint.getAllGroups(groupRole.name.toLowerCase())
+            if (role == null) return@launch
+            val getGroupsEndpoint = Endpoint.getAllGroups(role!!.name.toLowerCase())
             val typeTokenGroups = object : TypeToken<ApiResponse<ArrayList<Group>>>() {}.type
             val getGroupsResponse = Request.makeRequest<ApiResponse<ArrayList<Group>>>(getGroupsEndpoint.okHttpRequest(), typeTokenGroups)
 
@@ -157,11 +131,36 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         }
     }
 
-    fun removeGroup(id: String) {
-        groups = ArrayList(groups.filter { it.id != id })
-        currentAdapter?.addAll(groups)
-        currentAdapter?.notifyDataSetChanged()
-        setNoGroups()
+    private fun removeGroup() {
+        val groupId = groupSelected?.id ?: return
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val typeToken = object : TypeToken<ApiResponse<String>>() {}.type
+
+            var response: ApiResponse<String>? = null
+
+            when (role) {
+                User.Role.MEMBER -> {
+                    val leaveGroupEndpoint = Endpoint.leaveGroup(groupId)
+                    response = Request.makeRequest<ApiResponse<String>>(leaveGroupEndpoint.okHttpRequest(), typeToken)
+                }
+                User.Role.ADMIN -> {
+                    val deleteGroupEndpoint = Endpoint.deleteGroup(groupId)
+                    response = Request.makeRequest<ApiResponse<String>>(deleteGroupEndpoint.okHttpRequest(), typeToken)
+                }
+                null -> return@launch
+            }
+
+            if (response?.success ?: return@launch) {
+                withContext(Dispatchers.Main) {
+                    dismissPopup()
+                    groups = ArrayList(groups.filter { it.id != groupId })
+                    currentAdapter?.addAll(groups)
+                    currentAdapter?.notifyDataSetChanged()
+                    setNoGroups()
+                }
+            }
+        }
     }
 
     fun addGroup(group: Group) {
@@ -184,7 +183,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         if (noGroupsView != null) {
             noGroupsView.visibility = if (groups.isNotEmpty()) View.GONE else View.VISIBLE
 
-            when (arguments?.getSerializable(GROUP_ROLE) as User.Role) {
+            when (role) {
                 User.Role.MEMBER -> {
                     noGroupsEmoji.text = getString(R.string.no_groups_joined_emoji)
                     noGroupsTitle.text = getString(R.string.no_groups_joined_title)
@@ -206,6 +205,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
 
     override fun onMoreButtonPressed(group: Group?) {
 //        manageDim(true)
+        // TODO: setup delegation an call delegate method of `MainActivity` to dim view
         groupSelected = group
         groupMenuOptionsView.groupNameTextView.text = group?.name ?: "Pollo Group"
         groupMenuOptionsView.visibility = View.VISIBLE
@@ -219,6 +219,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
 //        manageDim(false)
 //        dimView.isClickable = false
 //        dimView.isFocusable = false
+        // TODO: setup delegation an call delegate method of `MainActivity` to undim view
         val animate = TranslateAnimation(0f, 0f, 0f, groupMenuOptionsView.height.toFloat())
         animate.duration = 300
         animate.fillAfter = true

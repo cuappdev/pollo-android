@@ -61,7 +61,6 @@
         </androidx.recyclerview.widget.RecyclerView>
     </FrameLayout>
 
-
 </androidx.constraintlayout.widget.ConstraintLayout>
     <include
         layout="@layout/manage_group_view"

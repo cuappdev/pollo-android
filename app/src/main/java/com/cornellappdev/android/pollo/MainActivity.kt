@@ -152,26 +152,6 @@ class MainActivity : AppCompatActivity() {
 
         })
 
-
-
-//        groupMenuOptionsView.addOnLayoutChangeListener { view, _, top, _, _, _, oldTop, _, _ ->
-//            // Need to change the position of the view when the tabs change since it changes size
-//            // If not, the top of the view will appear when we switch to the created tab
-//
-//            // Don't do anything if this is the initial layout
-//            if ( oldTop == 0 ) return@addOnLayoutChangeListener
-//
-//            // Only reset the view's position if we're changing tabs
-//            // If we're not, there will be an animation that has not ended
-//            if ( view.animation==null || view.animation.hasEnded() ) {
-//                if ( oldTop > top ) {
-//                    view.top = view.top + (oldTop - top)
-//                } else {
-//                    view.top = view.top + (top - oldTop)
-//                }
-//            }
-//        }
-
         // Add listener for when join and create buttons are pressed
         joinGroupButton.setOnClickListener {
             joinGroup(editTextJoinGroup.text.toString())

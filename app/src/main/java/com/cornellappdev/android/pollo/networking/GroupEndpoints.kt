@@ -8,11 +8,7 @@ import org.json.JSONObject
 
 fun Endpoint.Companion.joinGroupWithCode(code: String): Endpoint {
     val codeJSON = JSONObject()
-    try {
-        codeJSON.put("code", code)
-    } catch (e: JSONException) {
-        e.printStackTrace()
-    }
+    codeJSON.put("code", code)
     val requestBody = RequestBody.create(MediaType.get("application/json; charset=utf-8"), codeJSON.toString())
     return Endpoint(path = "/join/session", headers = mapOf("Authorization" to "Bearer " + User.currentSession.accessToken), body = requestBody, method = EndpointMethod.POST)
 }
@@ -31,23 +27,15 @@ fun Endpoint.Companion.deleteGroup(id: String): Endpoint {
 
 fun Endpoint.Companion.renameGroup(id: Int, name: String): Endpoint {
     val nameJSON = JSONObject()
-    try {
-        nameJSON.put("name", name)
-    } catch (e: JSONException) {
-        e.printStackTrace()
-    }
+    nameJSON.put("name", name)
     val requestBody = RequestBody.create(MediaType.get("application/json; charset=utf-8"), nameJSON.toString())
     return Endpoint("/sessions/$id", headers = mapOf("Authorization" to "Bearer ${User.currentSession.accessToken}"), body = requestBody, method = EndpointMethod.PUT)
 }
 
 fun Endpoint.Companion.startSession(code: String, name: String) : Endpoint {
     val codeJSON = JSONObject()
-    try {
-        codeJSON.put("code", code)
-        codeJSON.put("name", name)
-    } catch (e: JSONException) {
-        e.printStackTrace()
-    }
+    codeJSON.put("code", code)
+    codeJSON.put("name", name)
     val requestBody = RequestBody.create(MediaType.get("application/json; charset=utf-8"), codeJSON.toString())
 
     return Endpoint("/start/session/", headers = mapOf("Authorization" to "Bearer ${User.currentSession.accessToken}"), body = requestBody, method = EndpointMethod.POST)
