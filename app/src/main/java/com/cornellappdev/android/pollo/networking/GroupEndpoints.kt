@@ -39,17 +39,6 @@ fun Endpoint.Companion.startSession(code: String, name: String) : Endpoint {
 }
 
 fun Endpoint.Companion.startPoll(text: String, answerChoices: JSONObject, correctAnswer: String, type: String) : Endpoint {
-//    let newPollDict: [String: Any] = [
-//    "text": text,
-//    "answerChoices": answerChoicesDict,
-//    "state": "live",
-//    "correctAnswer": correct,
-//    "userAnswers": [String: [PollChoice]](),
-//    "type": type.rawValue
-//    ]`
-
-//    what is format for answerChoices and for correctAnswer?
-
     val codeJSON = JSONObject()
     try {
         codeJSON.put("text", text)
