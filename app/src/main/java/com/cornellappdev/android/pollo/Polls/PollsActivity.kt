@@ -8,6 +8,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.cornellappdev.android.pollo.R
 import com.cornellappdev.android.pollo.models.Poll
 import com.cornellappdev.android.pollo.models.PollState
@@ -15,8 +16,9 @@ import com.cornellappdev.android.pollo.networking.Socket
 import com.cornellappdev.android.pollo.networking.SocketDelegate
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import kotlinx.android.synthetic.main.activity_polls.*
-import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import kotlin.collections.ArrayList
 
 
 class PollsActivity : AppCompatActivity(), SocketDelegate {
@@ -45,7 +47,7 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
 
         groupNameTextView.text = name
         codeTextView.text = "Code: $code"
-//        userCountTextView.text = "$userCount"
+        currentPollView.text = "1 / ${polls.size}"
 
         val googleId = GoogleSignIn.getLastSignedInAccount(this)?.id ?: ""
 
@@ -57,7 +59,17 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
 
         if (polls[polls.size - 1].state == PollState.live) {
             linearLayoutManager.scrollToPosition(polls.size - 1)
+            currentPollView.text = "${polls.size} / ${polls.size}"
         }
+
+        pollsRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (linearLayoutManager.findFirstCompletelyVisibleItemPosition() >= 0) {
+                    currentPollView.text = "${linearLayoutManager.findFirstCompletelyVisibleItemPosition() + 1} / ${polls.size}"
+                }
+            }
+        })
     }
 
     override fun onDestroy() {
@@ -85,7 +97,8 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
         val datesSameDay = firstCalendar.get(Calendar.DAY_OF_YEAR) == secondCalendar.get(Calendar.DAY_OF_YEAR) &&
                 firstCalendar.get(Calendar.YEAR) == secondCalendar.get(Calendar.YEAR)
 
-        if (!datesSameDay) return //No need to handle a new poll if it is not the same day
+        if (!datesSameDay) return // No need to handle a new poll if it is not the same day
+        if (poll.id == polls[polls.size - 1].id) return // No need to handle a new poll if it already exists
 
         polls.add(poll)
         runOnUiThread {
@@ -107,7 +120,7 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
         renderPoll(poll)
     }
 
-    override fun onPollDelete(pollID: Int) {
+    override fun onPollDelete(pollID: String) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -115,6 +128,8 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+
+    // Below is legacy code for Free Response submissions by Austin Astorga. This is not used in Pollo v1.
     override fun freeResponseSubmissionSuccessful() {
         val viewHolder = pollsRecyclerView.findViewHolderForAdapterPosition(polls.size - 1) as PollsRecyclerAdapter.PollHolder
         runOnUiThread {

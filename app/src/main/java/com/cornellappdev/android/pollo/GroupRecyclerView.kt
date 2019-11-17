@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
 
 class GroupRecyclerAdapter(
         private val groups: ArrayList<Group>,
-        val callback: GroupFragment.OnMoreButtonPressedListener?,
+        val callback: OnMoreButtonPressedListener?,
         val role: User.Role
 ) : androidx.recyclerview.widget.RecyclerView.Adapter<GroupRecyclerAdapter.ViewHolder>() {
 
@@ -110,8 +110,12 @@ class GroupRecyclerAdapter(
         groups.addAll(newList)
     }
 
-    internal fun getItem(id: Int): Group {
-        return groups[id]
+    internal fun getItem(index: Int): Group {
+        return groups[index]
+    }
+
+    interface OnMoreButtonPressedListener {
+        fun onMoreButtonPressed(group: Group?)
     }
 
     companion object {

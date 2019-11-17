@@ -19,10 +19,11 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
-class PollsDateActivity : AppCompatActivity(), SocketDelegate {
+class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListener {
     private lateinit var adapter: PollsDateRecyclerAdapter
     private lateinit var group: Group
     private lateinit  var linearLayoutManager: LinearLayoutManager
+    private lateinit var role: User.Role
     private var currentUserCount = 0
 
     private val dateFormatter = SimpleDateFormat("MMMM dd yyyy", Locale.US)
@@ -35,6 +36,23 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate {
         sortedPolls = groupByDate(intent.getParcelableArrayListExtra<GetSortedPollsResponse>("SORTED_POLLS"))
         group = intent.getParcelableExtra("GROUP_NODE")
 
+        backButton.setOnClickListener(this)
+
+        // Customize page for role
+        role = intent.getSerializableExtra("USER_ROLE") as User.Role
+        when (role) {
+            User.Role.ADMIN -> {
+                noPollsTitle.setText(R.string.no_polls_created_title)
+                noPollsSubtext.setText(R.string.no_polls_created_subtext)
+            }
+            User.Role.MEMBER -> {
+                adminFooter.visibility = View.GONE
+                newPollImageButton.visibility = View.GONE
+            }
+        }
+
+        toggleEmptyState()
+
         val account = GoogleSignIn.getLastSignedInAccount(this)
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -42,7 +60,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate {
             val groupTypeToken = object : TypeToken<ApiResponse<Group>>() {}.type
             val groupResponse = Request.makeRequest<ApiResponse<Group>>(joinGroupEndpoint.okHttpRequest(), groupTypeToken)
             withContext(Dispatchers.Main) {
-                Socket.connect(groupResponse?.data?.id ?: 0, User.currentSession.accessToken)
+                Socket.connect(groupResponse?.data?.id ?: "", User.currentSession.accessToken)
                 Socket.add(this@PollsDateActivity)
             }
         }
@@ -69,6 +87,21 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate {
     fun goBack(view: View) {
         finish()
         Socket.disconnect()
+    }
+
+    override fun onClick(view: View) {
+        if (view.id == R.id.backButton)
+            goBack(view)
+    }
+
+    private fun toggleEmptyState() {
+        if (sortedPolls.count() == 0) {
+            noPollsView.visibility = View.VISIBLE
+            adminFooter.visibility = View.GONE
+        } else {
+            noPollsView.visibility = View.GONE
+            if (role == User.Role.ADMIN) adminFooter.visibility = View.VISIBLE
+        }
     }
 
     fun groupByDate(sortedPolls: ArrayList<GetSortedPollsResponse>): ArrayList<GetSortedPollsResponse> {
@@ -103,6 +136,14 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate {
         val currentDate = dateFormatter.format(Date())
         val datesForPolls = sortedPolls.map { it.date }
 
+        // Avoid index out of bounds exceptions
+        if (sortedPolls.isEmpty()) return
+
+        for (p in sortedPolls[0].polls){
+            // Don't add duplicate polls
+            if (p.id == poll.id) return
+        }
+
         if(datesForPolls.contains(currentDate)) {
             sortedPolls[0].isLive = true
             sortedPolls[0].polls.add(poll)
@@ -132,7 +173,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate {
 
     override fun freeResponseUpdates(poll: Poll) { }
 
-    override fun onPollDelete(pollID: Int) { }
+    override fun onPollDelete(pollID: String) { }
 
     override fun onPollDeleteLive() { }
 

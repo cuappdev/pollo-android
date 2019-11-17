@@ -20,7 +20,7 @@ enum class PollState: Parcelable {
 }
 
 @Parcelize
-data class Poll(val createdAt: String?, val updatedAt: String?, var id: Int?,
+data class Poll(val createdAt: String?, val updatedAt: String?, var id: String?,
                 val text: String, val answerChoices: ArrayList<PollResult>,
                 val type: PollType, val correctAnswer: String?, val userAnswers: MutableMap<String, ArrayList<PollChoice>>?,
                 val state: PollState): Parcelable

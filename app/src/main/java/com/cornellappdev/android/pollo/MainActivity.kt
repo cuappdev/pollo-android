@@ -16,9 +16,7 @@ import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
-import android.widget.EditText
 import com.cornellappdev.android.pollo.models.ApiResponse
 import com.cornellappdev.android.pollo.models.Group
 import com.cornellappdev.android.pollo.models.GroupCode
@@ -28,14 +26,13 @@ import com.cornellappdev.android.pollo.networking.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.manage_group_view.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
-class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListener {
+class MainActivity : AppCompatActivity() {
 
     /**
      * The [android.support.v4.view.PagerAdapter] that will provide
@@ -67,9 +64,21 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             val hasSixCharacters = s?.length == 6
-            join_poll_group.isEnabled = hasSixCharacters
+            joinGroupButton.isEnabled = hasSixCharacters
             val correctBackground = if (hasSixCharacters) R.drawable.rounded_join_button_filled else R.drawable.rounded_join_button
-            join_poll_group.setBackgroundResource(correctBackground)
+            joinGroupButton.setBackgroundResource(correctBackground)
+        }
+    }
+
+    private val createPollTextWatcher = object : TextWatcher {
+        override fun afterTextChanged(s: Editable?) {}
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            val hasText = s?.length != 0
+            createGroupButton.isEnabled = hasText
+            val correctBackground = if (hasText) R.drawable.rounded_join_button_filled else R.drawable.rounded_join_button
+            createGroupButton.setBackgroundResource(correctBackground)
         }
     }
 
@@ -77,22 +86,45 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val editText = findViewById<EditText>(R.id.edit_text_join_poll)
-        editText.filters = editText.filters + InputFilter.AllCaps()
-        editText.addTextChangedListener(joinPollTextWatcher)
-        editText.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> editText.isCursorVisible = hasFocus }
-        editText.setOnEditorActionListener { _, actionId, _ ->
+        // Joining group bottom bar setup
+        editTextJoinGroup.filters = editTextJoinGroup.filters + InputFilter.AllCaps()
+        editTextJoinGroup.addTextChangedListener(joinPollTextWatcher)
+        editTextJoinGroup.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> editTextJoinGroup.isCursorVisible = hasFocus }
+        editTextJoinGroup.setOnEditorActionListener { _, actionId, _ ->
             when (actionId) {
                 EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_SEARCH -> {
-                    editText.isCursorVisible = false
+                    editTextJoinGroup.isCursorVisible = false
                     true
                 }
                 else -> {
-                    editText.isCursorVisible = true
+                    editTextJoinGroup.isCursorVisible = true
                     false
                 }
             }
         }
+
+        // Creating group bottom bar setup
+        editTextCreateGroup.addTextChangedListener(createPollTextWatcher)
+        editTextCreateGroup.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> editTextCreateGroup.isCursorVisible = hasFocus }
+        editTextCreateGroup.setOnEditorActionListener { _, actionId, _ ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_SEARCH -> {
+                    editTextCreateGroup.isCursorVisible = false
+                    true
+                }
+                else -> {
+                    editTextCreateGroup.isCursorVisible = true
+                    false
+                }
+            }
+        }
+
+        // Setup for toggling admin/member switch
+        editTextCreateGroup.visibility = View.GONE
+        createGroupButton.visibility = View.GONE
+
+        joinGroupButton.isEnabled = false
+        createGroupButton.isEnabled = false
 
         container.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
 
@@ -104,44 +136,30 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
             override fun onPageSelected(position: Int) {
                 when (position) {
                     0 -> {
-                        join_poll_group.setText(R.string.join_button_text)
-                        join_poll_group.setOnClickListener {
-                            joinGroup(editText.text.toString())
-                            editText.setText("")
-                        }
+                        editTextCreateGroup.visibility = View.GONE
+                        createGroupButton.visibility = View.GONE
+                        editTextJoinGroup.visibility = View.VISIBLE
+                        joinGroupButton.visibility = View.VISIBLE
                     }
                     1 -> {
-                        join_poll_group.setText(R.string.create_button_text)
-                        join_poll_group.setOnClickListener {
-                            createGroup(editText.text.toString())
-                            editText.setText("")
-                        }
+                        editTextCreateGroup.visibility = View.VISIBLE
+                        createGroupButton.visibility = View.VISIBLE
+                        editTextJoinGroup.visibility = View.GONE
+                        joinGroupButton.visibility = View.GONE
                     }
                 }
             }
 
         })
 
-        groupMenuOptionsView.closeButton.setOnClickListener {
-            dismissPopup()
+        // Add listener for when join and create buttons are pressed
+        joinGroupButton.setOnClickListener {
+            joinGroup(editTextJoinGroup.text.toString())
+            editTextJoinGroup.setText("")
         }
-
-        groupMenuOptionsView.leaveGroup.setOnClickListener {
-            val groupId = groupSelected?.id ?: return@setOnClickListener
-            val leaveGroupEndpoint = Endpoint.leaveGroup(groupId)
-
-            CoroutineScope(Dispatchers.IO).launch {
-                val typeToken = object : TypeToken<ApiResponse<String>>() {}.type
-                Request.makeRequest<ApiResponse<String>>(leaveGroupEndpoint.okHttpRequest(), typeToken)
-            }
-            joinedGroupFragment?.removeGroup(groupId)
-            dismissPopup()
-        }
-
-        // Add listener for when join button is pressed
-        join_poll_group.setOnClickListener {
-            joinGroup(editText.text.toString())
-            editText.setText("")
+        createGroupButton.setOnClickListener {
+            createGroup(editTextCreateGroup.text.toString())
+            editTextCreateGroup.setText("")
         }
 
         val account = GoogleSignIn.getLastSignedInAccount(this)
@@ -175,29 +193,6 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
         // If account is null, we need to prompt them to login
         val signInIntent = Intent(this, LoginActivity::class.java)
         startActivityForResult(signInIntent, LOGIN_REQ_CODE)
-    }
-
-    override fun onMoreButtonPressed(group: Group?) {
-        manageDim(true)
-        groupSelected = group
-        groupMenuOptionsView.groupNameTextView.text = group?.name ?: "Pollo Group"
-        groupMenuOptionsView.visibility = View.VISIBLE
-        val animate = TranslateAnimation(0f, 0f, groupMenuOptionsView.height.toFloat(), 0f)
-        animate.duration = 300
-        animate.fillAfter = true
-        groupMenuOptionsView.startAnimation(animate)
-    }
-
-    private fun dismissPopup() {
-        manageDim(false)
-        dimView.isClickable = false
-        dimView.isFocusable = false
-        val animate = TranslateAnimation(0f, 0f, 0f, groupMenuOptionsView.height.toFloat())
-        animate.duration = 300
-        animate.fillAfter = true
-        groupMenuOptionsView.startAnimation(animate)
-        groupMenuOptionsView.visibility = View.INVISIBLE
-        groupSelected = null
     }
 
     private fun manageDim(shouldDim: Boolean) {
@@ -351,11 +346,11 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
 
         override fun getItem(position: Int): Fragment {
             if (position == 0) {
-                joinedGroupFragment = joinedGroupFragment ?: GroupFragment.newInstance(position + 1, this@MainActivity, userRole = User.Role.MEMBER)
+                joinedGroupFragment = joinedGroupFragment ?: GroupFragment.newInstance(position + 1, userRole = User.Role.MEMBER)
                 return joinedGroupFragment!!
             }
 
-            createdGroupFragment = createdGroupFragment ?: GroupFragment.newInstance(position + 1, this@MainActivity, userRole= User.Role.ADMIN)
+            createdGroupFragment = createdGroupFragment ?: GroupFragment.newInstance(position + 1, userRole= User.Role.ADMIN)
             return createdGroupFragment!!
         }
 

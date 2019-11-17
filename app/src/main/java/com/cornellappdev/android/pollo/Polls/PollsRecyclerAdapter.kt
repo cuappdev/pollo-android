@@ -1,17 +1,13 @@
 package com.cornellappdev.android.pollo.polls
 
-import android.content.Context
 import android.content.res.Resources
-import android.text.Layout
 import android.util.TypedValue
-import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import com.cornellappdev.android.pollo.R
 import com.cornellappdev.android.pollo.inflate
 import com.cornellappdev.android.pollo.networking.Socket
 import kotlinx.android.synthetic.main.poll_recyclerview_item_row.view.*
-import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -61,13 +57,13 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
 
             val headerHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100f, displayMetrics).toInt()
             val cellHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 55f, displayMetrics).toInt()
-            //86 dp is the heght of header, 53dp is height of cell
-            val tmpHeight = headerHeight + cellHeight*poll.answerChoices.count() //53 is cell height including top margin
+            // 86 dp is the heght of header, 53dp is height of cell
+            val tmpHeight = headerHeight + cellHeight*poll.answerChoices.count() // 53 is cell height including top margin
 
             height = if (tmpHeight <= 1250 && poll.type == PollType.multipleChoice) tmpHeight else 1250
 
-            //height = 750
-            //height = 1250
+            // height = 750
+            // height = 1250
         }
 
         val questionType = poll.type
@@ -114,6 +110,23 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
             view.questionMCTextView.text = poll.text
 
             when (questionType) {
+                PollType.multipleChoice -> {
+                    when (poll.state) {
+                        PollState.live -> {
+                            view.questionMCSubtitleText.text = "Live"
+                        }
+
+                        PollState.ended -> {
+                            view.questionMCSubtitleText.text = "Poll Closed"
+                        }
+
+                        PollState.shared -> {
+                            view.questionMCSubtitleText.text = "Final Results  •  $totalNumberOfResponses Vote${if (totalNumberOfResponses == 1) "" else "s"}"
+                        }
+                    }
+                }
+
+                // Below is legacy code for Free Response submissions by Austin Astorga. This is not used in Pollo v1.
                 PollType.freeResponse -> {
                     when(poll.state) {
                         PollState.ended -> {
@@ -146,25 +159,6 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
 //                                }
 //                                false
 //                            }
-                        }
-                    }
-
-
-
-
-                }
-                PollType.multipleChoice -> {
-                    when (poll.state) {
-                        PollState.live -> {
-                            view.questionMCSubtitleText.text = "Live"
-                        }
-
-                        PollState.ended -> {
-                            view.questionMCSubtitleText.text = "Poll Closed"
-                        }
-
-                        PollState.shared -> {
-                            view.questionMCSubtitleText.text = "Final Results  •  $totalNumberOfResponses Vote${if (totalNumberOfResponses == 1) "" else "s"}"
                         }
                     }
                 }

@@ -1,6 +1,5 @@
 package com.cornellappdev.android.pollo.polls
 
-import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -61,11 +60,12 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
                 }
             }
 
+            // Below is legacy code for Free Response submissions by Austin Astorga. This is not used in Pollo v1.
             PollType.freeResponse -> {
                 val choiceHolder = holder as FreeResponseHolder
                 choiceHolder.bindPoll(poll, googleId)
                 choiceHolder.view.upvoteImageView.setOnClickListener { view ->
-                    println("CLICKED ON UPVOTE")
+                    // TODO: Clicked on Upvote Action
                 }
             }
         }
@@ -130,14 +130,13 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
                     view.answerCountTextView.setTextColor(darkGrayColor)
                     val count = poll.answerChoices[adapterPosition].count ?: 0
                     view.answerCountTextView.visibility = View.VISIBLE
-                    view.answerCountTextView.text = "${(count / totalNumberOfResponses) * 100}%"
+                    view.answerCountTextView.text = if (totalNumberOfResponses != 0) "${(count / totalNumberOfResponses) * 100}%" else "0%"
                     val correctAnswer = poll.correctAnswer
                     if(correctAnswer == "") {
                         /* We need to set how much the background is filled based off the % of people that answered this.
                         the level property goes from 0 to 10000 */
                         view.progressBarWrapper.background.level =
-                                ((count.toDouble() / totalNumberOfResponses.toDouble()) * 10000)
-                                        .roundToInt()
+                            if (totalNumberOfResponses != 0) ((count.toDouble() / totalNumberOfResponses.toDouble()) * 10000).roundToInt() else 0
                     } else {
                         if (poll.answerChoices[adapterPosition].letter == correctAnswer) {
                             view.progressBarWrapper.background.level = 10000
@@ -160,6 +159,7 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
         }
     }
 
+    // Below is legacy code for Free Response submissions by Austin Astorga. This is not used in Pollo v1.
     class FreeResponseHolder(v: View) : RecyclerView.ViewHolder(v) {
 
         var view: View = v
@@ -182,8 +182,6 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
                     view.numberOfUpvotesTextView.text = "${poll.answerChoices[adapterPosition].count ?: 0}"
                 }
             }
-
-
         }
 
         companion object {
