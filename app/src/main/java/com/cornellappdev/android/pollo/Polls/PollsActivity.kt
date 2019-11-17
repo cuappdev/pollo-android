@@ -15,10 +15,11 @@ import com.cornellappdev.android.pollo.models.PollState
 import com.cornellappdev.android.pollo.networking.Socket
 import com.cornellappdev.android.pollo.networking.SocketDelegate
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import kotlinx.android.synthetic.main.activity_polls.*
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import kotlin.collections.ArrayList
+import kotlinx.android.synthetic.main.activity_polls.*
 
 
 class PollsActivity : AppCompatActivity(), SocketDelegate {
