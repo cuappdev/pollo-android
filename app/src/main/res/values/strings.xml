@@ -24,10 +24,14 @@
 
     <string name="joined">Joined</string>
 
-    <string name="leave_group_content_description">Leave Group</string>
-    <string name="leave_text">Leave</string>
-
     <string name="live_indicator">•</string>
+
+<!--Home Screen Edit Group Strings-->
+    <string name="leave_group_content_description">Leave Group</string>
+    <string name="leave_group">Leave Group</string>
+    <string name="delete_group">Delete Group</string>
+    <string name="edit_group_name">Edit Name</string>
+    <string name="end_poll">End Poll</string>
 
 <!--Home Screen Empty State Strings-->
     <string name="no_groups_joined_emoji">&#129335;&#8205;&#9792;&#65039;</string>
