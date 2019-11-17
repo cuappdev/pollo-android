@@ -16,7 +16,6 @@ import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
 import com.cornellappdev.android.pollo.models.ApiResponse
 import com.cornellappdev.android.pollo.models.Group
@@ -27,14 +26,13 @@ import com.cornellappdev.android.pollo.networking.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.manage_group_view.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
-class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListener {
+class MainActivity : AppCompatActivity() {
 
     /**
      * The [android.support.v4.view.PagerAdapter] that will provide
@@ -88,6 +86,7 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Joining group bottom bar setup
         editTextJoinGroup.filters = editTextJoinGroup.filters + InputFilter.AllCaps()
         editTextJoinGroup.addTextChangedListener(joinPollTextWatcher)
         editTextJoinGroup.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> editTextJoinGroup.isCursorVisible = hasFocus }
@@ -104,6 +103,7 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
             }
         }
 
+        // Creating group bottom bar setup
         editTextCreateGroup.addTextChangedListener(createPollTextWatcher)
         editTextCreateGroup.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> editTextCreateGroup.isCursorVisible = hasFocus }
         editTextCreateGroup.setOnEditorActionListener { _, actionId, _ ->
@@ -119,8 +119,12 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
             }
         }
 
+        // Setup for toggling admin/member switch
         editTextCreateGroup.visibility = View.GONE
         createGroupButton.visibility = View.GONE
+
+        joinGroupButton.isEnabled = false
+        createGroupButton.isEnabled = false
 
         container.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
 
@@ -147,22 +151,6 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
             }
 
         })
-
-        groupMenuOptionsView.closeButton.setOnClickListener {
-            dismissPopup()
-        }
-
-        groupMenuOptionsView.leaveGroup.setOnClickListener {
-            val groupId = groupSelected?.id ?: return@setOnClickListener
-            val leaveGroupEndpoint = Endpoint.leaveGroup(groupId)
-
-            CoroutineScope(Dispatchers.IO).launch {
-                val typeToken = object : TypeToken<ApiResponse<String>>() {}.type
-                Request.makeRequest<ApiResponse<String>>(leaveGroupEndpoint.okHttpRequest(), typeToken)
-            }
-            joinedGroupFragment?.removeGroup(groupId)
-            dismissPopup()
-        }
 
         // Add listener for when join and create buttons are pressed
         joinGroupButton.setOnClickListener {
@@ -205,29 +193,6 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
         // If account is null, we need to prompt them to login
         val signInIntent = Intent(this, LoginActivity::class.java)
         startActivityForResult(signInIntent, LOGIN_REQ_CODE)
-    }
-
-    override fun onMoreButtonPressed(group: Group?) {
-        manageDim(true)
-        groupSelected = group
-        groupMenuOptionsView.groupNameTextView.text = group?.name ?: "Pollo Group"
-        groupMenuOptionsView.visibility = View.VISIBLE
-        val animate = TranslateAnimation(0f, 0f, groupMenuOptionsView.height.toFloat(), 0f)
-        animate.duration = 300
-        animate.fillAfter = true
-        groupMenuOptionsView.startAnimation(animate)
-    }
-
-    private fun dismissPopup() {
-        manageDim(false)
-        dimView.isClickable = false
-        dimView.isFocusable = false
-        val animate = TranslateAnimation(0f, 0f, 0f, groupMenuOptionsView.height.toFloat())
-        animate.duration = 300
-        animate.fillAfter = true
-        groupMenuOptionsView.startAnimation(animate)
-        groupMenuOptionsView.visibility = View.INVISIBLE
-        groupSelected = null
     }
 
     private fun manageDim(shouldDim: Boolean) {
@@ -381,11 +346,11 @@ class MainActivity : AppCompatActivity(), GroupFragment.OnMoreButtonPressedListe
 
         override fun getItem(position: Int): Fragment {
             if (position == 0) {
-                joinedGroupFragment = joinedGroupFragment ?: GroupFragment.newInstance(position + 1, this@MainActivity, userRole = User.Role.MEMBER)
+                joinedGroupFragment = joinedGroupFragment ?: GroupFragment.newInstance(position + 1, userRole = User.Role.MEMBER)
                 return joinedGroupFragment!!
             }
 
-            createdGroupFragment = createdGroupFragment ?: GroupFragment.newInstance(position + 1, this@MainActivity, userRole= User.Role.ADMIN)
+            createdGroupFragment = createdGroupFragment ?: GroupFragment.newInstance(position + 1, userRole= User.Role.ADMIN)
             return createdGroupFragment!!
         }
 
