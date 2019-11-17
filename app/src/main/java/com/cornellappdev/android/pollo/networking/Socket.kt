@@ -11,7 +11,6 @@ import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import okhttp3.HttpUrl
 import org.json.JSONObject
-import java.util.*
 
 interface SocketDelegate {
     fun onPollStart(poll: Poll)
