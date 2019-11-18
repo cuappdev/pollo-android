@@ -1,5 +1,6 @@
 package com.cornellappdev.android.pollo
 
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
@@ -25,6 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
+
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
@@ -39,6 +41,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     private var sectionNumber: Int = 0
     private var currentAdapter: GroupRecyclerAdapter? = null
     private val fragmentInteractionListener: OnFragmentInteractionListener? = null
+    private var delegate: GroupFragmentDelegate? = null
 
     private var role: User.Role? = null
     private var groups = ArrayList<Group>()
@@ -101,7 +104,13 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        // TODO: setup delegation to MainActivity
+
+        if (context is GroupFragmentDelegate) {
+            print(context)
+            delegate = context
+        } else {
+            // TODO: log error
+        }
     }
 
     public fun refreshGroups() {
@@ -204,8 +213,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     }
 
     override fun onMoreButtonPressed(group: Group?) {
-//        manageDim(true)
-        // TODO: setup delegation an call delegate method of `MainActivity` to dim view
+        setDim(true)
         groupSelected = group
         groupMenuOptionsView.groupNameTextView.text = group?.name ?: "Pollo Group"
         groupMenuOptionsView.visibility = View.VISIBLE
@@ -216,10 +224,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     }
 
     private fun dismissPopup() {
-//        manageDim(false)
-//        dimView.isClickable = false
-//        dimView.isFocusable = false
-        // TODO: setup delegation an call delegate method of `MainActivity` to undim view
+        setDim(false)
         val animate = TranslateAnimation(0f, 0f, 0f, groupMenuOptionsView.height.toFloat())
         animate.duration = 300
         animate.fillAfter = true
@@ -228,6 +233,21 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         groupSelected = null
     }
 
+    interface GroupFragmentDelegate {
+        fun setDim(shouldDim: Boolean)
+
+    }
+
+
+    fun setDim(shouldDim: Boolean) {
+        delegate?.setDim(shouldDim)
+
+        val alphaValue = if (shouldDim) 0.5f else 1.0f
+        val dimAnimation = ObjectAnimator.ofFloat(constraintLayout, "alpha", alphaValue)
+        dimAnimation.duration = 500
+        dimAnimation.start()
+        //  TODO: figure out why tf this isn't dimming dark
+    }
 
     companion object {
 

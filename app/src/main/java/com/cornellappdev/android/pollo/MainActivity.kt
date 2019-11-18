@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
 
     /**
      * The [android.support.v4.view.PagerAdapter] that will provide
@@ -195,9 +195,9 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(signInIntent, LOGIN_REQ_CODE)
     }
 
-    private fun manageDim(shouldDim: Boolean) {
+    override fun setDim(shouldDim: Boolean) {
         val alphaValue = if (shouldDim) 0.5f else 1.0f
-        val dimAnimation = ObjectAnimator.ofFloat(dimView, "alpha", alphaValue)
+        val dimAnimation = ObjectAnimator.ofFloat(appbar, "alpha", alphaValue)
         dimAnimation.duration = 500
         dimAnimation.start()
     }
