@@ -127,6 +127,14 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         val currentDate = dateFormatter.format(Date())
         val datesForPolls = sortedPolls.map { it.date }
 
+        // Avoid index out of bounds exceptions
+        if (sortedPolls.isEmpty()) return
+
+        for (p in sortedPolls[0].polls){
+            // Don't add duplicate polls
+            if (p.id == poll.id) return
+        }
+
         if(datesForPolls.contains(currentDate)) {
             sortedPolls[0].isLive = true
             sortedPolls[0].polls.add(poll)
