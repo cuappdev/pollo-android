@@ -31,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
 
@@ -48,7 +49,6 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
      * The [ViewPager] that will host the section contents.
      */
     private var viewPager: ViewPager? = null
-    private var groupSelected: Group? = null
     private var socket: Socket? = null
     private var joinedGroupFragment: GroupFragment? = null
     private var createdGroupFragment: GroupFragment? = null
@@ -57,110 +57,9 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
         PreferencesHelper(this)
     }
 
-    private val joinPollTextWatcher = object : TextWatcher {
-
-        override fun afterTextChanged(s: Editable?) {}
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            val hasSixCharacters = s?.length == 6
-            joinGroupButton.isEnabled = hasSixCharacters
-            val correctBackground = if (hasSixCharacters) R.drawable.rounded_join_button_filled else R.drawable.rounded_join_button
-            joinGroupButton.setBackgroundResource(correctBackground)
-        }
-    }
-
-    private val createPollTextWatcher = object : TextWatcher {
-        override fun afterTextChanged(s: Editable?) {}
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            val hasText = s?.length != 0
-            createGroupButton.isEnabled = hasText
-            val correctBackground = if (hasText) R.drawable.rounded_join_button_filled else R.drawable.rounded_join_button
-            createGroupButton.setBackgroundResource(correctBackground)
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        // Joining group bottom bar setup
-        editTextJoinGroup.filters = editTextJoinGroup.filters + InputFilter.AllCaps()
-        editTextJoinGroup.addTextChangedListener(joinPollTextWatcher)
-        editTextJoinGroup.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> editTextJoinGroup.isCursorVisible = hasFocus }
-        editTextJoinGroup.setOnEditorActionListener { _, actionId, _ ->
-            when (actionId) {
-                EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_SEARCH -> {
-                    editTextJoinGroup.isCursorVisible = false
-                    true
-                }
-                else -> {
-                    editTextJoinGroup.isCursorVisible = true
-                    false
-                }
-            }
-        }
-
-        // Creating group bottom bar setup
-        editTextCreateGroup.addTextChangedListener(createPollTextWatcher)
-        editTextCreateGroup.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> editTextCreateGroup.isCursorVisible = hasFocus }
-        editTextCreateGroup.setOnEditorActionListener { _, actionId, _ ->
-            when (actionId) {
-                EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_SEARCH -> {
-                    editTextCreateGroup.isCursorVisible = false
-                    true
-                }
-                else -> {
-                    editTextCreateGroup.isCursorVisible = true
-                    false
-                }
-            }
-        }
-
-        // Setup for toggling admin/member switch
-        editTextCreateGroup.visibility = View.GONE
-        createGroupButton.visibility = View.GONE
-
-        joinGroupButton.isEnabled = false
-        createGroupButton.isEnabled = false
-
-        container.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-
-            override fun onPageScrollStateChanged(state: Int) {
-            }
-
-            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-            }
-            override fun onPageSelected(position: Int) {
-                when (position) {
-                    0 -> {
-                        editTextCreateGroup.visibility = View.GONE
-                        createGroupButton.visibility = View.GONE
-                        editTextJoinGroup.visibility = View.VISIBLE
-                        joinGroupButton.visibility = View.VISIBLE
-                    }
-                    1 -> {
-                        editTextCreateGroup.visibility = View.VISIBLE
-                        createGroupButton.visibility = View.VISIBLE
-                        editTextJoinGroup.visibility = View.GONE
-                        joinGroupButton.visibility = View.GONE
-                    }
-                }
-            }
-
-        })
-
-        // Add listener for when join and create buttons are pressed
-        joinGroupButton.setOnClickListener {
-            joinGroup(editTextJoinGroup.text.toString())
-            editTextJoinGroup.setText("")
-        }
-        createGroupButton.setOnClickListener {
-            createGroup(editTextCreateGroup.text.toString())
-            editTextCreateGroup.setText("")
-        }
 
         val account = GoogleSignIn.getLastSignedInAccount(this)
         // If account is null, attempt to sign in, if not, launch the normal activity. updateUI(account);
@@ -202,88 +101,17 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
         dimAnimation.start()
     }
 
+    override fun startGroupActivity(role: User.Role, group: Group, polls: ArrayList<GetSortedPollsResponse>) {
+        val pollsDateActivity = Intent(this@MainActivity, PollsDateActivity::class.java)
+        pollsDateActivity.putExtra("SORTED_POLLS", polls)
+        pollsDateActivity.putExtra("GROUP_NODE", group)
+        pollsDateActivity.putExtra("USER_ROLE", role)
+        startActivity(pollsDateActivity)
+    }
+
     fun showSettings(view: View) {
         val settings = Intent(this@MainActivity, SettingsActivity::class.java)
         startActivityForResult(settings, SETTINGS_CODE)
-    }
-
-    private fun joinGroup(code: String) {
-        val endpoint = Endpoint.joinGroupWithCode(code)
-        CoroutineScope(Dispatchers.IO).launch {
-            val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
-            val typeTokenSortedPolls = object : TypeToken<ApiResponse<ArrayList<GetSortedPollsResponse>>>() {}.type
-            val groupResponse = Request.makeRequest<ApiResponse<Group>>(endpoint.okHttpRequest(), typeTokenGroupNode)
-
-            if (groupResponse?.success == false || groupResponse?.data == null) {
-                withContext(Dispatchers.Main) {
-                    AlertDialog.Builder(this@MainActivity)
-                            .setTitle("Code Not Valid")
-                            .setMessage("Failed to join session with code $code.\nTry again!")
-                            .setNeutralButton(android.R.string.ok, null)
-                            .show()
-                }
-                return@launch
-            }
-
-            withContext(Dispatchers.Main) {
-                joinedGroupFragment?.addGroup(groupResponse.data)
-            }
-
-            val allPollsEndpoint = Endpoint.getSortedPolls(groupResponse.data.id)
-            val sortedPolls = Request.makeRequest<ApiResponse<ArrayList<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest(), typeTokenSortedPolls)
-
-            if (sortedPolls?.success == false || sortedPolls?.data == null) return@launch
-
-            val pollsDateActivity = Intent(this@MainActivity, PollsDateActivity::class.java)
-            pollsDateActivity.putExtra("SORTED_POLLS", sortedPolls.data)
-            pollsDateActivity.putExtra("GROUP_NODE", groupResponse.data)
-            pollsDateActivity.putExtra("USER_ROLE", User.Role.MEMBER)
-            startActivity(pollsDateActivity)
-        }
-    }
-
-    private fun createGroup(name: String) {
-        val typeTokenGroupCode = object : TypeToken<ApiResponse<GroupCode>>() {}.type
-        val generateCodeEndpoint = Endpoint.generateCode()
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val result = Request.makeRequest<ApiResponse<GroupCode>>(generateCodeEndpoint.okHttpRequest(),typeTokenGroupCode)
-
-            if (result?.success == true) {
-                val code = result.data.code
-
-                val joinSessionEndpoint = Endpoint.startSession(code, name)
-                val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
-                val typeTokenSortedPolls = object : TypeToken<ApiResponse<ArrayList<GetSortedPollsResponse>>>() {}.type
-                val groupResponse = Request.makeRequest<ApiResponse<Group>>(joinSessionEndpoint.okHttpRequest(), typeTokenGroupNode)
-
-                if (groupResponse?.success == false || groupResponse?.data == null) {
-                    return@launch
-                }
-
-
-                withContext(Dispatchers.Main) {
-                    createdGroupFragment?.addGroup(groupResponse.data)
-                }
-
-                val allPollsEndpoint = Endpoint.getSortedPolls(groupResponse.data.id)
-                val sortedPolls = Request.makeRequest<ApiResponse<ArrayList<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest(), typeTokenSortedPolls)
-
-                if (sortedPolls?.success == false || sortedPolls?.data == null) return@launch
-
-                val pollsDateActivity = Intent(this@MainActivity, PollsDateActivity::class.java)
-                pollsDateActivity.putExtra("SORTED_POLLS", sortedPolls.data)
-                pollsDateActivity.putExtra("GROUP_NODE", groupResponse.data)
-                pollsDateActivity.putExtra("USER_ROLE", User.Role.ADMIN)
-                startActivity(pollsDateActivity)
-
-            } else {
-                Log.e("failure","backend response failed to generate code")
-                return@launch
-            }
-        }
-
-
     }
 
     private fun finishAuthFlow() {

@@ -4,8 +4,13 @@ import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.InputFilter
+import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,9 +18,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.TranslateAnimation
-import com.cornellappdev.android.pollo.models.ApiResponse
-import com.cornellappdev.android.pollo.models.Group
-import com.cornellappdev.android.pollo.models.User
+import android.view.inputmethod.EditorInfo
+import com.cornellappdev.android.pollo.models.*
 import com.cornellappdev.android.pollo.networking.*
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_main.*
@@ -24,7 +28,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
+import kotlin.collections.ArrayList
 
 
 /**
@@ -73,6 +77,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         super.onViewCreated(view, savedInstanceState)
 
         setNoGroups()
+        dimView.bringToFront()
 
         when (role) {
             User.Role.MEMBER -> {
@@ -100,16 +105,62 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         groupMenuOptionsView.removeGroup.setOnClickListener {
             removeGroup()
         }
+
+        // Setup for joining/creating groups
+        addGroupEditText.addTextChangedListener(addGroupTextWatcher)
+        addGroupEditText.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> addGroupEditText.isCursorVisible = hasFocus }
+        addGroupEditText.setOnEditorActionListener { _, actionId, _ ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_SEARCH -> {
+                    addGroupEditText.isCursorVisible = false
+                    true
+                }
+                else -> {
+                    addGroupEditText.isCursorVisible = true
+                    false
+                }
+            }
+        }
+
+        when (role) {
+            User.Role.MEMBER -> {
+                addGroupEditText.setHint(R.string.join_group_hint)
+                addGroupEditText.setTextColor(Color.WHITE)
+                addGroupEditText.filters = addGroupEditText.filters +
+                        InputFilter.AllCaps() +
+                        InputFilter.LengthFilter(6)
+
+                addGroupButton.setText(R.string.join_button_text)
+                addGroupButton.setOnClickListener {
+                    joinGroup(addGroupEditText.text.toString())
+                    addGroupEditText.setText("")
+                }
+
+                addGroupBar.setBackgroundResource(R.color.black)
+            }
+
+            User.Role.ADMIN -> {
+                addGroupEditText.setHint(R.string.create_group_hint)
+                addGroupEditText.setTextColor(Color.BLACK)
+
+                addGroupButton.setText(R.string.create_button_text)
+                addGroupButton.setOnClickListener {
+                    createGroup(addGroupEditText.text.toString())
+                    addGroupEditText.setText("")
+                }
+
+                addGroupBar.setBackgroundResource(R.color.lightGray)
+            }
+        }
     }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
 
         if (context is GroupFragmentDelegate) {
-            print(context)
             delegate = context
         } else {
-            // TODO: log error
+            Log.d("Incorrect context", "GroupFragment context must be a GroupFragmentDelegate")
         }
     }
 
@@ -172,7 +223,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         }
     }
 
-    fun addGroup(group: Group) {
+    private fun addGroup(group: Group) {
         groups.add(group)
         currentAdapter?.addAll(groups)
         currentAdapter?.notifyDataSetChanged()
@@ -212,6 +263,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         fun onFragmentInteraction(uri: Uri)
     }
 
+    /// Methods for managing the Group options menu
+
     override fun onMoreButtonPressed(group: Group?) {
         setDim(true)
         groupSelected = group
@@ -233,20 +286,108 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         groupSelected = null
     }
 
-    interface GroupFragmentDelegate {
-        fun setDim(shouldDim: Boolean)
-
-    }
-
-
-    fun setDim(shouldDim: Boolean) {
+    /**
+     * Dims the `GroupFragment` and calls the delegates dim method according to `shouldDim`
+     */
+    private fun setDim(shouldDim: Boolean) {
         delegate?.setDim(shouldDim)
 
-        val alphaValue = if (shouldDim) 0.5f else 1.0f
-        val dimAnimation = ObjectAnimator.ofFloat(constraintLayout, "alpha", alphaValue)
+        val alphaValue = if (shouldDim) 0.5f else 0.0f
+        val dimAnimation = ObjectAnimator.ofFloat(dimView, "alpha", alphaValue)
         dimAnimation.duration = 500
         dimAnimation.start()
-        //  TODO: figure out why tf this isn't dimming dark
+    }
+
+    /// Group joining/creation methods and values
+
+    /**
+     * Handles enabling the `addGroupButton` and the associated color change (green --> active)
+     */
+    private val addGroupTextWatcher = object : TextWatcher {
+
+        override fun afterTextChanged(s: Editable?) {}
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            var canProceed = when (role) {
+                User.Role.MEMBER -> s?.length == 6
+                User.Role.ADMIN -> s?.length != 0
+                null -> return
+            }
+
+            addGroupButton.isEnabled = canProceed
+            val correctBackground = if (canProceed) R.drawable.rounded_join_button_filled else R.drawable.rounded_join_button
+            addGroupButton.setBackgroundResource(correctBackground)
+        }
+    }
+
+    /**
+     * Joins the group and launches a new `PollsDateActivity` associated with it
+     */
+    private fun joinGroup(code: String) {
+        val endpoint = Endpoint.joinGroupWithCode(code)
+        CoroutineScope(Dispatchers.IO).launch {
+            val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
+            val typeTokenSortedPolls = object : TypeToken<ApiResponse<ArrayList<GetSortedPollsResponse>>>() {}.type
+            val groupResponse = Request.makeRequest<ApiResponse<Group>>(endpoint.okHttpRequest(), typeTokenGroupNode)
+
+            if (groupResponse?.success == false || groupResponse?.data == null) {
+                withContext(Dispatchers.Main) {
+                    AlertDialog.Builder(context)
+                            .setTitle("Code Not Valid")
+                            .setMessage("Failed to join session with code $code.\nTry again!")
+                            .setNeutralButton(android.R.string.ok, null)
+                            .show()
+                }
+                return@launch
+            }
+
+            withContext(Dispatchers.Main) {
+                addGroup(groupResponse.data)
+            }
+
+            val allPollsEndpoint = Endpoint.getSortedPolls(groupResponse.data.id)
+            val sortedPolls = Request.makeRequest<ApiResponse<ArrayList<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest(), typeTokenSortedPolls)
+
+            if (sortedPolls?.success == false || sortedPolls?.data == null) return@launch
+            if (role == null) return@launch
+
+            delegate?.startGroupActivity(role!!, groupResponse.data, sortedPolls.data)
+        }
+    }
+
+    /**
+     * Joins the group and launches a new `PollsDateActivity` associated with it
+     */
+    private fun createGroup(name: String) {
+        val typeTokenGroupCode = object : TypeToken<ApiResponse<GroupCode>>() {}.type
+        val generateCodeEndpoint = Endpoint.generateCode()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = Request.makeRequest<ApiResponse<GroupCode>>(generateCodeEndpoint.okHttpRequest(),typeTokenGroupCode)
+
+            if (result?.success == true) {
+                val code = result.data.code
+
+                val joinSessionEndpoint = Endpoint.startSession(code, name)
+                val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
+                val groupResponse = Request.makeRequest<ApiResponse<Group>>(joinSessionEndpoint.okHttpRequest(), typeTokenGroupNode)
+
+                if (groupResponse?.success == false || groupResponse?.data == null) return@launch
+
+
+                withContext(Dispatchers.Main) {
+                    addGroup(groupResponse.data)
+                }
+                if (role == null) return@launch
+
+                delegate?.startGroupActivity(role!!, groupResponse.data, ArrayList())
+            } else {
+                Log.e("failure","backend response failed to generate code")
+                return@launch
+            }
+        }
     }
 
     companion object {
@@ -267,5 +408,17 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
             fragment.arguments = args
             return fragment
         }
+    }
+
+    interface GroupFragmentDelegate {
+        /**
+         * Should dim any parts of the screen outside of `GroupFragment`
+         */
+        fun setDim(shouldDim: Boolean)
+
+        /**
+         * Launches a `PollsDateActivity` for the given group and parameters
+         */
+        fun startGroupActivity(role: User.Role, group: Group, polls: ArrayList<GetSortedPollsResponse>)
     }
 }
