@@ -63,6 +63,7 @@
         </androidx.recyclerview.widget.RecyclerView>
 
     </FrameLayout>
+
     <View
         android:id="@+id/dimView"
         android:layout_width="match_parent"

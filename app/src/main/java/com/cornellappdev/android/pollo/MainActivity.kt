@@ -2,7 +2,6 @@ package com.cornellappdev.android.pollo
 
 import android.animation.ObjectAnimator
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.tabs.TabLayout
@@ -11,21 +10,16 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
 import androidx.appcompat.app.AppCompatActivity
-import android.text.Editable
-import android.text.InputFilter
-import android.text.TextWatcher
-import android.util.Log
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import com.cornellappdev.android.pollo.models.ApiResponse
 import com.cornellappdev.android.pollo.models.Group
-import com.cornellappdev.android.pollo.models.GroupCode
 import com.cornellappdev.android.pollo.models.User
 import com.cornellappdev.android.pollo.models.UserSession
 import com.cornellappdev.android.pollo.networking.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -61,6 +55,26 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        container.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                when (position) {
+                    0 -> {
+                        createdGroupFragment?.dismissPopup()
+                    }
+                    1 -> {
+                        joinedGroupFragment?.dismissPopup()
+                    }
+                }
+            }
+        })
+
         val account = GoogleSignIn.getLastSignedInAccount(this)
         // If account is null, attempt to sign in, if not, launch the normal activity. updateUI(account);
 
@@ -95,6 +109,8 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
     }
 
     override fun setDim(shouldDim: Boolean) {
+        settingsImageView.isEnabled = !shouldDim
+
         val alphaValue = if (shouldDim) 0.5f else 1.0f
         val dimAnimation = ObjectAnimator.ofFloat(appbar, "alpha", alphaValue)
         dimAnimation.duration = 500

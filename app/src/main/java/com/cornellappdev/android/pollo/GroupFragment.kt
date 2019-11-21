@@ -47,6 +47,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     private val fragmentInteractionListener: OnFragmentInteractionListener? = null
     private var delegate: GroupFragmentDelegate? = null
 
+    private var isPopupActive: Boolean = false
     private var role: User.Role? = null
     private var groups = ArrayList<Group>()
     private var groupSelected: Group? = null
@@ -266,6 +267,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     /// Methods for managing the Group options menu
 
     override fun onMoreButtonPressed(group: Group?) {
+        if (isPopupActive) return
+        isPopupActive = true
         setDim(true)
         groupSelected = group
         groupMenuOptionsView.groupNameTextView.text = group?.name ?: "Pollo Group"
@@ -276,7 +279,9 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         groupMenuOptionsView.startAnimation(animate)
     }
 
-    private fun dismissPopup() {
+     fun dismissPopup() {
+        if(!isPopupActive) return
+        isPopupActive = false
         setDim(false)
         val animate = TranslateAnimation(0f, 0f, 0f, groupMenuOptionsView.height.toFloat())
         animate.duration = 300
@@ -289,8 +294,11 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     /**
      * Dims the `GroupFragment` and calls the delegates dim method according to `shouldDim`
      */
-    private fun setDim(shouldDim: Boolean) {
+     fun setDim(shouldDim: Boolean) {
         delegate?.setDim(shouldDim)
+
+        // Don't want to be able to open group views when dimmed
+        dimView.isClickable = shouldDim
 
         val alphaValue = if (shouldDim) 0.5f else 0.0f
         val dimAnimation = ObjectAnimator.ofFloat(dimView, "alpha", alphaValue)
