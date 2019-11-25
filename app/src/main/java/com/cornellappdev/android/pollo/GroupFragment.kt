@@ -185,6 +185,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
                 }
 
                 groups = getGroupsResponse.data
+                groups.sort()
+                groups.reverse()
                 currentAdapter?.addAll(groups)
                 currentAdapter?.notifyDataSetChanged()
                 setNoGroups()
@@ -224,8 +226,9 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         }
     }
 
-    private fun addGroup(group: Group) {
-        groups.add(group)
+
+    fun addGroup(group: Group) {
+        groups.add(0, group)
         currentAdapter?.addAll(groups)
         currentAdapter?.notifyDataSetChanged()
         setNoGroups()
