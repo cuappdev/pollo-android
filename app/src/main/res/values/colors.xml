@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#74D6C0</color>
-    <color name="colorPrimaryDark">@color/bluishGreen</color>
-    <color name="colorAccent">@color/black</color>
-
-    <color name="cool_grey">#9EA7B3</color>
-    <color name="cardHeaderGray">#FAFAFA</color>
-    <color name="paleGray">#F5F7F8</color>
-    <color name="white">#F6F6F6</color>
     <color name="actualWhite">#FFFFFF</color>
     <color name="black">#202020</color>
     <color name="black_60">#559EA7B3</color>
     <color name="bluishGreen">#0AA17F</color>
-    <color name="settings_detail">#9EA7B3</color>
-    <color name="settings_divider">#E1E1E1</color>
-    <color name="liveNow">#64C5AF</color>
-    <color name="lightGrayDivider">#AEAEAE</color>
-    <color name="red">#E76366</color>
+    <color name="cardHeaderGray">#FAFAFA</color>
+    <color name="colorAccent">@color/black</color>
+    <color name="colorPrimary">#74D6C0</color>
+    <color name="colorPrimaryDark">@color/bluishGreen</color>
+    <color name="cool_grey">#9EA7B3</color>
+    <color name="darkGray02">#3D3D3D</color>
     <color name="darkGray">#6C6C6C</color>
     <color name="joinGroupGray">#9B9A9A</color>
-    <color name="joinGroupUnderline">#85514F4F</color>
-    <color name="pollsDateBackgroundColor">#3D3D3D</color>
-    <color name="polloGreen">#29C09E</color>
+    <color name="lightGray">#ECECEC</color>
+    <color name="lightGrayDivider">#AEAEAE</color>
+    <color name="liveNow">#64C5AF</color>
     <color name="multipleChoiceBorderColor">#9FA5B1</color>
     <color name="multipleChoiceIncorrectAnswerColor">#C4C4C4</color>
+    <color name="paleGray">#F5F7F8</color>
+    <color name="polloGreen">#29C09E</color>
+    <color name="red">#E76366</color>
+    <color name="settings_detail">#9EA7B3</color>
+    <color name="settings_divider">#E1E1E1</color>
+    <color name="white">#F6F6F6</color>
 </resources>
