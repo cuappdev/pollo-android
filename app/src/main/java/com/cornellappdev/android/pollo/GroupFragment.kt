@@ -166,8 +166,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     }
 
     public fun refreshGroups() {
+        if (role == null) return
         CoroutineScope(Dispatchers.IO).launch {
-            if (role == null) return@launch
             val getGroupsEndpoint = Endpoint.getAllGroups(role!!.name.toLowerCase())
             val typeTokenGroups = object : TypeToken<ApiResponse<ArrayList<Group>>>() {}.type
             val getGroupsResponse = Request.makeRequest<ApiResponse<ArrayList<Group>>>(getGroupsEndpoint.okHttpRequest(), typeTokenGroups)
@@ -359,9 +359,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
             val sortedPolls = Request.makeRequest<ApiResponse<ArrayList<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest(), typeTokenSortedPolls)
 
             if (sortedPolls?.success == false || sortedPolls?.data == null) return@launch
-            if (role == null) return@launch
 
-            delegate?.startGroupActivity(role!!, groupResponse.data, sortedPolls.data)
+            role?.let { delegate?.startGroupActivity(role!!, groupResponse.data, sortedPolls.data) } ?: return@launch
         }
     }
 
@@ -388,9 +387,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
                 withContext(Dispatchers.Main) {
                     addGroup(groupResponse.data)
                 }
-                if (role == null) return@launch
 
-                delegate?.startGroupActivity(role!!, groupResponse.data, ArrayList())
+                role?.let { delegate?.startGroupActivity(role!!, groupResponse.data, ArrayList()) } ?: return@launch
             } else {
                 Log.e("failure","backend response failed to generate code")
                 return@launch
