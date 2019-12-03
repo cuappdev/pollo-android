@@ -185,8 +185,11 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
                 }
 
                 groups = getGroupsResponse.data
-                groups.sort()
-                groups.reverse()
+                groups.apply {
+                    sort()
+                    reverse()
+                }
+
                 currentAdapter?.addAll(groups)
                 currentAdapter?.notifyDataSetChanged()
                 setNoGroups()
@@ -363,7 +366,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
 
             if (sortedPolls?.success == false || sortedPolls?.data == null) return@launch
 
-            role?.let { delegate?.startGroupActivity(role!!, groupResponse.data, sortedPolls.data) } ?: return@launch
+            role?.let { delegate?.startGroupActivity(it, groupResponse.data, sortedPolls.data) } ?: return@launch
         }
     }
 
@@ -391,7 +394,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
                     addGroup(groupResponse.data)
                 }
 
-                role?.let { delegate?.startGroupActivity(role!!, groupResponse.data, ArrayList()) } ?: return@launch
+                role?.let { delegate?.startGroupActivity(it, groupResponse.data, ArrayList()) } ?: return@launch
             } else {
                 Log.e("failure","backend response failed to generate code")
                 return@launch
