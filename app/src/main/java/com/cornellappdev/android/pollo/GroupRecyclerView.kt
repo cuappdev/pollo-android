@@ -101,6 +101,7 @@ class GroupRecyclerAdapter(
                     timeResult = timeResult.removeRange(timeResult.length - 1, timeResult.length)
                 }
                 view.groupLiveTextView.text = "${group.code}  •  Last live $timeResult ago"
+                view.groupLiveTextView.setTextColor(ContextCompat.getColor(view.context, R.color.settings_detail))
             }
         }
     }
