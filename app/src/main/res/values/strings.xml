@@ -10,8 +10,8 @@
 
     <string name="end_question_text">End question</string>
 
-    <string name="enter_a_code_placeholder">Enter a code…</string>
-    <string name="create_a_group_placeholder">Enter a new group name...</string>
+    <string name="join_group_hint">Enter a code…</string>
+    <string name="create_group_hint">Enter a new group name...</string>
 
     <string name="go_back_content_description">Go Back</string>
 
