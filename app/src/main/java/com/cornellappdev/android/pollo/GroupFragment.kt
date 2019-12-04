@@ -26,6 +26,7 @@ import com.cornellappdev.android.pollo.models.User
 import com.cornellappdev.android.pollo.networking.*
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.android.synthetic.main.manage_group_view.*
 import kotlinx.android.synthetic.main.manage_group_view.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -84,13 +85,13 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
 
         when (role) {
             User.Role.MEMBER -> {
-                groupMenuOptionsView.editGroupName.visibility = View.GONE
+                groupMenuOptionsView.renameGroup.visibility = View.GONE
                 groupMenuOptionsView.removeGroup.removeGroupImage.rotation = 180f
                 groupMenuOptionsView.removeGroup.removeGroupImage.setImageResource(R.drawable.leave_group_red)
                 groupMenuOptionsView.removeGroup.removeGroupText.setText(R.string.leave_group)
             }
             User.Role.ADMIN -> {
-                groupMenuOptionsView.editGroupName.visibility = View.VISIBLE
+                groupMenuOptionsView.renameGroup.visibility = View.VISIBLE
                 groupMenuOptionsView.removeGroup.removeGroupImage.setImageResource(R.drawable.ic_trash_can)
                 groupMenuOptionsView.removeGroup.removeGroupText.setText(R.string.delete_group)
             }
@@ -101,8 +102,13 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
             dismissPopup()
         }
 
-        groupMenuOptionsView.editGroupName.setOnClickListener {
-            // TODO(#40)
+        groupMenuOptionsView.renameGroup.setOnClickListener {
+            beginRenameGroup()
+        }
+
+        groupMenuOptionsView.renameGroupDetail.saveGroupName.setOnClickListener {
+            endRenameGroup() // passing a boolean?
+            // TODO: dismiss popup?
         }
 
         groupMenuOptionsView.removeGroup.setOnClickListener {
@@ -331,7 +337,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
-            var canProceed = when (role) {
+            val canProceed = when (role) {
                 User.Role.MEMBER -> s?.length == 6
                 User.Role.ADMIN -> s?.length != 0
                 null -> return
@@ -409,6 +415,67 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
                 return@launch
             }
         }
+    }
+
+    /**
+     * Shows keyboard and renaming `EditText` in the group options menu
+     */
+    private fun beginRenameGroup() {
+
+
+        groupMenuOptionsView.renameGroupDetail.visibility = View.VISIBLE
+        renameGroup.visibility = View.GONE
+        removeGroup.visibility = View.GONE
+
+        groupMenuOptionsView.groupNameTextView.text = "Edit Name"
+        groupMenuOptionsView.renameGroupDetail.renameGroupEditText.hint = groupSelected?.name
+        groupMenuOptionsView.renameGroupDetail.renameGroupEditText.setSelection(0)
+
+
+//        var alertDialog = AlertDialog.Builder(context)
+//
+//        alertDialog.apply {
+//            setTitle("Edit Name")
+//
+//            val editText = EditText(context)
+//
+//            editText.apply {
+//                hint = groupSelected?.name
+//
+//                setPadding(40,0,40,0)
+//
+//                setBackgroundResource(R.drawable.rounded_container)
+//            }
+//
+//            setView(editText)
+//
+//            setPositiveButton("Save") { d, _ ->
+//                val newName = editText.text.toString()
+//                newName.removePrefix(" ")
+//                if (newName == "") return@setPositiveButton
+//
+//                println("set new name")
+//                d.cancel()
+//                dismissPopup()
+//            }
+//
+//            setNegativeButton("Cancel") { d, _ ->
+//                d.cancel()
+//                dismissPopup()
+//            }
+//
+//        }
+//
+//        alertDialog.show()
+    }
+
+    /**
+     * Resets the group options menu to its default state (edit/delete group options for admins) and
+     * renames group (locally and to beckend). Does not dismiss the group options menu.
+     */
+    private fun endRenameGroup(){
+
+        // TODO
     }
 
     companion object {

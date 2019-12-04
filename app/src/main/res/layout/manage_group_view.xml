@@ -41,7 +41,7 @@
         app:layout_constraintTop_toBottomOf="@id/closeButton" />
 
     <LinearLayout
-        android:id="@+id/editGroupName"
+        android:id="@+id/renameGroup"
         android:clickable="true"
         android:focusable="true"
         android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
         android:paddingBottom="21dp"
         android:layout_width="match_parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editGroupName"
+        app:layout_constraintTop_toBottomOf="@id/renameGroup"
         tools:ignore="UseCompoundDrawables">
 
         <ImageView
@@ -102,4 +102,39 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/renameGroupDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="vertical"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider">
+
+        <EditText
+            android:id="@+id/renameGroupEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+            android:padding="15dp"
+            android:background="@drawable/rounded_grey_border"
+            />
+
+        <Button
+            android:id="@+id/saveGroupName"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:text="@string/save_group_name"
+            android:textColor="@color/actualWhite"
+            android:layout_marginBottom="50dp"
+            android:background="@drawable/rounded_save_rename_button"
+            />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
