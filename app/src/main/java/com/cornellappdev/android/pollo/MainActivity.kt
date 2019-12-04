@@ -91,6 +91,13 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
                         Request.makeRequest<ApiResponse<UserSession>>(refreshTokenEndpoint.okHttpRequest(), typeToken)
                     }!!.data
                     User.currentSession = userSession
+
+                    if (userSession.sessionExpiration == null) {
+                        val signInIntent = Intent(this@MainActivity, LoginActivity::class.java)
+                        startActivityForResult(signInIntent, LOGIN_REQ_CODE)
+                        return@launch
+                    }
+
                     preferencesHelper.refreshToken = userSession.refreshToken
                     preferencesHelper.accessToken = userSession.accessToken
                     preferencesHelper.expiresAt = userSession.sessionExpiration.toLong()
