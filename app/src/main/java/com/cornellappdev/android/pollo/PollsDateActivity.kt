@@ -128,8 +128,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         val datesForPolls = sortedPolls.map { it.date }
 
         // Avoid index out of bounds exceptions
-        if (sortedPolls.isEmpty()) return
-
+        if (sortedPolls.isNotEmpty())
         for (p in sortedPolls[0].polls){
             // Don't add duplicate polls
             if (p.id == poll.id) return
@@ -143,9 +142,10 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
             sortedPolls.add(newPollDate)
             sortedPolls.sortByDescending { dateFormatter.parse(it.date) }
         }
-        runOnUiThread { adapter.updatePolls(sortedPolls) }
-
-
+        runOnUiThread {
+            adapter.updatePolls(sortedPolls)
+            toggleEmptyState()
+        }
         val pollResponse = poll
     }
 
