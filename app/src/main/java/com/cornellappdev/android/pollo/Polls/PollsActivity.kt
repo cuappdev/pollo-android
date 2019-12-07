@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -105,6 +106,7 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
         runOnUiThread {
             adapter.notifyItemChanged(polls.size - 1)
             linearLayoutManager.scrollToPosition(polls.size - 1)
+            currentPollView.text = "${linearLayoutManager.findFirstCompletelyVisibleItemPosition() + 1} / ${polls.size}"
         }
     }
 
@@ -122,11 +124,37 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
     }
 
     override fun onPollDelete(pollID: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        var removePollID = -1
+        for (poll in polls){
+            if (poll.id == pollID) {
+                removePollID = polls.indexOf(poll)
+                polls.remove(poll)
+            }
+        }
+
+        if (removePollID == -1) return
+
+        runOnUiThread {
+            adapter.notifyItemRemoved(removePollID)
+            adapter.notifyDataSetChanged()
+            if (removePollID == polls.size) {
+                linearLayoutManager.scrollToPosition(polls.size - 1)
+                currentPollView.text = "${polls.size} / ${polls.size}"
+            }else{
+                currentPollView.text = "${linearLayoutManager.findFirstCompletelyVisibleItemPosition() + 1} / ${polls.size}"
+            }
+
+        }
     }
 
     override fun onPollDeleteLive() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        polls.removeAt(polls.lastIndex)
+        runOnUiThread {
+            adapter.notifyItemRemoved(polls.size)
+            adapter.notifyDataSetChanged()
+            linearLayoutManager.scrollToPosition(polls.size - 1)
+            currentPollView.text = "${polls.size} / ${polls.size}"
+        }
     }
 
 
