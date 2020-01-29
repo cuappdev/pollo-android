@@ -2,38 +2,46 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/create_poll_fragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/actualWhite">
 
     <Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="75dp"
         android:id="@+id/create_poll_toolbar"
-        android:layout_alignParentTop="true">
-
+        android:layout_width="match_parent"
+        android:layout_height="75dp">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Create Question"/>
+            android:text="@string/create_question" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@drawable/toolbar_dropshadow"/>
     </Toolbar>
 
     <RelativeLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/create_poll_toolbar">
+        android:layout_below="@id/create_poll_toolbar">
 
         <EditText
             android:id="@+id/poll_question"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:hint="@string/ask_question"/>
 
         <ListView
             android:id="@+id/poll_options"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/poll_question"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/poll_options">
 
             <Button
                 android:id="@+id/start_poll"
@@ -66,7 +74,7 @@
                 android:fontFamily="sans-serif"
                 android:text="@string/save_as_draft"
                 android:textAllCaps="false"
-                android:textColor="@color/polloGreen"
+                android:textColor="@color/white"
                 android:textColorHighlight="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -74,7 +82,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-        </ListView>
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/create_poll_option"
@@ -88,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_plus_sign"/>
 
-            <TextEdit
+            <EditText
                 android:id="@+id/add_poll_option_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

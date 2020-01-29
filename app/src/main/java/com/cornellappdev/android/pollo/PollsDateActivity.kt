@@ -29,6 +29,8 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
     private val dateFormatter = SimpleDateFormat("MMMM dd yyyy", Locale.US)
     private var sortedPolls = ArrayList<GetSortedPollsResponse>()
 
+    private var fragInflated = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -185,7 +187,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
 
     fun openNewPollFragment(view: View) {
         supportFragmentManager.beginTransaction()
-            .add(R.id.create_poll_fragment, CreatePollFragment()).commit()
+            .add(R.id.polls_date_layout, CreatePollFragment()).addToBackStack(null).commit()
     }
 
 //    fun createNewPoll(view: View) {

@@ -69,4 +69,5 @@
     <string name="drafts">Drafts</string>
     <string name="save_as_draft">Save as Draft</string>
     <string name="start_poll">Start Question</string>
+    <string name="create_question">Create Question</string>
 </resources>
