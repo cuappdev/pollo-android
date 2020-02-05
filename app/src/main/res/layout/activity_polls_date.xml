@@ -1,158 +1,165 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="match_parent"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context=".PollsDateActivity">
 
-    <ScrollView
+    <FrameLayout
+        android:id="@+id/polls_date_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/black">
-        <LinearLayout
-            android:background="@color/black"
-            android:layout_height="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:id="@+id/polls_date_screen"
             android:layout_width="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:background="@color/black">
 
-            <RelativeLayout
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:background="@color/black"
-                android:layout_height="65dp"
-                android:layout_width="match_parent"
-                android:layout_marginBottom="20dp">
-
-                <ImageButton
-                    android:id="@+id/backButton"
-                    android:background="@color/black"
-                    android:contentDescription="@string/go_back_content_description"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_height="32dp"
-                    android:layout_marginStart="15dp"
-                    android:layout_width="32dp"
-                    android:src="@drawable/arrow_back" />
-
-                <TextView
-                    android:id="@+id/groupNameTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="14dp"
-                    android:fontFamily="sans-serif"
-                    android:text="Example Course"
-                    android:textAlignment="center"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    tools:ignore="HardcodedText" />
-
-                <TextView
-                    android:id="@+id/codeTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:layout_below="@id/groupNameTextView"
-                    android:alpha="0.75"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="Code: 123ABC"
-                    android:textAlignment="center"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    tools:ignore="HardcodedText" />
-
-                <ImageButton
-                    android:id="@+id/newPollImageButton"
-                    android:background="@color/black"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_height="32dp"
-                    android:layout_width="32dp"
-                    android:layout_marginEnd="16dp"
-                    android:src="@drawable/plus_sign_white" />
-
-            </RelativeLayout>
-
-            <LinearLayout
-                android:id="@+id/noPollsView"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginTop="50dp"
-                android:layout_marginBottom="50dp"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="invisible">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/no_polls_emoji"
-                    android:textSize="38sp"
-                    android:layout_marginBottom="16dp"/>
-
-                <TextView
-                    android:id="@+id/noPollsTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/no_polls_title"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"
-                    android:layout_marginBottom="8dp"/>
-
-                <TextView
-                    android:id="@+id/noPollsSubtext"
-                    android:layout_width="228dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/no_polls_subtext"
-                    android:textSize="14sp"
-                    android:textAlignment="center"
-                    android:textColor="@color/cool_grey"/>
-            </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/pollsDateRecyclerView"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_width="match_parent"
-                android:scrollbars="vertical" />
-
-            <LinearLayout
-                android:id="@+id/adminFooter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginBottom="50dp"
-                android:gravity="center"
                 android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/viewAllButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/view_all"
-                    android:textColor="@color/polloGreen"
-                    android:textSize="16sp"
-                    android:textAllCaps="false"
-                    android:background="@color/black"
-                    android:layout_marginBottom="24dp" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="65dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@color/black">
 
-                <Button
-                    android:id="@+id/exportButton"
+                    <ImageButton
+                        android:id="@+id/backButton"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="15dp"
+                        android:background="@color/black"
+                        android:contentDescription="@string/go_back_content_description"
+                        android:src="@drawable/arrow_back" />
+
+                    <TextView
+                        android:id="@+id/groupNameTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="14dp"
+                        android:fontFamily="sans-serif"
+                        android:text="Example Course"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        tools:ignore="HardcodedText" />
+
+                    <TextView
+                        android:id="@+id/codeTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp"
+                        android:layout_below="@id/groupNameTextView"
+                        android:alpha="0.75"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Code: 123ABC"
+                        android:textAlignment="center"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        tools:ignore="HardcodedText" />
+
+                    <ImageButton
+                        android:id="@+id/newPollImageButton"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="16dp"
+                        android:background="@color/black"
+                        android:src="@drawable/plus_sign_white" />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/noPollsView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="50dp"
+                    android:layout_marginBottom="50dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="invisible">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:text="@string/no_polls_emoji"
+                        android:textSize="38sp" />
+
+                    <TextView
+                        android:id="@+id/noPollsTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/no_polls_title"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/noPollsSubtext"
+                        android:layout_width="228dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/no_polls_subtext"
+                        android:textAlignment="center"
+                        android:textColor="@color/cool_grey"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/pollsDateRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:scrollbars="vertical" />
+
+                <LinearLayout
+                    android:id="@+id/adminFooter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingStart="50dp"
-                    android:paddingEnd="50dp"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:text="@string/export"
-                    android:textColor="@color/cool_grey"
-                    android:textSize="16sp"
-                    android:textAllCaps="false"
-                    android:background="@drawable/rounded_export_button" />
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="50dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/viewAllButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="24dp"
+                        android:background="@color/black"
+                        android:text="@string/view_all"
+                        android:textAllCaps="false"
+                        android:textColor="@color/polloGreen"
+                        android:textSize="16sp" />
+
+                    <Button
+                        android:id="@+id/exportButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rounded_export_button"
+                        android:paddingStart="50dp"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="50dp"
+                        android:paddingBottom="12dp"
+                        android:text="@string/export"
+                        android:textAllCaps="false"
+                        android:textColor="@color/cool_grey"
+                        android:textSize="16sp" />
+                </LinearLayout>
             </LinearLayout>
-
-        </LinearLayout>
-    </ScrollView>
+        </ScrollView>
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

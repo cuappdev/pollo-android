@@ -41,6 +41,23 @@ fun Endpoint.Companion.startSession(code: String, name: String) : Endpoint {
     return Endpoint("/start/session/", headers = mapOf("Authorization" to "Bearer ${User.currentSession.accessToken}"), body = requestBody, method = EndpointMethod.POST)
 }
 
+fun Endpoint.Companion.startPoll(text: String, answerChoices: JSONObject, correctAnswer: String, type: String) : Endpoint {
+    val codeJSON = JSONObject()
+    try {
+        codeJSON.put("text", text)
+        codeJSON.put("answerChoices", answerChoices)
+        codeJSON.put("state", "live")
+        codeJSON.put("correctAnswer", correctAnswer)
+        codeJSON.put("userAnswers", {})
+        codeJSON.put("type", type)
+    } catch (e: JSONException) {
+        e.printStackTrace()
+    }
+
+    val requestBody = RequestBody.create(MediaType.get("application/json; charset=utf-8"), codeJSON.toString())
+    return Endpoint("/server/poll/start/", headers = mapOf("Authorization" to "Bearer ${User.currentSession.accessToken}"), body = requestBody, method = EndpointMethod.GET)
+}
+
 fun Endpoint.Companion.generateCode() : Endpoint {
     return Endpoint("/generate/code/", headers = mapOf("Authorization" to "Bearer ${User.currentSession.accessToken}"), method = EndpointMethod.GET)
 }

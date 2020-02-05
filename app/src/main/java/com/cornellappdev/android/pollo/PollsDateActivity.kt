@@ -73,11 +73,17 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
 
         groupNameTextView.text = group.name
         codeTextView.text = "Code: ${group.code}"
+
+        newPollImageButton.setOnClickListener { v -> openNewPollFragment(v) }
     }
 
     fun goBack(view: View) {
         finish()
         Socket.disconnect()
+    }
+
+    fun goBackFragment(view: View){
+        supportFragmentManager.popBackStack();
     }
 
     override fun onClick(view: View) {
@@ -173,6 +179,12 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
 
     override fun freeResponseSubmissionFailed(pollFilter: Socket.PollFilter) {
         println(pollFilter.filter)
+    }
+
+    fun openNewPollFragment(view: View) {
+        supportFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down)
+                .add(R.id.polls_date_layout, CreatePollFragment()).addToBackStack(null).commit()
     }
 
 }

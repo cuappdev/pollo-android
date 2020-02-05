@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:background="@drawable/rounded_container_grey"
+    android:orientation="horizontal">
+
+    <CheckBox
+        android:id="@+id/create_poll_options_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="12dp"
+        android:buttonTint="@color/cool_grey"
+        android:gravity="center"
+        style="@android:style/Widget.DeviceDefault.Light.CompoundButton.RadioButton"/>
+
+    <EditText
+        android:id="@+id/create_poll_options_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:ems="10"
+        android:hint="Option A"
+        android:inputType="textPersonName" />
+
+</LinearLayout>
