@@ -300,9 +300,14 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     /**
      * Dims the `GroupFragment` and calls the delegates dim method according to `shouldDim`
      */
-     fun setDim(shouldDim: Boolean) {
-        delegate?.setDim(shouldDim)
+     private fun setDim(shouldDim: Boolean) {
+        delegate?.setDim(shouldDim, this)
 
+        // Don't want to be able to open group views when dimmed
+        setSelfDim(shouldDim)
+    }
+
+    fun setSelfDim(shouldDim: Boolean) {
         // Don't want to be able to open group views when dimmed
         dimView.isClickable = shouldDim
 
@@ -426,7 +431,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         /**
          * Should dim any parts of the screen outside of `GroupFragment`
          */
-        fun setDim(shouldDim: Boolean)
+        fun setDim(shouldDim: Boolean, groupFragment: GroupFragment)
 
         /**
          * Launches a `PollsDateActivity` for the given group and parameters

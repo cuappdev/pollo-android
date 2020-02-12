@@ -115,7 +115,12 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
         startActivityForResult(signInIntent, LOGIN_REQ_CODE)
     }
 
-    override fun setDim(shouldDim: Boolean) {
+    override fun setDim(shouldDim: Boolean, groupFragment: GroupFragment) {
+        when (groupFragment) {
+            joinedGroupFragment -> createdGroupFragment?.setSelfDim(shouldDim)
+            createdGroupFragment -> joinedGroupFragment?.setSelfDim(shouldDim)
+        }
+
         settingsImageView.isEnabled = !shouldDim
 
         val alphaValue = if (shouldDim) 0.5f else 1.0f
