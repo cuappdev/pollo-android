@@ -7,19 +7,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
-import com.cornellappdev.android.pollo.models.ApiResponse
-import com.cornellappdev.android.pollo.models.Group
+import com.cornellappdev.android.pollo.models.*
+import com.cornellappdev.android.pollo.models.PollResult
 import com.cornellappdev.android.pollo.networking.*
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.fragment_create_poll.*
 import kotlinx.android.synthetic.main.fragment_create_poll.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONArray
+import org.json.JSONObject
 
 @SuppressLint("ValidFragment")
 class CreatePollFragment: Fragment() {
     var options: ArrayList<String> = arrayListOf()
     var adapter: CreatePollAdapter? = null
+    var correct: Int = -1
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -29,7 +33,7 @@ class CreatePollFragment: Fragment() {
         val rootView = inflater?.inflate(R.layout.fragment_create_poll, container, false)
 
         options = arrayListOf()
-        adapter = CreatePollAdapter(context!!, options, -1)
+        adapter = CreatePollAdapter(context!!, options, correct, this)
         rootView.poll_options.adapter = adapter
         addOptionToList()
         addOptionToList()
@@ -42,7 +46,9 @@ class CreatePollFragment: Fragment() {
             addOptionToList()
         }
 
-        startPoll.setOnClickListener {}
+        startPoll.setOnClickListener {
+            startPoll(correct)
+        }
 
         return rootView
     }
@@ -55,15 +61,16 @@ class CreatePollFragment: Fragment() {
     /**
      * Starts poll and returns to group
      */
-    private fun startPoll(name: String) {
+    private fun startPoll(correct : Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            val code = result.data.code
+            val correctAnwser = if (correct == -1) null else (correct + 65).toChar().toString()
+            var anwserChoices = Poll((System.currentTimeMillis()/1000).toString(),null,null, poll_question.text.toString(),
+                    ArrayList(),PollType.multipleChoice, correctAnwser, mutableMapOf(), PollState.live)
+            for (x in 0 until options.size){
+                anwserChoices.answerChoices.add(PollResult((x + 65).toChar().toString(),options[x],x))
+            }
 
-            val startPollEndpoint = Endpoint.startPoll("start", name)
-            val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
-            val groupResponse = Request.makeRequest<ApiResponse<Group>>(startPollEndpoint.okHttpRequest(), typeTokenGroupNode)
-
-            if (groupResponse?.success == false || groupResponse?.data == null) return@launch
+            (activity as PollsDateActivity).startNewPoll(anwserChoices)
         }
     }
 }
