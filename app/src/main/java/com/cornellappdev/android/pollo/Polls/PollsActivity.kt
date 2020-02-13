@@ -158,6 +158,35 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
     }
 
 
+    override fun onPollStartAdmin(poll: Poll) {
+        val firstCalendar = Calendar.getInstance()
+        val secondCalendar = Calendar.getInstance()
+        val parser = SimpleDateFormat("MMMM d yyyy")
+        firstCalendar.time = parser.parse(date)
+        secondCalendar.time = Date()
+
+        val datesSameDay = firstCalendar.get(Calendar.DAY_OF_YEAR) == secondCalendar.get(Calendar.DAY_OF_YEAR) &&
+                firstCalendar.get(Calendar.YEAR) == secondCalendar.get(Calendar.YEAR)
+
+        if (!datesSameDay) return // No need to handle a new poll if it is not the same day
+        if (poll.id == polls[polls.size - 1].id) return // No need to handle a new poll if it already exists
+
+        polls.add(poll)
+        runOnUiThread {
+            adapter.notifyItemChanged(polls.size - 1)
+            linearLayoutManager.scrollToPosition(polls.size - 1)
+            currentPollView.text = "${linearLayoutManager.findFirstCompletelyVisibleItemPosition() + 1} / ${polls.size}"
+        }
+    }
+
+    override fun onPollEndAdmin(poll: Poll) {
+        renderPoll(poll)
+    }
+
+    override fun onPollUpdateAdmin(poll: Poll) {
+        renderPoll(poll)
+    }
+
     // Below is legacy code for Free Response submissions by Austin Astorga. This is not used in Pollo v1.
     override fun freeResponseSubmissionSuccessful() {
         val viewHolder = pollsRecyclerView.findViewHolderForAdapterPosition(polls.size - 1) as PollsRecyclerAdapter.PollHolder

@@ -11,7 +11,7 @@ import android.widget.*
 import androidx.annotation.LayoutRes
 import kotlinx.android.synthetic.main.create_poll_options_list_item.view.*
 
-class CreatePollAdapter(private val context: Context, private val options: ArrayList<String>, private var correct: Int) :
+class CreatePollAdapter(private val context: Context, private val options: ArrayList<String>, private var correct: Int, private var root: CreatePollFragment) :
         BaseAdapter() {
 
     private val inflater: LayoutInflater
@@ -36,6 +36,7 @@ class CreatePollAdapter(private val context: Context, private val options: Array
         rightAnswerButton.setOnClickListener {
             correct = if (correct == position) -1 else position
             this!!.notifyDataSetChanged()
+            root.correct = correct
         }
 
         optionPollName.addTextChangedListener( object : TextWatcher{
@@ -51,4 +52,6 @@ class CreatePollAdapter(private val context: Context, private val options: Array
 
         return rowView
     }
+
+
 }
