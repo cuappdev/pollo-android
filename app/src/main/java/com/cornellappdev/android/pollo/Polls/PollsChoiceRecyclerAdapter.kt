@@ -32,6 +32,11 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
                 val inflatedView = parent.inflate(R.layout.poll_free_response_item_row, false)
                 FreeResponseHolder(inflatedView)
             }
+
+            null -> {
+                val inflatedView = parent.inflate(R.layout.poll_multiple_choice_item_row, false)
+                ChoiceHolder(inflatedView)
+            }
         }
     }
 
@@ -39,6 +44,7 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
         return when (poll.type) {
             PollType.multipleChoice -> 0
             PollType.freeResponse -> 1
+            null -> 0
         }
     }
 

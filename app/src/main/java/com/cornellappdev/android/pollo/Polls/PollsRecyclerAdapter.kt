@@ -66,7 +66,7 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
             // height = 1250
         }
 
-        val questionType = poll.type
+        val questionType = poll.type ?: PollType.multipleChoice
         holder.bindPoll(poll, questionType, this)
 
         val childLayoutManager = LinearLayoutManager(holder.view.pollsChoiceRecyclerView.context)
