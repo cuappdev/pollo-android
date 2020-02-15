@@ -23,7 +23,7 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (poll.type) {
-            PollType.multipleChoice -> {
+            PollType.multipleChoice, null -> {
                 val inflatedView = parent.inflate(R.layout.poll_multiple_choice_item_row, false)
                 ChoiceHolder(inflatedView)
             }
@@ -37,7 +37,7 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
 
     override fun getItemViewType(position: Int): Int {
         return when (poll.type) {
-            PollType.multipleChoice -> 0
+            PollType.multipleChoice, null -> 0
             PollType.freeResponse -> 1
         }
     }
