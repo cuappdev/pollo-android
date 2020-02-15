@@ -96,16 +96,17 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
 
     fun refreshPolls() {
         CoroutineScope(Dispatchers.Main).launch {
-            val endpoint = Endpoint.joinGroupWithCode(group?.code ?: "")
+            val endpoint = Endpoint.joinGroupWithCode(group.code)
             val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
             val typeTokenSortedPolls = object : TypeToken<ApiResponse<ArrayList<GetSortedPollsResponse>>>() {}.type
-            val groupNodeResponse = withContext(Dispatchers.Default) { Request.makeRequest<ApiResponse<Group>>(endpoint.okHttpRequest(), typeTokenGroupNode) }
+            val groupNodeResponse = withContext(Dispatchers.Default) { Request.makeRequest<ApiResponse<Group>>(endpoint.okHttpRequest(), typeTokenGroupNode) } ?: return@launch
+
 
             val allPollsEndpoint = Endpoint.getSortedPolls(groupNodeResponse!!.data.id)
             val sortedPollsRefreshed = withContext(Dispatchers.Default) {
                 Request.makeRequest<ApiResponse<ArrayList<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest(), typeTokenSortedPolls)
-            }
-            for (sortedPoll in sortedPollsRefreshed!!.data){
+            } ?: return@launch
+            for (sortedPoll in sortedPollsRefreshed.data){
                 for (poll in sortedPoll.polls)
                     onPollStart(poll)
             }

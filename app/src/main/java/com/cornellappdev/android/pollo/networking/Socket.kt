@@ -60,7 +60,7 @@ object Socket {
 
     private val onPollStart = Emitter.Listener { args ->
         if (args.isEmpty()) return@Listener
-        val json= args[0] as JSONObject
+        val json = args[0] as JSONObject
         val poll = Gson().fromJson<Poll>(json.toString(), Poll::class.java)
         delegates.forEach { it.onPollStart(poll) }
     }
@@ -103,7 +103,7 @@ object Socket {
 
     private val onPollStartAdmin = Emitter.Listener { args ->
         if (args.isEmpty()) return@Listener
-        val json= args[0] as JSONObject
+        val json = args[0] as JSONObject
         val poll = Gson().fromJson<Poll>(json.toString(), Poll::class.java)
         delegates.forEach { it.onPollStart(poll) }
     }
@@ -165,7 +165,7 @@ object Socket {
         delegates = ArrayList(delegates.filter { it != socketDelegate })
     }
 
-    fun serverStart(newPoll : Poll) {
+    fun serverStart(newPoll: Poll) {
         socket.emit("server/poll/start", JSONObject(Gson().toJson(newPoll)))
     }
 
