@@ -3,6 +3,7 @@ package com.cornellappdev.android.pollo.networking
 import com.cornellappdev.android.pollo.models.User
 import okhttp3.MediaType
 import okhttp3.RequestBody
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 

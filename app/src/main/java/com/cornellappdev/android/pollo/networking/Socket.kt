@@ -21,6 +21,9 @@ interface SocketDelegate {
     fun freeResponseUpdates(poll: Poll)
     fun onPollDelete(pollID: String)
     fun onPollDeleteLive()
+    fun onPollStartAdmin(poll: Poll)
+    fun onPollEndAdmin(poll: Poll)
+    fun onPollUpdateAdmin(poll: Poll)
 }
 
 object Socket {
@@ -57,7 +60,7 @@ object Socket {
 
     private val onPollStart = Emitter.Listener { args ->
         if (args.isEmpty()) return@Listener
-        val json= args[0] as JSONObject
+        val json = args[0] as JSONObject
         val poll = Gson().fromJson<Poll>(json.toString(), Poll::class.java)
         delegates.forEach { it.onPollStart(poll) }
     }
@@ -98,6 +101,26 @@ object Socket {
         delegates.forEach { it.onPollDeleteLive() }
     }
 
+    private val onPollStartAdmin = Emitter.Listener { args ->
+        if (args.isEmpty()) return@Listener
+        val json = args[0] as JSONObject
+        val poll = Gson().fromJson<Poll>(json.toString(), Poll::class.java)
+        delegates.forEach { it.onPollStart(poll) }
+    }
+
+    private val onPollUpdateAdmin = Emitter.Listener { args ->
+        if (args.isEmpty()) return@Listener
+        val json = args[0] as JSONObject
+        val poll = Gson().fromJson<Poll>(json.toString(), Poll::class.java)
+        delegates.forEach { it.onPollResult(poll) }
+    }
+
+    private val onPollEndAdmin = Emitter.Listener { args ->
+        if (args.isEmpty()) return@Listener
+        val json = args[0] as JSONObject
+        val poll = Gson().fromJson<Poll>(json.toString(), Poll::class.java)
+        delegates.forEach { it.onPollEnd(poll) }
+    }
 
     fun connect(id: String, accessToken: String) {
         val urlBuilder = HttpUrl.Builder()
@@ -123,6 +146,10 @@ object Socket {
         socket.on("user/poll/delete/live", onPollDeleteLive)
         socket.on("user/poll/fr/filter", onFreeResponseFilter)
 
+        socket.on("admin/poll/start", onPollStartAdmin)
+        socket.on("admin/poll/updates", onPollUpdateAdmin)
+        socket.on("admin/poll/ended", onPollEndAdmin)
+
         socket.connect()
     }
 
@@ -136,6 +163,10 @@ object Socket {
 
     fun delete(socketDelegate: SocketDelegate) {
         delegates = ArrayList(delegates.filter { it != socketDelegate })
+    }
+
+    fun serverStart(newPoll: Poll) {
+        socket.emit("server/poll/start", JSONObject(Gson().toJson(newPoll)))
     }
 
     fun sendMCAnswer(pollChoice: PollChoice) {

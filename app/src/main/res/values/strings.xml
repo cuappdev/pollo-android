@@ -62,4 +62,12 @@
     <string name="view_polls_for_date_content_description">View Polls For Date</string>
 
     <string name="welcome_to_text">Welcome to</string>
+
+    <!-- Create Poll Fragment -->
+    <string name="add_option">  Add Option</string>
+    <string name="ask_question">Ask a question...</string>
+    <string name="create_question">Create Question</string>
+    <string name="drafts">Drafts</string>
+    <string name="save_as_draft">Save as Draft</string>
+    <string name="start_poll">Start Question</string>
 </resources>

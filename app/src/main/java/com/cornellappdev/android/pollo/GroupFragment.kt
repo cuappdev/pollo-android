@@ -11,15 +11,18 @@ import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.Log
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
-import com.cornellappdev.android.pollo.models.*
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.cornellappdev.android.pollo.models.ApiResponse
+import com.cornellappdev.android.pollo.models.Group
+import com.cornellappdev.android.pollo.models.GroupCode
+import com.cornellappdev.android.pollo.models.User
 import com.cornellappdev.android.pollo.networking.*
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_main.*
@@ -28,7 +31,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.collections.ArrayList
 
 
 /**
@@ -165,7 +167,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         }
     }
 
-    public fun refreshGroups() {
+    fun refreshGroups() {
         if (role == null) return
         CoroutineScope(Dispatchers.IO).launch {
             val getGroupsEndpoint = Endpoint.getAllGroups(role!!.name.toLowerCase())
@@ -285,8 +287,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         groupMenuOptionsView.startAnimation(animate)
     }
 
-     fun dismissPopup() {
-        if(!isPopupActive) return
+    fun dismissPopup() {
+        if (!isPopupActive) return
         isPopupActive = false
         setDim(false)
         val animate = TranslateAnimation(0f, 0f, 0f, groupMenuOptionsView.height.toFloat())
@@ -371,7 +373,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
 
             if (sortedPolls?.success == false || sortedPolls?.data == null) return@launch
 
-            role?.let { delegate?.startGroupActivity(it, groupResponse.data, sortedPolls.data) } ?: return@launch
+            role?.let { delegate?.startGroupActivity(it, groupResponse.data, sortedPolls.data) }
+                    ?: return@launch
         }
     }
 
@@ -383,7 +386,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         val generateCodeEndpoint = Endpoint.generateCode()
 
         CoroutineScope(Dispatchers.IO).launch {
-            val result = Request.makeRequest<ApiResponse<GroupCode>>(generateCodeEndpoint.okHttpRequest(),typeTokenGroupCode)
+            val result = Request.makeRequest<ApiResponse<GroupCode>>(generateCodeEndpoint.okHttpRequest(), typeTokenGroupCode)
 
             if (result?.success == true) {
                 val code = result.data.code
@@ -399,9 +402,10 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
                     addGroup(groupResponse.data)
                 }
 
-                role?.let { delegate?.startGroupActivity(it, groupResponse.data, ArrayList()) } ?: return@launch
+                role?.let { delegate?.startGroupActivity(it, groupResponse.data, ArrayList()) }
+                        ?: return@launch
             } else {
-                Log.e("failure","backend response failed to generate code")
+                Log.e("failure", "backend response failed to generate code")
                 return@launch
             }
         }

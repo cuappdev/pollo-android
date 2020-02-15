@@ -76,3 +76,12 @@ fastlane/Preview.html
 fastlane/screenshots
 fastlane/test_output
 fastlane/readme.md
+upload_keystore.jks
+app/debug/output.json
+app/release/output.json
+
+*.jks
+
+app/debug/output.json
+
+app/release/output.json
