@@ -9,7 +9,6 @@ import com.cornellappdev.android.pollo.inflate
 import com.cornellappdev.android.pollo.models.Poll
 import com.cornellappdev.android.pollo.models.PollChoice
 import com.cornellappdev.android.pollo.models.PollState
-import com.cornellappdev.android.pollo.models.PollType
 import kotlinx.android.synthetic.main.poll_free_response_item_row.view.*
 import kotlinx.android.synthetic.main.poll_multiple_choice_item_row.view.*
 import com.cornellappdev.android.pollo.networking.Socket
@@ -22,51 +21,26 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
     private var positionSelected = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (poll.type) {
-            PollType.multipleChoice, null -> {
-                val inflatedView = parent.inflate(R.layout.poll_multiple_choice_item_row, false)
-                ChoiceHolder(inflatedView)
-            }
-
-            PollType.freeResponse -> {
-                val inflatedView = parent.inflate(R.layout.poll_free_response_item_row, false)
-                FreeResponseHolder(inflatedView)
-            }
-        }
+        val inflatedView = parent.inflate(R.layout.poll_multiple_choice_item_row, false)
+        return ChoiceHolder(inflatedView)
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when (poll.type) {
-            PollType.multipleChoice, null -> 0
-            PollType.freeResponse -> 1
-        }
+        return 0
     }
 
     override fun getItemCount(): Int = poll.answerChoices.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when(poll.type) {
-            PollType.multipleChoice -> {
-                val choiceHolder = holder as ChoiceHolder
-                choiceHolder.bindPoll(poll, googleId)
-                if (poll.state == PollState.live) {
-                    choiceHolder.view.setOnClickListener { view ->
-                        positionSelected = position
-                        val answerSelected = poll.answerChoices[position]
-                        poll.userAnswers?.set(googleId, arrayListOf(PollChoice(letter = answerSelected.letter, text = answerSelected.text)))
-                        notifyDataSetChanged()
-                        sendAnswer(position)
-                    }
-                }
-            }
-
-            // Below is legacy code for Free Response submissions by Austin Astorga. This is not used in Pollo v1.
-            PollType.freeResponse -> {
-                val choiceHolder = holder as FreeResponseHolder
-                choiceHolder.bindPoll(poll, googleId)
-                choiceHolder.view.upvoteImageView.setOnClickListener { view ->
-                    // TODO: Clicked on Upvote Action
-                }
+        val choiceHolder = holder as ChoiceHolder
+        choiceHolder.bindPoll(poll, googleId)
+        if (poll.state == PollState.live) {
+            choiceHolder.view.setOnClickListener { view ->
+                positionSelected = position
+                val answerSelected = poll.answerChoices[position]
+                poll.userAnswers?.set(googleId, arrayListOf(PollChoice(letter = answerSelected.letter, text = answerSelected.text)))
+                notifyDataSetChanged()
+                sendAnswer(position)
             }
         }
     }
@@ -156,36 +130,6 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
 
         companion object {
             private val POLL_CHOICE_KEY = "POLL_CHOICE_MULTIPLE"
-        }
-    }
-
-    // Below is legacy code for Free Response submissions by Austin Astorga. This is not used in Pollo v1.
-    class FreeResponseHolder(v: View) : RecyclerView.ViewHolder(v) {
-
-        var view: View = v
-        private var poll: Poll? = null
-
-        fun bindPoll(poll: Poll, googleId: String) {
-            this.poll = poll
-
-            when(poll.state) {
-                PollState.live -> {
-                    view.optionTextView.text = poll.answerChoices[adapterPosition].text
-                }
-
-                PollState.ended -> {
-
-                }
-
-                PollState.shared -> {
-                    view.optionTextView.text = poll.answerChoices[adapterPosition].text
-                    view.numberOfUpvotesTextView.text = "${poll.answerChoices[adapterPosition].count ?: 0}"
-                }
-            }
-        }
-
-        companion object {
-            private val POLL_CHOICE_KEY = "POLL_CHOICE_RESPONSE"
         }
     }
 }
