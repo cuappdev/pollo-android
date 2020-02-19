@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.cornellappdev.android.pollo.models.Poll
 import com.cornellappdev.android.pollo.models.PollChoice
 import com.cornellappdev.android.pollo.models.PollState
-import com.cornellappdev.android.pollo.models.PollType
 
 
 interface FreeResponseDelegate {
@@ -60,14 +59,13 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
             // 86 dp is the heght of header, 53dp is height of cell
             val tmpHeight = headerHeight + cellHeight*poll.answerChoices.count() // 53 is cell height including top margin
 
-            height = if (tmpHeight <= 1250 && poll.type == PollType.multipleChoice) tmpHeight else 1250
+            height = if (tmpHeight <= 1250) tmpHeight else 1250
 
             // height = 750
             // height = 1250
         }
 
-        val questionType = poll.type ?: PollType.multipleChoice
-        holder.bindPoll(poll, questionType, this)
+        holder.bindPoll(poll, this)
 
         val childLayoutManager = LinearLayoutManager(holder.view.pollsChoiceRecyclerView.context)
         childLayoutManager.initialPrefetchItemCount = 4
@@ -89,7 +87,6 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
 
         var view: View = v
         private var poll: Poll? = null
-        private var pollType: PollType? = null
         private var delegate: FreeResponseDelegate? = null
 
         init {
@@ -100,9 +97,8 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
             println("CLICKED BIG POLL")
         }
 
-        fun bindPoll(poll: Poll, questionType: PollType, delegate: FreeResponseDelegate) {
+        fun bindPoll(poll: Poll, delegate: FreeResponseDelegate) {
             this.poll = poll
-            this.pollType = questionType
             this.delegate = delegate
 
             val totalNumberOfResponses = poll.answerChoices?.map { pollResult ->
@@ -110,58 +106,17 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
             }?.sum()
             view.questionMCTextView.text = poll.text
 
-            when (questionType) {
-                PollType.multipleChoice -> {
-                    when (poll.state) {
-                        PollState.live -> {
-                            view.questionMCSubtitleText.text = "Live"
-                        }
-
-                        PollState.ended -> {
-                            view.questionMCSubtitleText.text = "Poll Closed"
-                        }
-
-                        PollState.shared -> {
-                            view.questionMCSubtitleText.text = "Final Results  •  $totalNumberOfResponses Vote${if (totalNumberOfResponses == 1) "" else "s"}"
-                        }
-                    }
+            when (poll.state) {
+                PollState.live -> {
+                    view.questionMCSubtitleText.text = "Live"
                 }
 
-                // Below is legacy code for Free Response submissions by Austin Astorga. This is not used in Pollo v1.
-                PollType.freeResponse -> {
-                    when(poll.state) {
-                        PollState.ended -> {
-                            view.questionMCSubtitleText.text = "Poll Closed"
-                        }
-                        PollState.live -> {
-                            view.questionHeaderView.visibility = View.GONE
-                            view.questionFRHeaderView.visibility = View.VISIBLE
+                PollState.ended -> {
+                    view.questionMCSubtitleText.text = "Poll Closed"
+                }
 
-                            view.questionFRTextView.text = poll.text
-                            val newHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 132f, view.resources.displayMetrics);
-                            view.questionFRHeaderView.layoutParams.height = newHeight.toInt()
-                            val layoutParams = view.pollsChoiceRecyclerView.layoutParams as ConstraintLayout.LayoutParams
-                            layoutParams.topToBottom = view.questionFRHeaderView.id
-                            view.pollsChoiceRecyclerView.requestLayout()
-
-//                            view.questionFREditText.setOnKeyListener { v, keyCode, event ->
-//
-//                                if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-//                                    val freeResponse = v.questionFREditText.text
-//                                    if (!freeResponse.isEmpty()) {
-//                                        delegate?.sendAnswer(adapterPosition, freeResponse.toString())
-//                                    }
-//
-//                                    // Clear focus and hide keyboard
-//                                    v.questionFREditText.clearFocus()
-//                                    val imm = v.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-//                                    imm.hideSoftInputFromWindow(v.windowToken, 0)
-//                                    true
-//                                }
-//                                false
-//                            }
-                        }
-                    }
+                PollState.shared -> {
+                    view.questionMCSubtitleText.text = "Final Results  •  $totalNumberOfResponses Vote${if (totalNumberOfResponses == 1) "" else "s"}"
                 }
             }
         }

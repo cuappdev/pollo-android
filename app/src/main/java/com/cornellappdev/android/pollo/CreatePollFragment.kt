@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import com.cornellappdev.android.pollo.models.Poll
 import com.cornellappdev.android.pollo.models.PollResult
 import com.cornellappdev.android.pollo.models.PollState
-import com.cornellappdev.android.pollo.models.PollType
 import kotlinx.android.synthetic.main.fragment_create_poll.*
 import kotlinx.android.synthetic.main.fragment_create_poll.view.*
 import kotlinx.coroutines.CoroutineScope
@@ -64,7 +63,7 @@ class CreatePollFragment : Fragment() {
         CoroutineScope(Dispatchers.IO).launch {
             val correctAnwser = if (correct == -1) null else (correct + 65).toChar().toString()
             var answerChoices = Poll((System.currentTimeMillis() / 1000).toString(), null, null, poll_question.text.toString(),
-                    ArrayList(), PollType.multipleChoice, correctAnwser, mutableMapOf(), PollState.live)
+                    ArrayList(), correctAnwser, mutableMapOf(), PollState.live)
             for (x in 0 until options.size) {
                 answerChoices.answerChoices.add(PollResult((x + 65).toChar().toString(), options[x], x))
             }
