@@ -97,6 +97,7 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/footerView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
@@ -158,4 +159,9 @@
 
     </LinearLayout>
 
+    <include
+        android:id="@+id/onboardingView"
+        layout="@layout/create_poll_onboarding"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </RelativeLayout>
