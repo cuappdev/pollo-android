@@ -163,5 +163,6 @@
         android:id="@+id/onboardingView"
         layout="@layout/create_poll_onboarding"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 </RelativeLayout>

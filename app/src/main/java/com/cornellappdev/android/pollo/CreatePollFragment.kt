@@ -26,7 +26,6 @@ class CreatePollFragment : Fragment() {
     var options: ArrayList<String> = arrayListOf()
     var adapter: CreatePollAdapter? = null
     var correct: Int = -1
-    val onboardScreens: ArrayList<Int> = arrayListOf(R.id.welcomeLayout, R.id.customizeLayout, R.id.autofillLayout, R.id.quizLayout, R.id.saveDraftLayout, R.id.readyLayout, R.id.startQuestionLayout)
     var currOnboardScreen: Int = -1
 
     private val preferencesHelper: PreferencesHelper by lazy {
@@ -50,13 +49,6 @@ class CreatePollFragment : Fragment() {
         val saveDraft = rootView.save_draft as Button
         val startPoll = rootView.start_poll as Button
 
-        val onboardingView = rootView.onboardingView as ConstraintLayout
-        rootView.headerView.elevation = 0f
-        rootView.footerView.elevation = 0f
-        currOnboardScreen = 0
-
-        setupOnboard(onboardingView)
-
         addOption.setOnClickListener {
             addOptionToList()
         }
@@ -65,8 +57,13 @@ class CreatePollFragment : Fragment() {
             startPoll(correct)
         }
 
-        onboardingView.setOnClickListener {
-            displayOnboard()
+        if (preferencesHelper.displayOnboarding) {
+            val onboardingView = rootView.onboardingView as ConstraintLayout
+            setupOnboard(rootView)
+            onboardingView.setOnClickListener {
+                displayOnboard(onboardingView)
+            }
+            preferencesHelper.displayOnboarding = false
         }
 
         return rootView
@@ -94,13 +91,18 @@ class CreatePollFragment : Fragment() {
         }
     }
 
-    private fun setupOnboard(rootView : View) {
-        outlinePollOption(rootView.option_a_outline, "Option A")
-        outlinePollOption(rootView.option_b_outline, "Option B")
-        outlinePollOption(rootView.autofill_a_outline, "A")
-        outlinePollOption(rootView.autofill_b_outline, "B")
-        outlineBubble(rootView.bubble_outline1)
-        outlineBubble(rootView.bubble_outline2)
+    private fun setupOnboard(view : View) {
+        view.onboardingView.visibility = View.VISIBLE
+        view.headerView.elevation = 0f
+        view.footerView.elevation = 0f
+
+        currOnboardScreen = 0
+        outlinePollOption(view.option_a_outline, "Option A")
+        outlinePollOption(view.option_b_outline, "Option B")
+        outlinePollOption(view.autofill_a_outline, "A")
+        outlinePollOption(view.autofill_b_outline, "B")
+        outlineBubble(view.bubble_outline1)
+        outlineBubble(view.bubble_outline2)
     }
 
     private fun outlinePollOption(view : View, text : String) {
@@ -116,11 +118,11 @@ class CreatePollFragment : Fragment() {
         view.create_poll_options_item.buttonTintList = ColorStateList.valueOf(Color.WHITE)
     }
 
-    private fun displayOnboard() {
-        onboardingView.findViewById<View>(onboardScreens[currOnboardScreen]).visibility = View.GONE
+    private fun displayOnboard(view : ConstraintLayout) {
+        view.getChildAt(currOnboardScreen).visibility = View.GONE
         currOnboardScreen++
-        if (currOnboardScreen < onboardScreens.size) {
-            onboardingView.findViewById<View>(onboardScreens[currOnboardScreen]).visibility = View.VISIBLE
+        if (currOnboardScreen < view.childCount) {
+            view.getChildAt(currOnboardScreen).visibility = View.VISIBLE
         } else {
             onboardingView.visibility = View.GONE
             headerView.elevation = 4f
