@@ -57,7 +57,7 @@ class CreatePollFragment : Fragment() {
             startPoll(correct)
         }
 
-        if (preferencesHelper.displayOnboarding) {
+        if (!preferencesHelper.displayOnboarding) {
             val onboardingView = rootView.onboardingView as ConstraintLayout
             setupOnboard(rootView)
             onboardingView.setOnClickListener {
@@ -97,6 +97,9 @@ class CreatePollFragment : Fragment() {
         view.footerView.elevation = 0f
 
         currOnboardScreen = 0
+        view.start_poll_outline.save_draft.visibility = View.INVISIBLE
+        view.save_draft_outline.start_poll.visibility = View.INVISIBLE
+        view.start_poll_outline2.save_draft.visibility = View.INVISIBLE
         outlinePollOption(view.option_a_outline, "Option A")
         outlinePollOption(view.option_b_outline, "Option B")
         outlinePollOption(view.autofill_a_outline, "A")
