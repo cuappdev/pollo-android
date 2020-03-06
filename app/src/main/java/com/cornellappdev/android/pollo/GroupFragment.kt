@@ -50,6 +50,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     private val fragmentInteractionListener: OnFragmentInteractionListener? = null
     private var delegate: GroupFragmentDelegate? = null
 
+    private var isNameEditingActive: Boolean = false
     private var isPopupActive: Boolean = false
     private var role: User.Role? = null
     private var groups = ArrayList<Group>()
@@ -107,7 +108,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         }
 
         groupMenuOptionsView.renameGroupDetail.saveGroupName.setOnClickListener {
-            endRenameGroup() // passing a boolean?
+            endRenameGroup()
+            dismissPopup()
             // TODO: dismiss popup?
         }
 
@@ -303,6 +305,17 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         groupMenuOptionsView.startAnimation(animate)
         groupMenuOptionsView.visibility = View.INVISIBLE
         groupSelected = null
+
+        if (isNameEditingActive) {
+            // Don't need to check user role since only an admin could edit name in the first place
+            groupMenuOptionsView.renameGroupDetail.visibility = View.GONE
+            groupMenuOptionsView.renameGroup.visibility = View.VISIBLE
+            groupMenuOptionsView.removeGroup.visibility = View.VISIBLE
+
+            isNameEditingActive = false
+            groupMenuOptionsView.renameGroupDetail.renameGroupEditText.text.clear()
+            // TODO: dismiss keyboard?
+        }
     }
 
     /**
@@ -421,7 +434,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
      * Shows keyboard and renaming `EditText` in the group options menu
      */
     private fun beginRenameGroup() {
-
+        isNameEditingActive = true
 
         groupMenuOptionsView.renameGroupDetail.visibility = View.VISIBLE
         renameGroup.visibility = View.GONE
@@ -430,52 +443,45 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         groupMenuOptionsView.groupNameTextView.text = "Edit Name"
         groupMenuOptionsView.renameGroupDetail.renameGroupEditText.hint = groupSelected?.name
         groupMenuOptionsView.renameGroupDetail.renameGroupEditText.setSelection(0)
-
-
-//        var alertDialog = AlertDialog.Builder(context)
-//
-//        alertDialog.apply {
-//            setTitle("Edit Name")
-//
-//            val editText = EditText(context)
-//
-//            editText.apply {
-//                hint = groupSelected?.name
-//
-//                setPadding(40,0,40,0)
-//
-//                setBackgroundResource(R.drawable.rounded_container)
-//            }
-//
-//            setView(editText)
-//
-//            setPositiveButton("Save") { d, _ ->
-//                val newName = editText.text.toString()
-//                newName.removePrefix(" ")
-//                if (newName == "") return@setPositiveButton
-//
-//                println("set new name")
-//                d.cancel()
-//                dismissPopup()
-//            }
-//
-//            setNegativeButton("Cancel") { d, _ ->
-//                d.cancel()
-//                dismissPopup()
-//            }
-//
-//        }
-//
-//        alertDialog.show()
+        // TODO: animations?
     }
 
     /**
      * Resets the group options menu to its default state (edit/delete group options for admins) and
-     * renames group (locally and to beckend). Does not dismiss the group options menu.
+     * renames group (locally and to backend). Does not dismiss the group options menu.
      */
     private fun endRenameGroup(){
+        val newGroupName = renameGroupEditText.text.toString().trim()
+        if (newGroupName == "" || groupSelected == null) return
+        val endpoint = Endpoint.renameGroup(groupSelected!!.id, newGroupName)
 
-        // TODO
+        CoroutineScope(Dispatchers.IO).launch {
+            val typeTokenGroup = object : TypeToken<ApiResponse<Group>>() {}.type
+            val groupResponse = Request.makeRequest<ApiResponse<Group>>(endpoint.okHttpRequest(), typeTokenGroup)
+
+            if (groupResponse?.success == false || groupResponse?.data == null) {
+                withContext(Dispatchers.Main) {
+                    AlertDialog.Builder(context)
+                            .setTitle("Group Rename Failed")
+                            .setMessage("Please try again!")
+                            .setNeutralButton(android.R.string.ok, null)
+                            .show()
+                }
+                return@launch
+            }
+
+            for (i in 0 until groups.size) {
+                if (groups[i].id == groupResponse.data.id) {
+                    groups[i] = groupResponse.data
+
+                    withContext(Dispatchers.Main) {
+                        currentAdapter?.updateGroup(groups[i], i)
+                    }
+                    break
+                }
+            }
+        }
+        // TODO: hide keyboard
     }
 
     companion object {

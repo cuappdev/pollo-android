@@ -111,6 +111,11 @@ class GroupRecyclerAdapter(
         groups.addAll(newList)
     }
 
+    fun updateGroup(group: Group, index: Int) {
+        groups[index] = group
+        notifyItemChanged(index)
+    }
+
     internal fun getItem(index: Int): Group {
         return groups[index]
     }
