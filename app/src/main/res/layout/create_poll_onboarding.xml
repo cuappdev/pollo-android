@@ -18,9 +18,11 @@
 
         <TextView
             android:id="@+id/welcomeTextView"
-            android:layout_width="209dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="73dp"
             android:layout_marginTop="230dp"
+            android:layout_marginEnd="73dp"
             android:fontFamily="sans-serif"
             android:text="@string/welcome"
             android:textAlignment="center"
@@ -33,9 +35,11 @@
 
         <TextView
             android:id="@+id/tipsTextView"
-            android:layout_width="195dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="85dp"
             android:layout_marginTop="5dp"
+            android:layout_marginEnd="85dp"
             android:fontFamily="sans-serif-medium"
             android:text="@string/tips"
             android:textAlignment="center"
@@ -86,9 +90,11 @@
 
         <TextView
             android:id="@+id/customizeQuestionTextView"
-            android:layout_width="316dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="22dp"
             android:layout_marginTop="5dp"
+            android:layout_marginEnd="22dp"
             android:text="@string/customize"
             android:textColor="@color/actualWhite"
             android:textSize="20sp"
@@ -137,10 +143,10 @@
         <Button
             android:id="@+id/add_poll_option_outline"
             android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="26dp"
+            android:layout_height="54dp"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="6dp"
-            android:layout_marginEnd="26dp"
+            android:layout_marginEnd="24dp"
             android:background="@drawable/rounded_container_outline"
             android:drawableStart="@drawable/plus_sign_white"
             android:paddingLeft="10dp"
@@ -208,9 +214,10 @@
 
         <TextView
             android:id="@+id/autofillTextView"
-            android:layout_width="260dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="28dp"
+            android:layout_marginStart="79dp"
+            android:layout_marginEnd="21dp"
             android:layout_marginBottom="5dp"
             android:text="@string/autofill"
             android:textAlignment="center"
@@ -218,7 +225,8 @@
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/start_poll_outline"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <include
             android:id="@+id/start_poll_outline"
@@ -253,14 +261,16 @@
 
         <TextView
             android:id="@+id/quizModeTextView"
-            android:layout_width="214dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="67dp"
             android:layout_marginTop="118dp"
+            android:layout_marginEnd="79dp"
             android:text="@string/quiz_mode"
             android:textColor="@color/actualWhite"
             android:textSize="20sp"
             android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -301,15 +311,17 @@
 
         <TextView
             android:id="@+id/saveDraftTextView"
-            android:layout_width="214dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
+            android:layout_marginEnd="127dp"
             android:layout_marginBottom="5dp"
             android:text="@string/save_draft"
             android:textColor="@color/actualWhite"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/save_draft_outline"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <include
@@ -329,9 +341,11 @@
 
         <TextView
             android:id="@+id/readyToGoTextView"
-            android:layout_width="214dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="73dp"
             android:layout_marginTop="230dp"
+            android:layout_marginEnd="73dp"
             android:text="@string/ready"
             android:textAlignment="center"
             android:textColor="@color/actualWhite"
@@ -354,17 +368,19 @@
 
         <TextView
             android:id="@+id/startQuestionTextView"
-            android:layout_width="166dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="28dp"
+            android:layout_marginStart="174dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginBottom="5dp"
             android:text="@string/start_question"
-            android:textAlignment="center"
+            android:textAlignment="textEnd"
             android:textColor="@color/actualWhite"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/start_poll_outline2"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <include
             android:id="@+id/start_poll_outline2"
