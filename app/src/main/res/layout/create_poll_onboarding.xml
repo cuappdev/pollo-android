@@ -89,33 +89,33 @@
             android:id="@+id/customizeQuestionTextView"
             android:layout_width="316dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="284dp"
+            android:layout_marginTop="5dp"
             android:text="@string/customize"
             android:textColor="@color/actualWhite"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/add_poll_option_outline" />
 
         <View
             android:id="@+id/underline"
             android:layout_width="0dp"
             android:layout_height="3dp"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="101dp"
+            android:layout_marginTop="1dp"
             android:layout_marginEnd="24dp"
             android:background="@color/actualWhite"
             android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/askQuestionTextView" />
 
         <include
             android:id="@+id/option_a_outline"
             layout="@layout/create_poll_options_list_item"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_marginStart="24dp"
             android:layout_marginTop="112dp"
             android:layout_marginEnd="24dp"
@@ -127,20 +127,20 @@
             android:id="@+id/option_b_outline"
             layout="@layout/create_poll_options_list_item"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="170dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/option_a_outline" />
 
         <Button
             android:id="@+id/add_poll_option_outline"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:layout_marginStart="26dp"
-            android:layout_marginTop="227dp"
+            android:layout_marginTop="6dp"
             android:layout_marginEnd="26dp"
             android:background="@drawable/rounded_container_outline"
             android:drawableStart="@drawable/plus_sign_white"
@@ -154,7 +154,7 @@
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/option_b_outline" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -174,7 +174,7 @@
             android:id="@+id/autofill_a_outline"
             layout="@layout/create_poll_options_list_item"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_marginStart="24dp"
             android:layout_marginTop="112dp"
             android:layout_marginEnd="24dp"
@@ -186,26 +186,26 @@
             android:id="@+id/autofill_b_outline"
             layout="@layout/create_poll_options_list_item"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="170dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/autofill_a_outline" />
 
         <TextView
             android:id="@+id/autofillTextView"
             android:layout_width="260dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="28dp"
-            android:layout_marginBottom="65dp"
+            android:layout_marginBottom="5dp"
             android:text="@string/autofill"
             android:textAlignment="center"
             android:textColor="@color/actualWhite"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/start_poll_outline"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <include
@@ -243,7 +243,7 @@
             android:id="@+id/bubble_outline1"
             layout="@layout/create_poll_options_list_item"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_marginStart="24dp"
             android:layout_marginTop="112dp"
             android:layout_marginEnd="24dp"
@@ -255,13 +255,13 @@
             android:id="@+id/bubble_outline2"
             layout="@layout/create_poll_options_list_item"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_marginStart="24dp"
-            android:layout_marginTop="170dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/bubble_outline1" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -279,12 +279,12 @@
             android:layout_width="214dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginBottom="68dp"
+            android:layout_marginBottom="5dp"
             android:text="@string/save_draft"
             android:textColor="@color/actualWhite"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/save_draft_outline"
             app:layout_constraintStart_toStartOf="parent" />
 
         <include
@@ -332,13 +332,13 @@
             android:layout_width="166dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="28dp"
-            android:layout_marginBottom="65dp"
+            android:layout_marginBottom="5dp"
             android:text="@string/start_question"
             android:textAlignment="center"
             android:textColor="@color/actualWhite"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/start_poll_outline2"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <include

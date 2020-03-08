@@ -57,7 +57,7 @@ class CreatePollFragment : Fragment() {
             startPoll(correct)
         }
 
-        if (!preferencesHelper.displayOnboarding) {
+        if (preferencesHelper.displayOnboarding) {
             val onboardingView = rootView.onboardingView as ConstraintLayout
             setupOnboard(rootView)
             onboardingView.setOnClickListener {
