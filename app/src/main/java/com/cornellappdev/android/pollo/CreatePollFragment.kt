@@ -57,14 +57,14 @@ class CreatePollFragment : Fragment() {
             startPoll(correct)
         }
 
-        //if (!preferencesHelper.displayOnboarding) {
+        if (!preferencesHelper.displayOnboarding) {
             val onboardingView = rootView.onboardingView as ConstraintLayout
             setupOnboard(rootView)
             onboardingView.setOnClickListener {
                 displayOnboard(onboardingView)
             }
             preferencesHelper.displayOnboarding = false
-        // }
+        }
 
         return rootView
     }
@@ -92,11 +92,13 @@ class CreatePollFragment : Fragment() {
     }
 
     private fun setupOnboard(view : View) {
+        currOnboardScreen = 0
+
         view.onboardingView.visibility = View.VISIBLE
         view.headerView.elevation = 0f
         view.footerView.elevation = 0f
 
-        currOnboardScreen = 0
+        // Converts included XML elements into outlines
         view.start_poll_outline.save_draft.visibility = View.INVISIBLE
         view.save_draft_outline.start_poll.visibility = View.INVISIBLE
         view.start_poll_outline2.save_draft.visibility = View.INVISIBLE
@@ -121,6 +123,9 @@ class CreatePollFragment : Fragment() {
         view.create_poll_options_item.buttonTintList = ColorStateList.valueOf(Color.WHITE)
     }
 
+    /**
+     * Moves through onboarding screens
+     */
     private fun displayOnboard(view : ConstraintLayout) {
         view.getChildAt(currOnboardScreen).visibility = View.GONE
         currOnboardScreen++
