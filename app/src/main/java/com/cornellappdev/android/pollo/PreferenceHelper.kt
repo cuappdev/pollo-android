@@ -25,9 +25,16 @@ class PreferencesHelper(context: Context) {
             field = preferences.getLong(EXPIRES_AT, 0L)
         }
 
+    var displayOnboarding = preferences.getBoolean(DISPLAY_ONBOARDING, true)
+        set(value) {
+            preferences.edit().putBoolean(DISPLAY_ONBOARDING, value).apply()
+            field = preferences.getBoolean(DISPLAY_ONBOARDING, true)
+        }
+
     companion object {
         private const val ACCESS_TOKEN = "data.source.prefs.ACCESS_TOKEN"
         private const val REFRESH_TOKEN = "data.source.prefs.REFRESH_TOKEN"
         private const val EXPIRES_AT = "data.source.prefs.EXPIRES_AT"
+        private const val DISPLAY_ONBOARDING = "data.source.prefs.DISPLAY_ONBOARDING"
     }
 }
