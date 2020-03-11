@@ -11,7 +11,7 @@
     <string name="end_question_text">End question</string>
 
     <string name="join_group_hint">Enter a code…</string>
-    <string name="create_group_hint">Enter a new group name...</string>
+    <string name="create_group_hint">Enter a new group name…</string>
 
     <string name="go_back_content_description">Go Back</string>
 
@@ -65,7 +65,7 @@
 
     <!-- Create Poll Fragment -->
     <string name="add_option">  Add Option</string>
-    <string name="ask_question">Ask a question...</string>
+    <string name="ask_question">Ask a question…</string>
     <string name="create_question">Create Question</string>
     <string name="drafts">Drafts</string>
     <string name="save_as_draft">Save as Draft</string>
@@ -76,7 +76,7 @@
     <string name="tips">Here are some tips to get you started.</string>
     <string name="tap_anywhere">Tap anywhere to continue</string>
     <string name="customize">To customize this question, type here and add additional options</string>
-    <string name="autofill">To autofill choices A, B, ... , tap here to start live polling</string>
+    <string name="autofill">To autofill choices A, B, … , tap here to start live polling</string>
     <string name="quiz_mode">To use quiz mode, select a right answer</string>
     <string name="save_draft">To come back to this question later, tap here</string>
     <string name="ready">That\'s it! You\'re good to go.</string>
