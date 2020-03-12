@@ -23,4 +23,5 @@
     <color name="settings_detail">#9EA7B3</color>
     <color name="settings_divider">#E1E1E1</color>
     <color name="white">#F6F6F6</color>
+    <color name="onboarding_background">#A6202020</color>
 </resources>
