@@ -56,8 +56,9 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
 
             val headerHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100f, displayMetrics).toInt()
             val cellHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 55f, displayMetrics).toInt()
-            // 86 dp is the heght of header, 53dp is height of cell
-            val tmpHeight = headerHeight + cellHeight*poll.answerChoices.count() // 53 is cell height including top margin
+            val buttonHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 65f, displayMetrics).toInt()
+            // 86 dp is the height of header, 53dp is height of cell
+            val tmpHeight = headerHeight + cellHeight*poll.answerChoices.count() + buttonHeight // 53 is cell height including top margin
 
             height = if (tmpHeight <= 1250) tmpHeight else 1250
 
@@ -109,10 +110,14 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
             when (poll.state) {
                 PollState.live -> {
                     view.questionMCSubtitleText.text = "Live"
+                    view.end_poll_button.setOnClickListener {
+                        Socket.serverEnd()
+                    }
                 }
 
                 PollState.ended -> {
                     view.questionMCSubtitleText.text = "Poll Closed"
+                    view.end_poll_button.visibility = View.GONE
                 }
 
                 PollState.shared -> {

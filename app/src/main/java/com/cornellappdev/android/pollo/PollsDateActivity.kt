@@ -150,17 +150,6 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         return newSortedPollsList
     }
 
-    // Removes last poll created today, if any, to prevent duplicate polls on poll creation
-    private fun removePollToday() {
-        val currentDate = dateFormatter.format(Date())
-        if (sortedPolls.isNotEmpty() && sortedPolls[0].date == currentDate) {
-            val pollsToday = sortedPolls[0].polls
-            if (pollsToday.isNotEmpty()) {
-                pollsToday.removeAll { it.updatedAt == null }
-            }
-        }
-    }
-
     // Socket Delegate
 
     override fun onPollStart(poll: Poll) {
@@ -177,10 +166,14 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
             }
         // Only add polls created today
         if (pollDate == currentDate) {
-            removePollToday()
             if (datesForPolls.contains(currentDate)) {
+                // Removes last poll created today to prevent duplicate polls on poll creation
+                val pollsToday = sortedPolls[0].polls
+                if (pollsToday.last().updatedAt == null) {
+                    pollsToday.removeAt(pollsToday.size - 1)
+                }
                 sortedPolls[0].isLive = true
-                sortedPolls[0].polls.add(poll)
+                pollsToday.add(poll)
             } else {
                 val newPollDate = GetSortedPollsResponse(currentDate, arrayListOf(poll), isLive = true)
                 sortedPolls.add(newPollDate)
