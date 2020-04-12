@@ -1,18 +1,21 @@
 package com.cornellappdev.android.pollo
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.cornellappdev.android.pollo.models.Poll
 import com.cornellappdev.android.pollo.models.PollResult
 import com.cornellappdev.android.pollo.models.PollState
+import com.cornellappdev.android.pollo.models.PollType
 import kotlinx.android.synthetic.main.create_poll_onboarding.view.*
 import kotlinx.android.synthetic.main.create_poll_options_list_item.view.*
 import kotlinx.android.synthetic.main.fragment_create_poll.*
@@ -82,10 +85,13 @@ class CreatePollFragment : Fragment() {
         CoroutineScope(Dispatchers.IO).launch {
             val correctAnswer = if (correct == -1) null else (correct + 65).toChar().toString()
             var answerChoices = Poll((System.currentTimeMillis() / 1000).toString(), null, null, poll_question.text.toString(),
-                    ArrayList(), correctAnswer, mutableMapOf(), PollState.live)
+                    ArrayList(), PollType.multipleChoice, correctAnswer, mutableMapOf(), PollState.live)
             for (x in 0 until options.size) {
                 answerChoices.answerChoices.add(PollResult((x + 65).toChar().toString(), options[x], x))
             }
+
+            val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view!!.applicationWindowToken, 0)
 
             (activity as PollsDateActivity).startNewPoll(answerChoices)
         }

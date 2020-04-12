@@ -1,6 +1,5 @@
 package com.cornellappdev.android.pollo
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -17,7 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -152,30 +150,46 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         return newSortedPollsList
     }
 
+    // Removes last poll created today, if any, to prevent duplicate polls on poll creation
+    private fun removePollToday() {
+        val currentDate = dateFormatter.format(Date())
+        if (sortedPolls.isNotEmpty() && sortedPolls[0].date == currentDate) {
+            val pollsToday = sortedPolls[0].polls
+            if (pollsToday.isNotEmpty()) {
+                pollsToday.removeAll { it.updatedAt == null }
+            }
+        }
+    }
+
     // Socket Delegate
 
     override fun onPollStart(poll: Poll) {
         val currentDate = dateFormatter.format(Date())
         val datesForPolls = sortedPolls.map { it.date }
+        val pollDateStr = poll.updatedAt ?: poll.createdAt
+        val pollDate = dateFormatter.format(Date(pollDateStr!!.toLong() * 1000))
 
         // Avoid index out of bounds exceptions
         if (sortedPolls.isNotEmpty())
-        for (p in sortedPolls[0].polls){
-            // Don't add duplicate polls
-            if (p.id == poll.id) return
-        }
-
-        if(datesForPolls.contains(currentDate)) {
-            sortedPolls[0].isLive = true
-            sortedPolls[0].polls.add(poll)
-        } else {
-            val newPollDate = GetSortedPollsResponse(currentDate, arrayListOf(poll), isLive = true)
-            sortedPolls.add(newPollDate)
-            sortedPolls.sortByDescending { dateFormatter.parse(it.date) }
-        }
-        runOnUiThread {
-            adapter.updatePolls(sortedPolls)
-            toggleEmptyState()
+            for (p in sortedPolls[0].polls){
+                // Don't add duplicate polls
+                if (p.id == poll.id) return
+            }
+        // Only add polls created today
+        if (pollDate == currentDate) {
+            removePollToday()
+            if (datesForPolls.contains(currentDate)) {
+                sortedPolls[0].isLive = true
+                sortedPolls[0].polls.add(poll)
+            } else {
+                val newPollDate = GetSortedPollsResponse(currentDate, arrayListOf(poll), isLive = true)
+                sortedPolls.add(newPollDate)
+                sortedPolls.sortByDescending { dateFormatter.parse(it.date) }
+            }
+            runOnUiThread {
+                adapter.updatePolls(sortedPolls)
+                toggleEmptyState()
+            }
         }
         val pollResponse = poll
     }
