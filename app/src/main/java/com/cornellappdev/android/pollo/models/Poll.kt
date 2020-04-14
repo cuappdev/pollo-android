@@ -10,6 +10,11 @@ data class PollResult(val letter: String?, val text: String, val count: Int?): P
 data class PollChoice(val letter: String?, val text: String): Parcelable
 
 @Parcelize
+enum class PollType: Parcelable {
+    multipleChoice
+}
+
+@Parcelize
 enum class PollState: Parcelable {
     live, ended, shared
 }
@@ -17,5 +22,5 @@ enum class PollState: Parcelable {
 @Parcelize
 data class Poll(val createdAt: String?, val updatedAt: String?, var id: String?,
                 val text: String, val answerChoices: ArrayList<PollResult>,
-                val correctAnswer: String?, val userAnswers: MutableMap<String, ArrayList<PollChoice>>?,
+                val type: PollType?, val correctAnswer: String?, val userAnswers: MutableMap<String, ArrayList<PollChoice>>?,
                 val state: PollState): Parcelable

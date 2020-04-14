@@ -1,8 +1,9 @@
 package com.cornellappdev.android.pollo
 
-import android.content.Intent
+import android.app.Activity
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cornellappdev.android.pollo.models.ApiResponse
@@ -17,7 +18,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -85,6 +85,8 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
 
     fun goBackFragment(view: View){
         supportFragmentManager.popBackStack()
+        val imm = applicationContext.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.applicationWindowToken, 0)
     }
 
     fun startNewPoll(newPoll : Poll){
@@ -157,25 +159,34 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
     override fun onPollStart(poll: Poll) {
         val currentDate = dateFormatter.format(Date())
         val datesForPolls = sortedPolls.map { it.date }
+        val pollDateStr = poll.updatedAt ?: poll.createdAt
+        val pollDate = dateFormatter.format(Date(pollDateStr!!.toLong() * 1000))
 
         // Avoid index out of bounds exceptions
         if (sortedPolls.isNotEmpty())
-        for (p in sortedPolls[0].polls){
-            // Don't add duplicate polls
-            if (p.id == poll.id) return
-        }
-
-        if(datesForPolls.contains(currentDate)) {
-            sortedPolls[0].isLive = true
-            sortedPolls[0].polls.add(poll)
-        } else {
-            val newPollDate = GetSortedPollsResponse(currentDate, arrayListOf(poll), isLive = true)
-            sortedPolls.add(newPollDate)
-            sortedPolls.sortByDescending { dateFormatter.parse(it.date) }
-        }
-        runOnUiThread {
-            adapter.updatePolls(sortedPolls)
-            toggleEmptyState()
+            for (p in sortedPolls[0].polls){
+                // Don't add duplicate polls
+                if (p.id == poll.id) return
+            }
+        // Only add polls created today
+        if (pollDate == currentDate) {
+            if (datesForPolls.contains(currentDate)) {
+                // Removes last poll created today to prevent duplicate polls on poll creation
+                val pollsToday = sortedPolls[0].polls
+                if (pollsToday.last().updatedAt == null) {
+                    pollsToday.removeAt(pollsToday.size - 1)
+                }
+                sortedPolls[0].isLive = true
+                pollsToday.add(poll)
+            } else {
+                val newPollDate = GetSortedPollsResponse(currentDate, arrayListOf(poll), isLive = true)
+                sortedPolls.add(newPollDate)
+                sortedPolls.sortByDescending { dateFormatter.parse(it.date) }
+            }
+            runOnUiThread {
+                adapter.updatePolls(sortedPolls)
+                toggleEmptyState()
+            }
         }
         val pollResponse = poll
     }

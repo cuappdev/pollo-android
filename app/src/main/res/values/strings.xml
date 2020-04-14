@@ -8,7 +8,7 @@
 
     <string name="created">Created</string>
 
-    <string name="end_question_text">End question</string>
+    <string name="end_question_text">End Question</string>
 
     <string name="join_group_hint">Enter a code…</string>
     <string name="create_group_hint">Enter a new group name…</string>
