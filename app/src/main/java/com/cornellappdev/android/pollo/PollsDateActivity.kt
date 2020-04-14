@@ -1,7 +1,9 @@
 package com.cornellappdev.android.pollo
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cornellappdev.android.pollo.models.ApiResponse
@@ -83,6 +85,8 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
 
     fun goBackFragment(view: View){
         supportFragmentManager.popBackStack()
+        val imm = applicationContext.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.applicationWindowToken, 0)
     }
 
     fun startNewPoll(newPoll : Poll){
