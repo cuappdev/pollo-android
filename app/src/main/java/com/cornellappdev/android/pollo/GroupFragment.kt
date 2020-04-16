@@ -1,7 +1,9 @@
 package com.cornellappdev.android.pollo
 
+import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
@@ -16,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +31,7 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.manage_group_view.*
 import kotlinx.android.synthetic.main.manage_group_view.view.*
+import kotlinx.android.synthetic.main.manage_group_view.view.renameGroupDetail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -110,7 +114,6 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         groupMenuOptionsView.renameGroupDetail.saveGroupName.setOnClickListener {
             endRenameGroup()
             dismissPopup()
-            // TODO: dismiss popup?
         }
 
         groupMenuOptionsView.removeGroup.setOnClickListener {
@@ -307,6 +310,9 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         groupSelected = null
 
         if (isNameEditingActive) {
+            // Reset this from beginRenameGroup
+            groupMenuOptionsView.layoutTransition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING)
+
             // Don't need to check user role since only an admin could edit name in the first place
             groupMenuOptionsView.renameGroupDetail.visibility = View.GONE
             groupMenuOptionsView.renameGroup.visibility = View.VISIBLE
@@ -314,7 +320,11 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
 
             isNameEditingActive = false
             groupMenuOptionsView.renameGroupDetail.renameGroupEditText.text.clear()
-            // TODO: dismiss keyboard?
+
+            if (context != null && view != null) {
+                val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(view!!.applicationWindowToken, 0)
+            }
         }
     }
 
@@ -436,6 +446,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     private fun beginRenameGroup() {
         isNameEditingActive = true
 
+        // Disable this so that renameGroup and removeGroup disappear immediately
+        groupMenuOptionsView.layoutTransition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING)
         groupMenuOptionsView.renameGroupDetail.visibility = View.VISIBLE
         renameGroup.visibility = View.GONE
         removeGroup.visibility = View.GONE
@@ -443,7 +455,6 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         groupMenuOptionsView.groupNameTextView.text = "Edit Name"
         groupMenuOptionsView.renameGroupDetail.renameGroupEditText.hint = groupSelected?.name
         groupMenuOptionsView.renameGroupDetail.renameGroupEditText.setSelection(0)
-        // TODO: animations?
     }
 
     /**
@@ -481,7 +492,6 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
                 }
             }
         }
-        // TODO: hide keyboard
     }
 
     companion object {
