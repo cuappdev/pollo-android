@@ -112,7 +112,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         }
 
         groupMenuOptionsView.renameGroupDetail.saveGroupName.setOnClickListener {
-            endRenameGroup()
+            finishRenameGroup()
             dismissPopup()
         }
 
@@ -311,7 +311,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
 
         if (isNameEditingActive) {
             // Reset this from beginRenameGroup
-            groupMenuOptionsView.layoutTransition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING)
+            groupMenuOptionsView.layoutTransition.enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING)
 
             // Don't need to check user role since only an admin could edit name in the first place
             groupMenuOptionsView.renameGroupDetail.visibility = View.GONE
@@ -441,29 +441,43 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     }
 
     /**
-     * Shows keyboard and renaming `EditText` in the group options menu
+     * Shows keyboard and the `EditText` for renaming in the group options menu
      */
     private fun beginRenameGroup() {
         isNameEditingActive = true
 
         // Disable this so that renameGroup and removeGroup disappear immediately
         groupMenuOptionsView.layoutTransition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING)
-        groupMenuOptionsView.renameGroupDetail.visibility = View.VISIBLE
         renameGroup.visibility = View.GONE
         removeGroup.visibility = View.GONE
+        groupMenuOptionsView.renameGroupDetail.visibility = View.VISIBLE
 
         groupMenuOptionsView.groupNameTextView.text = "Edit Name"
         groupMenuOptionsView.renameGroupDetail.renameGroupEditText.hint = groupSelected?.name
-        groupMenuOptionsView.renameGroupDetail.renameGroupEditText.setSelection(0)
+        renameGroupEditText.requestFocus()
+
+        // I'm not sure if this is necessary on a real device, going to leave in until I can confirm
+        if (context != null && view != null) {
+            val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(view!!, InputMethodManager.SHOW_IMPLICIT)
+        }
     }
 
     /**
      * Resets the group options menu to its default state (edit/delete group options for admins) and
      * renames group (locally and to backend). Does not dismiss the group options menu.
      */
-    private fun endRenameGroup(){
+    private fun finishRenameGroup(){
         val newGroupName = renameGroupEditText.text.toString().trim()
-        if (newGroupName == "" || groupSelected == null) return
+        if (newGroupName == "" || groupSelected == null) {
+            AlertDialog.Builder(context)
+                    .setTitle("Group Rename Failed")
+                    .setMessage("Please enter a valid name!")
+                    .setNeutralButton(android.R.string.ok, null)
+                    .show()
+            return
+        }
+
         val endpoint = Endpoint.renameGroup(groupSelected!!.id, newGroupName)
 
         CoroutineScope(Dispatchers.IO).launch {
