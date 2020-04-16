@@ -92,9 +92,12 @@ class GroupRecyclerAdapter(
                 val lastUpdated = java.lang.Long.parseLong(group.updatedAt)
                 var timeResult = " "
                 val timeSplit = Util.splitToComponentTimes(unixTime - lastUpdated)
-                for (i in 0..6) {
+                for (i in TIME_LABELS.indices) {
                     timeResult = timeSplit[i].toString() + " " + TIME_LABELS[i]
-                    if (timeSplit[i] != 0) break
+                    if (timeSplit[i] > 0) break
+
+                    // To handle issue where `group.updatedAt` is greater than the current time
+                    if (i == TIME_LABELS.size-1) timeResult = "1 " + TIME_LABELS[i]
                 }
 
                 if (timeResult[0] == '1') {
@@ -109,6 +112,11 @@ class GroupRecyclerAdapter(
     fun addAll(newList: ArrayList<Group>) {
         groups.clear()
         groups.addAll(newList)
+    }
+
+    fun updateGroup(group: Group, index: Int) {
+        groups[index] = group
+        notifyItemChanged(index)
     }
 
     internal fun getItem(index: Int): Group {

@@ -26,7 +26,7 @@ fun Endpoint.Companion.deleteGroup(id: String): Endpoint {
     return Endpoint("/sessions/$id", headers = mapOf("Authorization" to "Bearer ${User.currentSession.accessToken}"), method = EndpointMethod.DELETE)
 }
 
-fun Endpoint.Companion.renameGroup(id: Int, name: String): Endpoint {
+fun Endpoint.Companion.renameGroup(id: String, name: String): Endpoint {
     val nameJSON = JSONObject()
     nameJSON.put("name", name)
     val requestBody = RequestBody.create(MediaType.get("application/json; charset=utf-8"), nameJSON.toString())

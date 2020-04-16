@@ -2,22 +2,24 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/groupMenuOptionsView"
     android:background="@color/white"
     android:layout_alignParentBottom="true"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:visibility="invisible">
+    android:visibility="invisible"
+    android:animateLayoutChanges="true">
 
     <TextView
         android:id="@+id/groupNameTextView"
         android:fontFamily="sans-serif-medium"
-        android:layout_height="25dp"
+        android:layout_height="30dp"
         android:layout_marginStart="22dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:text=""
         android:textColor="@color/black"
-        android:textSize="17sp"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -41,7 +43,7 @@
         app:layout_constraintTop_toBottomOf="@id/closeButton" />
 
     <LinearLayout
-        android:id="@+id/editGroupName"
+        android:id="@+id/renameGroup"
         android:clickable="true"
         android:focusable="true"
         android:layout_height="wrap_content"
@@ -80,7 +82,7 @@
         android:paddingBottom="21dp"
         android:layout_width="match_parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editGroupName"
+        app:layout_constraintTop_toBottomOf="@id/renameGroup"
         tools:ignore="UseCompoundDrawables">
 
         <ImageView
@@ -102,4 +104,41 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/renameGroupDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="vertical"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider">
+
+        <EditText
+            android:id="@+id/renameGroupEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:inputType="text"
+            android:hint=""
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+            android:padding="15dp"
+            android:background="@drawable/rounded_grey_border"
+            />
+
+        <Button
+            android:id="@+id/saveGroupName"
+            android:layout_width="200dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:text="@string/save_group_name"
+            android:textColor="@color/actualWhite"
+            android:layout_marginBottom="50dp"
+            android:background="@drawable/rounded_save_rename_button"
+            />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

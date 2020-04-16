@@ -1,7 +1,9 @@
 package com.cornellappdev.android.pollo
 
+import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
@@ -16,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,7 +29,9 @@ import com.cornellappdev.android.pollo.models.User
 import com.cornellappdev.android.pollo.networking.*
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.android.synthetic.main.manage_group_view.*
 import kotlinx.android.synthetic.main.manage_group_view.view.*
+import kotlinx.android.synthetic.main.manage_group_view.view.renameGroupDetail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -49,6 +54,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     private val fragmentInteractionListener: OnFragmentInteractionListener? = null
     private var delegate: GroupFragmentDelegate? = null
 
+    private var isNameEditingActive: Boolean = false
     private var isPopupActive: Boolean = false
     private var role: User.Role? = null
     private var groups = ArrayList<Group>()
@@ -84,13 +90,13 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
 
         when (role) {
             User.Role.MEMBER -> {
-                groupMenuOptionsView.editGroupName.visibility = View.GONE
+                groupMenuOptionsView.renameGroup.visibility = View.GONE
                 groupMenuOptionsView.removeGroup.removeGroupImage.rotation = 180f
                 groupMenuOptionsView.removeGroup.removeGroupImage.setImageResource(R.drawable.leave_group_red)
                 groupMenuOptionsView.removeGroup.removeGroupText.setText(R.string.leave_group)
             }
             User.Role.ADMIN -> {
-                groupMenuOptionsView.editGroupName.visibility = View.VISIBLE
+                groupMenuOptionsView.renameGroup.visibility = View.VISIBLE
                 groupMenuOptionsView.removeGroup.removeGroupImage.setImageResource(R.drawable.ic_trash_can)
                 groupMenuOptionsView.removeGroup.removeGroupText.setText(R.string.delete_group)
             }
@@ -101,8 +107,13 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
             dismissPopup()
         }
 
-        groupMenuOptionsView.editGroupName.setOnClickListener {
-            // TODO(#40)
+        groupMenuOptionsView.renameGroup.setOnClickListener {
+            beginRenameGroup()
+        }
+
+        groupMenuOptionsView.renameGroupDetail.saveGroupName.setOnClickListener {
+            finishRenameGroup()
+            dismissPopup()
         }
 
         groupMenuOptionsView.removeGroup.setOnClickListener {
@@ -297,6 +308,24 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         groupMenuOptionsView.startAnimation(animate)
         groupMenuOptionsView.visibility = View.INVISIBLE
         groupSelected = null
+
+        if (isNameEditingActive) {
+            // Reset this from beginRenameGroup
+            groupMenuOptionsView.layoutTransition.enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING)
+
+            // Don't need to check user role since only an admin could edit name in the first place
+            groupMenuOptionsView.renameGroupDetail.visibility = View.GONE
+            groupMenuOptionsView.renameGroup.visibility = View.VISIBLE
+            groupMenuOptionsView.removeGroup.visibility = View.VISIBLE
+
+            isNameEditingActive = false
+            groupMenuOptionsView.renameGroupDetail.renameGroupEditText.text.clear()
+
+            if (context != null && view != null) {
+                val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(view!!.applicationWindowToken, 0)
+            }
+        }
     }
 
     /**
@@ -331,7 +360,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
-            var canProceed = when (role) {
+            val canProceed = when (role) {
                 User.Role.MEMBER -> s?.length == 6
                 User.Role.ADMIN -> s?.length != 0
                 null -> return
@@ -407,6 +436,74 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
             } else {
                 Log.e("failure", "backend response failed to generate code")
                 return@launch
+            }
+        }
+    }
+
+    /**
+     * Shows keyboard and the `EditText` for renaming in the group options menu
+     */
+    private fun beginRenameGroup() {
+        isNameEditingActive = true
+
+        // Disable this so that renameGroup and removeGroup disappear immediately
+        groupMenuOptionsView.layoutTransition.disableTransitionType(LayoutTransition.CHANGE_DISAPPEARING)
+        renameGroup.visibility = View.GONE
+        removeGroup.visibility = View.GONE
+        groupMenuOptionsView.renameGroupDetail.visibility = View.VISIBLE
+
+        groupMenuOptionsView.groupNameTextView.text = "Edit Name"
+        groupMenuOptionsView.renameGroupDetail.renameGroupEditText.hint = groupSelected?.name
+        renameGroupEditText.requestFocus()
+
+        // I'm not sure if this is necessary on a real device, going to leave in until I can confirm
+        if (context != null && view != null) {
+            val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(view!!, InputMethodManager.SHOW_IMPLICIT)
+        }
+    }
+
+    /**
+     * Resets the group options menu to its default state (edit/delete group options for admins) and
+     * renames group (locally and to backend). Does not dismiss the group options menu.
+     */
+    private fun finishRenameGroup(){
+        val newGroupName = renameGroupEditText.text.toString().trim()
+        if (newGroupName == "" || groupSelected == null) {
+            AlertDialog.Builder(context)
+                    .setTitle("Group Rename Failed")
+                    .setMessage("Please enter a valid name!")
+                    .setNeutralButton(android.R.string.ok, null)
+                    .show()
+            return
+        }
+
+        val endpoint = Endpoint.renameGroup(groupSelected!!.id, newGroupName)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val typeTokenGroup = object : TypeToken<ApiResponse<Group>>() {}.type
+            val groupResponse = Request.makeRequest<ApiResponse<Group>>(endpoint.okHttpRequest(), typeTokenGroup)
+
+            if (groupResponse?.success == false || groupResponse?.data == null) {
+                withContext(Dispatchers.Main) {
+                    AlertDialog.Builder(context)
+                            .setTitle("Group Rename Failed")
+                            .setMessage("Please try again!")
+                            .setNeutralButton(android.R.string.ok, null)
+                            .show()
+                }
+                return@launch
+            }
+
+            for (i in 0 until groups.size) {
+                if (groups[i].id == groupResponse.data.id) {
+                    groups[i] = groupResponse.data
+
+                    withContext(Dispatchers.Main) {
+                        currentAdapter?.updateGroup(groups[i], i)
+                    }
+                    break
+                }
             }
         }
     }

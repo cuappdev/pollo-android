@@ -44,6 +44,14 @@ class Endpoint(private val path: String, private val headers: Map<String, String
                         .build()
             }
 
+            EndpointMethod.PUT -> {
+                return Request.Builder()
+                        .url(endpoint)
+                        .headers(headers)
+                        .put(body ?: RequestBody.create(MediaType.get("application/json; charset=utf-8"), ""))
+                        .build()
+            }
+
             else -> {
                 throw IllegalArgumentException("NOT IMPLEMENTED")
             }
