@@ -31,7 +31,6 @@
     <string name="leave_group">Leave Group</string>
     <string name="delete_group">Delete Group</string>
     <string name="edit_group_name">Edit Name</string>
-    <string name="end_poll">End Poll</string>
     <string name="save_group_name">Save</string>
 
 <!--Home Screen Empty State Strings-->
