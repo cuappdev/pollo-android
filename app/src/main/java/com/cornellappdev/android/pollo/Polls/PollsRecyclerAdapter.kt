@@ -1,6 +1,8 @@
 package com.cornellappdev.android.pollo.polls
 
+import android.app.Activity
 import android.content.res.Resources
+import android.os.Handler
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -11,9 +13,15 @@ import kotlinx.android.synthetic.main.poll_recyclerview_item_row.view.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.cornellappdev.android.pollo.PollsDateActivity
 import com.cornellappdev.android.pollo.models.Poll
 import com.cornellappdev.android.pollo.models.PollChoice
 import com.cornellappdev.android.pollo.models.PollState
+import com.cornellappdev.android.pollo.models.User
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.scheduleAtFixedRate
+import kotlin.concurrent.timer
 
 
 interface FreeResponseDelegate {
@@ -21,7 +29,8 @@ interface FreeResponseDelegate {
 }
 
 class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
-                           private val googleId: String) : RecyclerView.Adapter<PollsRecyclerAdapter.PollHolder>(), FreeResponseDelegate {
+                           private val googleId: String,
+                           private val role: User.Role) : RecyclerView.Adapter<PollsRecyclerAdapter.PollHolder>(), FreeResponseDelegate {
 
     private val viewPool = RecyclerView.RecycledViewPool()
 
@@ -56,9 +65,9 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
 
             val headerHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100f, displayMetrics).toInt()
             val cellHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 55f, displayMetrics).toInt()
-            val buttonHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 65f, displayMetrics).toInt()
+            val adminControlsHeight = if (role == User.Role.ADMIN) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 85f, displayMetrics).toInt() else 0
             // 86 dp is the height of header, 53dp is height of cell
-            val tmpHeight = headerHeight + cellHeight*poll.answerChoices.count() + buttonHeight // 53 is cell height including top margin
+            val tmpHeight = headerHeight + cellHeight*poll.answerChoices.count() + adminControlsHeight // 53 is cell height including top margin
 
             height = if (tmpHeight <= 1250) tmpHeight else 1250
 
@@ -66,7 +75,7 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
             // height = 1250
         }
 
-        holder.bindPoll(poll, this)
+        holder.bindPoll(poll, this, role)
 
         val childLayoutManager = LinearLayoutManager(holder.view.pollsChoiceRecyclerView.context)
         childLayoutManager.initialPrefetchItemCount = 4
@@ -89,6 +98,7 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
         var view: View = v
         private var poll: Poll? = null
         private var delegate: FreeResponseDelegate? = null
+        private var role: User.Role? = null
 
         init {
             v.setOnClickListener(this)
@@ -98,26 +108,47 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
             println("CLICKED BIG POLL")
         }
 
-        fun bindPoll(poll: Poll, delegate: FreeResponseDelegate) {
+        fun bindPoll(poll: Poll, delegate: FreeResponseDelegate, role: User.Role) {
             this.poll = poll
             this.delegate = delegate
+            this.role = role
 
             val totalNumberOfResponses = poll.answerChoices?.map { pollResult ->
                 pollResult.count ?: 0
             }?.sum()
             view.questionMCTextView.text = poll.text
+            view.adminPollControlsView.visibility = View.GONE
 
             when (poll.state) {
                 PollState.live -> {
                     view.questionMCSubtitleText.text = "Live"
-                    view.end_poll_button.setOnClickListener {
-                        Socket.serverEnd()
+                    if (role == User.Role.ADMIN) {
+                        val timer = Timer("Poll Timer", false)
+                        timer.schedule(object: TimerTask() {
+                            val start = if (poll.createdAt != null) poll.createdAt.toLong() * 1000 else Date().time
+                            override fun run() {
+                                val timeElapsed = ((Date().time - start) / 1000)
+                                val minutes = timeElapsed / 60
+                                val seconds = timeElapsed % 60
+
+                                val secondsText = if (seconds < 10) "0$seconds" else "$seconds"
+                                val minutesText = if (minutes < 10) "0$minutes" else "$minutes"
+                                val timerText = "$minutesText:$secondsText"
+                                view.post {
+                                    view.poll_timer.text = timerText
+                                }
+                            }
+                        }, 0, 1000)
+                        view.adminPollControlsView.visibility = View.VISIBLE
+                        view.end_poll_button.setOnClickListener {
+                            Socket.serverEnd()
+                            timer.cancel()
+                        }
                     }
                 }
 
                 PollState.ended -> {
                     view.questionMCSubtitleText.text = "Poll Closed"
-                    view.end_poll_button.visibility = View.GONE
                 }
 
                 PollState.shared -> {
