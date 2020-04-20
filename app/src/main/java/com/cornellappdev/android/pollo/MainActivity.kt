@@ -19,7 +19,6 @@ import com.cornellappdev.android.pollo.networking.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

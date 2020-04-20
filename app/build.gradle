@@ -27,7 +27,13 @@ android {
         buildConfigField("String", "BACKEND_URI", "\"pollo-dev.cornellappdev.com\"")
     }
     buildTypes {
+        debug {
+            manifestPlaceholders = [crashlyticsCollectionEnabled:"false"]
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
         release {
+            manifestPlaceholders = [crashlyticsCollectionEnabled:"true"]
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
