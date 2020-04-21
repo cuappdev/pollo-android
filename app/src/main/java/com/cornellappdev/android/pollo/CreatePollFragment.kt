@@ -87,7 +87,7 @@ class CreatePollFragment : Fragment() {
             var answerChoices = Poll((System.currentTimeMillis() / 1000).toString(), null, null, poll_question.text.toString(),
                     ArrayList(), PollType.multipleChoice, correctAnswer, mutableMapOf(), PollState.live)
             for (x in 0 until options.size) {
-                answerChoices.answerChoices.add(PollResult((x + 65).toChar().toString(), options[x], x))
+                answerChoices.answerChoices.add(PollResult((x + 65).toChar().toString(), options[x], 0))
             }
 
             val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager

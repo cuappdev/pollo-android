@@ -81,7 +81,7 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
         childLayoutManager.initialPrefetchItemCount = 4
         holder.view.pollsChoiceRecyclerView.apply {
             layoutManager = childLayoutManager
-            adapter = PollsChoiceRecyclerAdapter(poll, googleId)
+            adapter = PollsChoiceRecyclerAdapter(poll, googleId, role)
             setRecycledViewPool(viewPool)
         }
 
@@ -113,9 +113,9 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
             this.delegate = delegate
             this.role = role
 
-            val totalNumberOfResponses = poll.answerChoices?.map { pollResult ->
+            val totalNumberOfResponses = poll.answerChoices.map { pollResult ->
                 pollResult.count ?: 0
-            }?.sum()
+            }.sum()
             view.questionMCTextView.text = poll.text
             view.adminPollControlsView.visibility = View.GONE
 
