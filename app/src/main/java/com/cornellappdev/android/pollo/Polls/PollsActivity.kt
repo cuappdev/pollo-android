@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.cornellappdev.android.pollo.R
 import com.cornellappdev.android.pollo.models.Poll
 import com.cornellappdev.android.pollo.models.PollState
+import com.cornellappdev.android.pollo.models.User
 import com.cornellappdev.android.pollo.networking.Socket
 import com.cornellappdev.android.pollo.networking.SocketDelegate
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -30,6 +31,7 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
     private lateinit var name: String
     private lateinit var code: String
     private lateinit var date: String
+    private lateinit var role: User.Role
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var adapter: PollsRecyclerAdapter
 
@@ -45,6 +47,7 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
         code = intent.getStringExtra("GROUP_CODE")
         date = intent.getStringExtra("POLLS_DATE")
         userCount = intent.getIntExtra("USER_COUNT", 0)
+        role = intent.getSerializableExtra("USER_ROLE") as User.Role
         Socket.add(this)
 
         groupNameTextView.text = name
@@ -55,7 +58,7 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
 
         linearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         pollsRecyclerView.layoutManager = linearLayoutManager
-        adapter = PollsRecyclerAdapter(polls, googleId)
+        adapter = PollsRecyclerAdapter(polls, googleId, role)
         pollsRecyclerView.adapter = adapter
 
         if (polls[polls.size - 1].state == PollState.live) {

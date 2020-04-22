@@ -9,14 +9,15 @@ import com.cornellappdev.android.pollo.inflate
 import com.cornellappdev.android.pollo.models.Poll
 import com.cornellappdev.android.pollo.models.PollChoice
 import com.cornellappdev.android.pollo.models.PollState
-import kotlinx.android.synthetic.main.poll_free_response_item_row.view.*
+import com.cornellappdev.android.pollo.models.User
 import kotlinx.android.synthetic.main.poll_multiple_choice_item_row.view.*
 import com.cornellappdev.android.pollo.networking.Socket
 import kotlin.math.roundToInt
 
 
 class PollsChoiceRecyclerAdapter(private val poll: Poll,
-                                 private val googleId: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                                 private val googleId: String,
+                                 private val role: User.Role) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var positionSelected = -1
 
@@ -33,8 +34,8 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val choiceHolder = holder as ChoiceHolder
-        choiceHolder.bindPoll(poll, googleId)
-        if (poll.state == PollState.live) {
+        choiceHolder.bindPoll(poll, googleId, role)
+        if (poll.state == PollState.live && role == User.Role.MEMBER) {
             choiceHolder.view.setOnClickListener { view ->
                 positionSelected = position
                 val answerSelected = poll.answerChoices[position]
@@ -58,15 +59,20 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
         private var isQuestionLive = false
         private var totalNumberOfResponses = 0
 
-        fun bindPoll(poll: Poll, googleId: String) {
+        fun bindPoll(poll: Poll, googleId: String, role: User.Role) {
             this.poll = poll
             this.totalNumberOfResponses = poll.answerChoices.map { it.count ?: 0}.sum()
+
+            if (role == User.Role.MEMBER && poll.state != PollState.shared) {
+                view.answerCountTextView.visibility = View.INVISIBLE
+            } else {
+                displayPercentage(poll)
+            }
 
             when (poll.state) {
                 PollState.live -> {
                     view.answerTextView.text = poll.answerChoices[adapterPosition].text
                     view.answerTextView.setTextColor(ContextCompat.getColor(view.context, R.color.black))
-                    view.answerCountTextView.visibility = View.INVISIBLE
 
                     val potentialUserAnswer = poll.userAnswers?.get(googleId)
 
@@ -80,7 +86,6 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
 
                 PollState.ended -> {
                     setupFinishedPoll()
-                    view.answerCountTextView.text = ""
                     val potentialUserAnswer = poll.userAnswers?.get(googleId)
                     if (potentialUserAnswer == null || potentialUserAnswer.size < 1) {
                         view.progressBarWrapper.background.level = 0
@@ -103,8 +108,6 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
                     view.answerTextView.setTextColor(darkGrayColor)
                     view.answerCountTextView.setTextColor(darkGrayColor)
                     val count = poll.answerChoices[adapterPosition].count ?: 0
-                    view.answerCountTextView.visibility = View.VISIBLE
-                    view.answerCountTextView.text = if (totalNumberOfResponses != 0) "${(count / totalNumberOfResponses) * 100}%" else "0%"
                     val correctAnswer = poll.correctAnswer
                     if(correctAnswer == "") {
                         /* We need to set how much the background is filled based off the % of people that answered this.
@@ -120,6 +123,12 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
                     }
                 }
             }
+        }
+        // Displays percentage of responses for this answer choice
+        private fun displayPercentage(poll: Poll) {
+            val count = poll.answerChoices[adapterPosition].count ?: 0
+            view.answerCountTextView.visibility = View.VISIBLE
+            view.answerCountTextView.text = if (totalNumberOfResponses != 0) "${((count.toDouble()/ totalNumberOfResponses) * 100).roundToInt()}%" else "0%"
         }
 
         private fun setupFinishedPoll() {

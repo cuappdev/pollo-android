@@ -69,7 +69,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         // Use LinearLayoutManager because we just want one cell per row
         linearLayoutManager = LinearLayoutManager(this)
         pollsDateRecyclerView.layoutManager = linearLayoutManager
-        adapter = PollsDateRecyclerAdapter(sortedPolls, group.code, group.name, currentUserCount)
+        adapter = PollsDateRecyclerAdapter(sortedPolls, group.code, group.name, currentUserCount, role)
         pollsDateRecyclerView.adapter = adapter
 
         groupNameTextView.text = group.name
@@ -108,9 +108,11 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
             val sortedPollsRefreshed = withContext(Dispatchers.Default) {
                 Request.makeRequest<ApiResponse<ArrayList<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest(), typeTokenSortedPolls)
             } ?: return@launch
-            for (sortedPoll in sortedPollsRefreshed.data){
-                for (poll in sortedPoll.polls)
+
+            if (sortedPollsRefreshed.data.isNotEmpty()) {
+                for (poll in sortedPollsRefreshed.data.last().polls) {
                     onPollStart(poll)
+                }
             }
         }
     }
