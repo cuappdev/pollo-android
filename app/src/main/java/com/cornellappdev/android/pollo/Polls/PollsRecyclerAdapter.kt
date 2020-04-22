@@ -125,7 +125,8 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
                     if (role == User.Role.ADMIN) {
                         val timer = Timer("Poll Timer", false)
                         timer.schedule(object: TimerTask() {
-                            val start = if (poll.createdAt != null) poll.createdAt.toLong() * 1000 else Date().time
+                            val pollCreatedAt = if (poll.createdAt != null) poll.createdAt.toLong() * 1000 else Date().time
+                            val start = if (pollCreatedAt < Date().time) pollCreatedAt else Date().time
                             override fun run() {
                                 val timeElapsed = ((Date().time - start) / 1000)
                                 val minutes = timeElapsed / 60

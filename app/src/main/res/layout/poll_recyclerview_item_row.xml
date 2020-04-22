@@ -166,6 +166,7 @@
             android:layout_marginTop="16dp"
             android:text="@string/default_timer_text"
             android:textColor="@color/white"
+            android:includeFontPadding="false"
             app:layout_constraintTop_toBottomOf="@+id/end_poll_button" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

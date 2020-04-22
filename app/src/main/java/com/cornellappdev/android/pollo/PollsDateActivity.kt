@@ -114,10 +114,6 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
                     onPollStart(poll)
                 }
             }
-//            for (sortedPoll in sortedPollsRefreshed.data){
-//                for (poll in sortedPoll.polls)
-//                    onPollStart(poll)
-//            }
         }
     }
 

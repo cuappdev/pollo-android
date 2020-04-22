@@ -62,7 +62,6 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
         pollsRecyclerView.adapter = adapter
 
         if (polls[polls.size - 1].state == PollState.live) {
-            val numItems = linearLayoutManager.itemCount
             linearLayoutManager.scrollToPosition(polls.size - 1)
             currentPollView.text = "${polls.size} / ${polls.size}"
         }
