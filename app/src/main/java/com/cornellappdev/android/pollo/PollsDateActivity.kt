@@ -276,7 +276,6 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
 
     override fun onPollResult(poll: Poll) {}
 
-    override fun freeResponseUpdates(poll: Poll) {}
 
     override fun onPollDelete(pollID: String) {
         for (pollGroup in sortedPolls) {
@@ -307,12 +306,6 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
 
         runOnUiThread { adapter.updatePolls(sortedPolls) }
         toggleEmptyState()
-    }
-
-    override fun freeResponseSubmissionSuccessful() {}
-
-    override fun freeResponseSubmissionFailed(pollFilter: Socket.PollFilter) {
-        println(pollFilter.filter)
     }
 
     fun openNewPollFragment(view: View) {

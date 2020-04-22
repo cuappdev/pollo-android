@@ -18,6 +18,7 @@ import com.cornellappdev.android.pollo.models.*
 import com.cornellappdev.android.pollo.models.PollResult
 import com.cornellappdev.android.pollo.networking.*
 import com.google.gson.reflect.TypeToken
+import com.cornellappdev.android.pollo.models.PollState
 import kotlinx.android.synthetic.main.create_poll_onboarding.view.*
 import kotlinx.android.synthetic.main.create_poll_options_list_item.view.*
 import kotlinx.android.synthetic.main.fragment_create_poll.*
@@ -114,8 +115,8 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate {
             val correctAnswer = if (correct == -1) null else (correct + 65).toChar().toString()
             val pollText = if (poll_question.text.toString().isBlank()) getString(R.string.untitled_poll) else poll_question.text.toString()
 
-            val answerChoices = Poll((System.currentTimeMillis() / 1000).toString(), null, null, pollText,
-                    ArrayList(), PollType.multipleChoice, correctAnswer, mutableMapOf(), PollState.live)
+            var answerChoices = Poll((System.currentTimeMillis() / 1000).toString(), null, null, pollText,
+                    ArrayList(), correct, mutableMapOf(), PollState.live)
             for (x in 0 until options.size) {
                 answerChoices.answerChoices.add(PollResult((x + 65).toChar().toString(), options[x], 0))
             }

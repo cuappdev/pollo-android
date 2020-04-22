@@ -126,11 +126,6 @@ class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.
         renderPoll(poll)
     }
 
-    override fun freeResponseUpdates(poll: Poll) {
-        println(poll.answerChoices)
-        renderPoll(poll)
-    }
-
     override fun onPollDelete(pollID: String) {
         var removePollID = -1
         for (poll in polls) {
@@ -203,32 +198,6 @@ class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.
 
     override fun onPollUpdateAdmin(poll: Poll) {
         renderPoll(poll)
-    }
-
-    // Below is legacy code for Free Response submissions by Austin Astorga. This is not used in Pollo v1.
-    override fun freeResponseSubmissionSuccessful() {
-        val viewHolder = pollsRecyclerView.findViewHolderForAdapterPosition(polls.size - 1) as PollsRecyclerAdapter.PollHolder
-        runOnUiThread {
-            // viewHolder.view.questionFREditText.setText("")
-        }
-    }
-
-    override fun freeResponseSubmissionFailed(pollFilter: Socket.PollFilter) {
-        val viewHolder = pollsRecyclerView.findViewHolderForAdapterPosition(polls.size - 1) as PollsRecyclerAdapter.PollHolder
-        val spannableText = SpannableString(pollFilter.text ?: "")
-        (pollFilter.filter ?: ArrayList()).forEach { wordToFilter ->
-            var currEndIndex = 0
-            val regexForFilteredWord = "(?i)$wordToFilter".toRegex()
-            regexForFilteredWord.findAll(spannableText).forEach { match ->
-                val startIndex = spannableText.indexOf(match.value, startIndex = currEndIndex)
-                currEndIndex = startIndex + match.value.length
-                spannableText.setSpan(ForegroundColorSpan(resources.getColor(R.color.red)), startIndex, currEndIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-            }
-        }
-
-        runOnUiThread {
-            // viewHolder.view.questionFREditText.setText(spannableText)
-        }
     }
 
     fun goBack(view: View) {

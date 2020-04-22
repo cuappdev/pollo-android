@@ -109,9 +109,25 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
                 PollState.shared -> {
                     view.answerButton.background =
                         when (poll.correctAnswer) {
-                            "" -> ContextCompat.getDrawable(view.context, R.drawable.no_correct_radio_button)
-                            potentialUserAnswer?.first()?.letter -> ContextCompat.getDrawable(view.context, R.drawable.checked_correct_radio_button)
+                            -1 -> ContextCompat.getDrawable(view.context, R.drawable.no_correct_radio_button)
+//                            potentialUserAnswer?.first() -> ContextCompat.getDrawable(view.context, R.drawable.checked_correct_radio_button)
                             else -> ContextCompat.getDrawable(view.context, R.drawable.checked_incorrect_radio_button)
+//                    setupFinishedPoll()
+//                    val darkGrayColor = ContextCompat.getColor(view.context, R.color.darkGray)
+//                    view.answerTextView.setTextColor(darkGrayColor)
+//                    view.answerCountTextView.setTextColor(darkGrayColor)
+//                    val count = poll.answerChoices[adapterPosition].count ?: 0
+//                    val correctAnswer = poll.correctAnswer
+//                    if (correctAnswer == -1) {
+//                        /* No correct answer. We need to set how much the background is filled based
+//                         off the % of people that answered this. the level property goes from 0 to 10000 */
+//                        view.progressBarWrapper.background.level =
+//                                if (totalNumberOfResponses != 0) ((count.toDouble() / totalNumberOfResponses.toDouble()) * 10000).roundToInt() else 0
+//                    } else {
+//                        if (adapterPosition == correctAnswer) {
+//                            view.progressBarWrapper.background.level = 10000
+//                        } else {
+//                            view.progressBarWrapper.background.level = 0
                         }
                 }
             }

@@ -18,7 +18,6 @@ import com.cornellappdev.android.pollo.models.User
 import java.util.*
 import kotlin.collections.ArrayList
 
-
 interface FreeResponseDelegate {
     fun sendAnswer(position: Int, answer: String)
 }
@@ -82,7 +81,7 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
 
     override fun sendAnswer(position: Int, answer: String) {
         val poll = polls[position]
-        val pollChoice = PollChoice(letter = null, text = answer)
+        val pollChoice = PollChoice(letter = poll.answerChoices[position].letter, text = answer)
         Socket.sendMCAnswer(pollChoice)
     }
 
