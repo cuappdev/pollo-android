@@ -3,7 +3,6 @@ package com.cornellappdev.android.pollo.networking
 import android.util.Log
 import com.cornellappdev.android.pollo.BuildConfig
 import com.cornellappdev.android.pollo.models.Poll
-import com.cornellappdev.android.pollo.models.PollChoice
 import com.google.gson.Gson
 import io.socket.client.IO
 import io.socket.client.Manager
@@ -102,8 +101,11 @@ object Socket {
 
     fun connect(id: String, accessToken: String) {
         val urlBuilder = HttpUrl.Builder()
-                .scheme("https")
-                .host(BuildConfig.BACKEND_URI)
+                .scheme("http")
+                .host("10.0.2.2")
+                .port(3000)
+                .addPathSegment("api")
+                .addPathSegment("2")
                 .build()
 
         Log.d("Socket URL", urlBuilder.url().toString())
@@ -161,7 +163,7 @@ object Socket {
         socket.emit("server/poll/delete/live")
     }
 
-    fun sendMCAnswer(pollChoice: PollChoice) {
-        socket.emit("server/poll/answer", JSONObject(Gson().toJson(pollChoice)))
+    fun sendMCAnswer(pollIndex: Int) {
+        socket.emit("server/poll/answer", pollIndex)
     }
 }

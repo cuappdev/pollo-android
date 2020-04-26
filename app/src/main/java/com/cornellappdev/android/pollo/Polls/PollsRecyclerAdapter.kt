@@ -12,14 +12,13 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cornellappdev.android.pollo.models.Poll
-import com.cornellappdev.android.pollo.models.PollChoice
 import com.cornellappdev.android.pollo.models.PollState
 import com.cornellappdev.android.pollo.models.User
 import java.util.*
 import kotlin.collections.ArrayList
 
 interface FreeResponseDelegate {
-    fun sendAnswer(position: Int, answer: String)
+    fun sendAnswer(position: Int)
 }
 
 class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
@@ -79,10 +78,8 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
 
     }
 
-    override fun sendAnswer(position: Int, answer: String) {
-        val poll = polls[position]
-        val pollChoice = PollChoice(letter = poll.answerChoices[position].letter, text = answer)
-        Socket.sendMCAnswer(pollChoice)
+    override fun sendAnswer(position: Int) {
+        Socket.sendMCAnswer(position)
     }
 
     inner class PollHolder(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener {

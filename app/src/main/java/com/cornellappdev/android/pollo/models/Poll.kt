@@ -7,9 +7,6 @@ import kotlinx.android.parcel.Parcelize
 data class PollResult(val letter: String, val text: String, val count: Int?): Parcelable
 
 @Parcelize
-data class PollChoice(val letter: String, val text: String): Parcelable
-
-@Parcelize
 enum class PollState: Parcelable {
     live, ended, shared
 }
@@ -17,5 +14,5 @@ enum class PollState: Parcelable {
 @Parcelize
 data class Poll(val createdAt: String?, val updatedAt: String?, var id: String?,
                 val text: String, val answerChoices: ArrayList<PollResult>,
-                val correctAnswer: Int, val userAnswers: MutableMap<String, ArrayList<PollChoice>>?,
+                val correctAnswer: Int, val userAnswers: MutableMap<String, ArrayList<Int>>,
                 val state: PollState): Parcelable

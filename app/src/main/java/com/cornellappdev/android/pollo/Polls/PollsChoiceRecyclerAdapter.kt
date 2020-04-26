@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.cornellappdev.android.pollo.R
 import com.cornellappdev.android.pollo.inflate
 import com.cornellappdev.android.pollo.models.Poll
-import com.cornellappdev.android.pollo.models.PollChoice
 import com.cornellappdev.android.pollo.models.PollState
 import com.cornellappdev.android.pollo.models.User
 import kotlinx.android.synthetic.main.poll_multiple_choice_item_row.view.*
@@ -39,9 +38,13 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
         if (poll.state == PollState.live && role == User.Role.MEMBER) {
             choiceHolder.view.setOnClickListener { _ ->
                 positionSelected = position
+<<<<<<< HEAD
                 val answerSelected = poll.answerChoices[position]
                 choiceHolder.view.answerButton.isChecked = true
                 poll.userAnswers?.set(googleId, arrayListOf(PollChoice(letter = answerSelected.letter, text = answerSelected.text)))
+=======
+                poll.userAnswers[googleId] = arrayListOf(position)
+>>>>>>> Added the rest of the API updates, temp code for local backend
                 notifyDataSetChanged()
                 sendAnswer(position)
             }
@@ -49,9 +52,7 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
     }
 
     private fun sendAnswer(index: Int) {
-        val answerSelected = poll.answerChoices[index];
-        val pollChoice = PollChoice(letter = answerSelected.letter, text = answerSelected.text)
-        Socket.sendMCAnswer(pollChoice)
+        Socket.sendMCAnswer(index)
     }
 
     class ChoiceHolder(v: View) : RecyclerView.ViewHolder(v) {
@@ -63,7 +64,7 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
 
         fun bindPoll(poll: Poll, googleId: String, role: User.Role) {
             this.poll = poll
-            this.totalNumberOfResponses = poll.answerChoices.map { it.count ?: 0}.sum()
+            this.totalNumberOfResponses = poll.userAnswers.count()
 
             if (role == User.Role.MEMBER && poll.state != PollState.shared) {
                 // hides responses
@@ -82,6 +83,7 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
             val answerTextColor = if (role == User.Role.ADMIN || poll.state == PollState.live) R.color.black else R.color.darkGray
             view.answerTextView.setTextColor(ContextCompat.getColor(view.context, answerTextColor))
 
+<<<<<<< HEAD
             // See if radio button is checked
             val potentialUserAnswer = poll.userAnswers?.get(googleId)
             if (potentialUserAnswer == null || potentialUserAnswer.size < 1) {
@@ -104,6 +106,34 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
 
                 PollState.ended -> {
                     view.answerButton.background = ContextCompat.getDrawable(view.context, R.drawable.no_correct_radio_button)
+=======
+                    val potentialUserAnswer = poll.userAnswers[googleId]
+
+                    if (potentialUserAnswer == null || potentialUserAnswer.size == 0) {
+                        view.progressBarWrapper.background.level = 0
+                    } else {
+                        val level = if (potentialUserAnswer.first() == adapterPosition) 10000 else 0
+                        view.progressBarWrapper.background.level = level
+                    }
+                }
+
+                PollState.ended -> {
+                    setupFinishedPoll()
+                    val potentialUserAnswer = poll.userAnswers.get(googleId)
+                    if (potentialUserAnswer == null || potentialUserAnswer.size < 1) {
+                        view.progressBarWrapper.background.level = 0
+                        view.answerTextView.setTextColor(ContextCompat.getColor(view.context, R.color.multipleChoiceIncorrectAnswerColor))
+                    } else {
+                        val isSelectedAnswer = potentialUserAnswer.first() == adapterPosition
+                        val level = if (isSelectedAnswer) 10000 else 0
+                        view.progressBarWrapper.background.level = level
+                        if (isSelectedAnswer) {
+                            view.answerTextView.setTextColor(ContextCompat.getColor(view.context, R.color.actualWhite))
+                        } else {
+                            view.answerTextView.setTextColor(ContextCompat.getColor(view.context, R.color.multipleChoiceIncorrectAnswerColor))
+                        }
+                    }
+>>>>>>> Added the rest of the API updates, temp code for local backend
                 }
 
                 PollState.shared -> {
@@ -141,8 +171,15 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
             view.answerCountTextView.text = count.toString()
             val answerPercentage = if (totalNumberOfResponses != 0) "(${((count.toDouble()/ totalNumberOfResponses) * 100).roundToInt()}%)" else "(0%)"
             view.answerPercentageTextView.text = answerPercentage
-
-            setupProgressBar(poll)
+//        // Displays percentage of responses for this answer choice
+//        private fun displayPercentage(poll: Poll) {
+//            val count = poll.userAnswers.count {
+//                if (it.value.count() > 0) it.value.first() == adapterPosition else false
+//            }
+//            view.answerCountTextView.visibility = View.VISIBLE
+//            view.answerCountTextView.text = if (totalNumberOfResponses != 0) "${((count.toDouble()/ totalNumberOfResponses) * 100).roundToInt()}%" else "0%"
+//        }
+//            setupProgressBar(poll)
         }
 
         // Displays progress bar
