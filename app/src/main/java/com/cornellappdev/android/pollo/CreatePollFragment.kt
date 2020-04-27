@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.room.Room
 import com.cornellappdev.android.pollo.models.Poll
 import com.cornellappdev.android.pollo.models.PollResult
 import com.cornellappdev.android.pollo.models.PollState
@@ -22,6 +23,7 @@ import kotlinx.android.synthetic.main.fragment_create_poll.*
 import kotlinx.android.synthetic.main.fragment_create_poll.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 @SuppressLint("ValidFragment")
@@ -54,6 +56,10 @@ class CreatePollFragment : Fragment() {
 
         addOption.setOnClickListener {
             addOptionToList()
+        }
+
+        saveDraft.setOnClickListener {
+            saveDraft()
         }
 
         startPoll.setOnClickListener {
@@ -94,6 +100,24 @@ class CreatePollFragment : Fragment() {
             imm.hideSoftInputFromWindow(view!!.applicationWindowToken, 0)
 
             (activity as PollsDateActivity).startNewPoll(answerChoices)
+        }
+    }
+
+    private fun saveDraft() {
+        val db = Room.databaseBuilder(context!!, AppDatabase::class.java, "draft-list.db").build()
+
+
+
+        GlobalScope.launch {
+            db.draftDao().insertAll(
+                    DraftEntity(1,"yes", arrayListOf("green", "red", "blue"),-1)
+            )
+
+            val data = db.draftDao().getAll()
+
+            for (d in data) {
+                print(d)
+            }
         }
     }
 

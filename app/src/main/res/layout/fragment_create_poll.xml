@@ -95,6 +95,34 @@
             android:textSize="18sp" />
 
     </RelativeLayout>
+    
+    <LinearLayout
+        android:id="@+id/drafts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical"
+        >
+        
+        <TextView
+            android:id="@+id/draftsHeader"
+            android:layout_width="match_parent"
+            android:layout_height="26dp"
+            android:textColor="@color/black"
+            android:textAlignment="center"
+
+            />
+
+        <ListView
+            android:id="@+id/draftsListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            />
+        
+        
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/footerView"
