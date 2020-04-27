@@ -14,6 +14,7 @@
     <color name="joinGroupGray">#9B9A9A</color>
     <color name="lightGray">#ECECEC</color>
     <color name="lightGrayDivider">#AEAEAE</color>
+    <color name="lightGreen">#C7EFE6</color>
     <color name="liveNow">#64C5AF</color>
     <color name="multipleChoiceBorderColor">#9FA5B1</color>
     <color name="multipleChoiceIncorrectAnswerColor">#C4C4C4</color>

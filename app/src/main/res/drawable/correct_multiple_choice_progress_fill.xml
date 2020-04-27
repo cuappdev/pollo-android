@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<clip
+<scale
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:drawable="@drawable/correct_multiple_choice_shape"
-    android:clipOrientation="horizontal"
-    android:gravity="left|clip_horizontal|fill_vertical"/>
+    android:scaleGravity="left|fill_vertical|clip_horizontal"
+    android:scaleHeight="100%"
+    android:scaleWidth="100%" />
