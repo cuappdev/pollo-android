@@ -12,24 +12,21 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.room.Room
-import com.cornellappdev.android.pollo.models.Poll
-import com.cornellappdev.android.pollo.models.PollResult
-import com.cornellappdev.android.pollo.models.PollState
-import com.cornellappdev.android.pollo.models.PollType
+import com.cornellappdev.android.pollo.models.*
 import kotlinx.android.synthetic.main.create_poll_onboarding.view.*
 import kotlinx.android.synthetic.main.create_poll_options_list_item.view.*
 import kotlinx.android.synthetic.main.fragment_create_poll.*
 import kotlinx.android.synthetic.main.fragment_create_poll.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 @SuppressLint("ValidFragment")
-class CreatePollFragment : Fragment() {
+class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate {
     var options: ArrayList<String> = arrayListOf()
-    var adapter: CreatePollAdapter? = null
+    var createPollAdapter: CreatePollAdapter? = null
+    var drafts: ArrayList<Draft> = arrayListOf()
+    var draftAdapter: DraftAdapter? = null
     var correct: Int = -1
     var currOnboardScreen: Int = -1
 
@@ -45,10 +42,15 @@ class CreatePollFragment : Fragment() {
         val rootView = inflater.inflate(R.layout.fragment_create_poll, container, false)
 
         options = arrayListOf()
-        adapter = CreatePollAdapter(context!!, options, correct, this)
-        rootView.poll_options.adapter = adapter
-        addOptionToList()
-        addOptionToList()
+        createPollAdapter = CreatePollAdapter(context!!, options, correct, this)
+        rootView.poll_options.adapter = createPollAdapter
+        resetOptions()
+
+        drafts = arrayListOf()
+        draftAdapter = DraftAdapter(context!!, drafts, this)
+        draftAdapter?.delegate = this
+        rootView.drafts.draftsListView.adapter = draftAdapter
+
 
         val addOption = rootView.add_poll_option_button as Button
         val saveDraft = rootView.save_draft as Button
@@ -81,7 +83,20 @@ class CreatePollFragment : Fragment() {
     private fun addOptionToList() {
         // ASCII Math, 0 is 'A', going up from there.
         options.add("Option " + (options.size + 65).toChar())
-        adapter!!.notifyDataSetChanged()
+        createPollAdapter?.notifyDataSetChanged()
+    }
+
+    private fun resetOptions() {
+        // ASCII Math, 0 is 'A', going up from there.
+        options.clear()
+        options.add("Option " + (options.size + 65).toChar())
+        options.add("Option " + (options.size + 65).toChar())
+        createPollAdapter?.notifyDataSetChanged()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setDraftsHeader()
     }
 
     /**
@@ -103,23 +118,52 @@ class CreatePollFragment : Fragment() {
         }
     }
 
+    // DRAFTS
+
     private fun saveDraft() {
-        val db = Room.databaseBuilder(context!!, AppDatabase::class.java, "draft-list.db").build()
+        val text = poll_question.text.toString()
+        val draftOptions = arrayListOf<String>()
+        draftOptions.addAll(options)
+        val draft = Draft(
+                text = if (text.isBlank()) getString(R.string.untitled_poll) else text,
+                options = draftOptions
+        )
 
+        // TODO: don't add if one is selected, just update
+        drafts.add(0, draft)
+        draftAdapter?.notifyDataSetChanged()
 
+        setDraftsHeader()
+        poll_question.text.clear()
+        resetOptions()
+    }
 
-        GlobalScope.launch {
-            db.draftDao().insertAll(
-                    DraftEntity(1,"yes", arrayListOf("green", "red", "blue"),-1)
-            )
-
-            val data = db.draftDao().getAll()
-
-            for (d in data) {
-                print(d)
-            }
+    private fun setDraftsHeader() {
+        if (drafts.size == 0) {
+            draftsHeader?.visibility = View.GONE
+        } else {
+            draftsHeader?.visibility = View.VISIBLE
+            draftsHeader?.text = "Drafts (${drafts.size})"
         }
     }
+
+    override fun draftSelected(draft: Draft) {
+        poll_question.setText(draft.text)
+        options.clear()
+        options.addAll(draft.options)
+        createPollAdapter?.notifyDataSetChanged()
+    }
+
+    override fun draftDeselected() {
+        poll_question.text.clear()
+        resetOptions()
+    }
+
+    override fun draftDeleted(position: Int) {
+        print("delete poll")
+    }
+
+    // ONBOARDING
 
     private fun setupOnboard(view : View) {
         currOnboardScreen = 0

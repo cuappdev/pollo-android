@@ -65,7 +65,10 @@
     <string name="add_option">  Add Option</string>
     <string name="ask_question">Ask a question…</string>
     <string name="create_question">Create Question</string>
+    <string name="delete_poll">Delete Poll</string>
     <string name="drafts">Drafts</string>
+    <string name="untitled_poll">Untitled Poll</string>
+    <string name="multiple_choice">Multiple Choice</string>
     <string name="save_as_draft">Save as Draft</string>
     <string name="start_poll">Start Question</string>
 

@@ -16,6 +16,7 @@
     <color name="lightGrayDivider">#AEAEAE</color>
     <color name="lightGreen">#C7EFE6</color>
     <color name="liveNow">#64C5AF</color>
+    <color name="mediumGray">#C1C1C1</color>
     <color name="multipleChoiceBorderColor">#9FA5B1</color>
     <color name="multipleChoiceIncorrectAnswerColor">#C4C4C4</color>
     <color name="paleGray">#F5F7F8</color>
