@@ -100,13 +100,7 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
         private var delegate: FreeResponseDelegate? = null
         private var role: User.Role? = null
 
-        init {
-            v.setOnClickListener(this)
-        }
-
-        override fun onClick(v: View) {
-            println("CLICKED BIG POLL")
-        }
+        override fun onClick(v: View) {}
 
         fun bindPoll(poll: Poll, delegate: FreeResponseDelegate, role: User.Role) {
             this.poll = poll

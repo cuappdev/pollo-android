@@ -15,22 +15,22 @@
         android:baselineAligned="false"
         android:orientation="horizontal">
 
-        <CheckBox
+        <RadioButton
             android:id="@+id/answerButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
             android:layout_gravity="center"
-            android:buttonTint="@color/black"
+            android:buttonTint="@android:color/transparent"
+            android:background="@drawable/live_radio_button_background"
             android:gravity="center"
-            android:clickable="false"
-            style="@android:style/Widget.DeviceDefault.Light.CompoundButton.RadioButton"/>
+            android:clickable="false"/>
 
         <LinearLayout
             android:id="@+id/progressBarBorder"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_marginStart="2dp"
+            android:layout_marginStart="4dp"
             android:layout_marginEnd="2dp"
             android:orientation="horizontal"
             android:background="@drawable/rounded_multiple_choice_cell">

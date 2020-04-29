@@ -66,11 +66,12 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
             this.totalNumberOfResponses = poll.answerChoices.map { it.count ?: 0}.sum()
 
             if (role == User.Role.MEMBER && poll.state != PollState.shared) {
+                // hides responses
                 view.answerLinearLayout.visibility = View.GONE
+                view.progressBarBorder.background = ContextCompat.getDrawable(view.context, R.drawable.rounded_multiple_choice_cell)
+                view.progressBarWrapper.background.level = 0
             } else {
                 displayResponses(poll)
-                val defaultLevel = if (poll.state == PollState.live && totalNumberOfResponses == 0) 10000 else 0
-                setupProgressBar(poll, defaultLevel)
                 if (role == User.Role.ADMIN) {
                     view.answerButton.visibility = View.GONE
                 }
@@ -81,7 +82,7 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
             val answerTextColor = if (role == User.Role.ADMIN || poll.state == PollState.live) R.color.black else R.color.darkGray
             view.answerTextView.setTextColor(ContextCompat.getColor(view.context, answerTextColor))
 
-            // Toggle radio button
+            // See if radio button is checked
             val potentialUserAnswer = poll.userAnswers?.get(googleId)
             if (potentialUserAnswer == null || potentialUserAnswer.size < 1) {
                 view.answerButton.isChecked = false
@@ -90,30 +91,42 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
                 view.answerButton.isChecked = isSelectedAnswer
             }
 
+            // Set radio button background
             when (poll.state) {
                 PollState.live -> {
+                    view.answerButton.background = ContextCompat.getDrawable(view.context, R.drawable.live_radio_button_background)
                 }
 
                 PollState.ended -> {
-                    setupFinishedPoll()
+                    view.answerButton.background = ContextCompat.getDrawable(view.context, R.drawable.no_correct_radio_button_background)
                 }
 
                 PollState.shared -> {
-                    setupFinishedPoll()
-                    val correctAnswer = poll.correctAnswer
-//                    if(correctAnswer == "") {
-//                    } else {
-//                    }
+                    if (view.answerButton.isChecked) {
+                        view.answerButton.background =
+                            when (poll.correctAnswer) {
+                                "" -> ContextCompat.getDrawable(view.context, R.drawable.no_correct_radio_button)
+                                potentialUserAnswer?.first()?.letter -> ContextCompat.getDrawable(view.context, R.drawable.checked_correct_radio_button)
+                                else -> ContextCompat.getDrawable(view.context, R.drawable.checked_incorrect_radio_button)
+                            }
+                    } else {
+                        view.answerButton.background = ContextCompat.getDrawable(view.context, R.drawable.unchecked_radio_button)
+                    }
                 }
             }
         }
 
         // Displays count and percentage of responses for this answer choice
         private fun displayResponses(poll: Poll) {
+            view.answerLinearLayout.visibility = View.VISIBLE
+
             val count = poll.answerChoices[adapterPosition].count ?: 0
             view.answerCountTextView.text = count.toString()
             val answerPercentage = if (totalNumberOfResponses != 0) "(${((count.toDouble()/ totalNumberOfResponses) * 100).roundToInt()}%)" else "(0%)"
             view.answerPercentageTextView.text = answerPercentage
+
+            val defaultLevel = if (poll.state == PollState.live && totalNumberOfResponses == 0) 10000 else 0
+            setupProgressBar(poll, defaultLevel)
         }
 
         // Displays progress bar
@@ -131,12 +144,6 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
             val count = poll.answerChoices[adapterPosition].count ?: 0
             val level = if (count != 0 && totalNumberOfResponses != 0) ((count.toDouble() / totalNumberOfResponses.toDouble()) * 10000).toInt() else defaultLevel
             view.progressBarWrapper.background.level = level
-        }
-
-        private fun setupFinishedPoll() {
-            val currPoll = poll ?: return
-            view.answerTextView.text = currPoll.answerChoices[adapterPosition].text
-
         }
 
         companion object {
