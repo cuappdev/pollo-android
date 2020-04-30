@@ -7,7 +7,7 @@ import kotlinx.android.parcel.Parcelize
 data class Draft(
         val id: String? = null,
         val createdAt: String? = null,
-        val text: String,
-        val options: ArrayList<String>,
-        val updatedAt: String? = null
+        var text: String,
+        var options: ArrayList<String>,
+        var updatedAt: String? = null
 ) : Parcelable {}

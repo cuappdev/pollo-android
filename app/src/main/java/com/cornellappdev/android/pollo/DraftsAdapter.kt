@@ -117,6 +117,11 @@ class DraftAdapter(private val context: Context,
         val layoutImageParams = ViewGroup.LayoutParams(WRAP_CONTENT, MATCH_PARENT)
         (textView.parent as SnackbarContentLayout).addView(deleteImage, layoutImageParams)
         deleteImage.setOnClickListener {
+            if (selectedDraftItem != null) {
+                // Reset selection
+                setDraftItemSelection(selectedDraftItem, SelectionAction.Deselect)
+                delegate?.draftDeselected()
+            }
             delegate?.draftDeleted(position)
             snackBar.dismiss()
         }
@@ -128,8 +133,8 @@ class DraftAdapter(private val context: Context,
     }
 
     interface DraftsDelegate {
-        fun draftSelected(draft: Draft) //send info to populate field
-        fun draftDeselected()   //clear all fields
+        fun draftSelected(draft: Draft) // Populates draft creation fields appropriately
+        fun draftDeselected()   // Clears draft creation fields
         fun draftDeleted(position: Int)
     }
 }
