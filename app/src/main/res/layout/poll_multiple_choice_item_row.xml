@@ -21,7 +21,7 @@
             android:layout_height="23dp"
             android:layout_gravity="center"
             android:buttonTint="@android:color/transparent"
-            android:background="@drawable/live_radio_button_background"
+            android:background="@drawable/unchecked_radio_button"
             android:gravity="center"
             android:clickable="false"/>
 

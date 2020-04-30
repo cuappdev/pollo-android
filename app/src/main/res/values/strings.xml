@@ -8,7 +8,7 @@
 
     <string name="created">Created</string>
 
-    <string name="end_question_text">End Question</string>
+    <string name="end_question_text">End Poll</string>
     <string name="default_timer_text">00:00</string>
 
     <string name="join_group_hint">Enter a code…</string>

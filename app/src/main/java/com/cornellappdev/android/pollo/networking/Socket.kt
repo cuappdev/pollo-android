@@ -173,6 +173,10 @@ object Socket {
         socket.emit("server/poll/end")
     }
 
+    fun shareResults(poll: Poll) {
+        socket.emit("server/poll/results", poll.id ?: "")
+    }
+
     fun sendMCAnswer(pollChoice: PollChoice) {
         socket.emit("server/poll/answer", JSONObject(Gson().toJson(pollChoice)))
     }

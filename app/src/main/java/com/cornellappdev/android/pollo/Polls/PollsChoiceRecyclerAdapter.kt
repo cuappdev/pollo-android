@@ -37,7 +37,7 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
         val choiceHolder = holder as ChoiceHolder
         choiceHolder.bindPoll(poll, googleId, role)
         if (poll.state == PollState.live && role == User.Role.MEMBER) {
-            choiceHolder.view.setOnClickListener { view ->
+            choiceHolder.view.setOnClickListener { _ ->
                 positionSelected = position
                 val answerSelected = poll.answerChoices[position]
                 choiceHolder.view.answerButton.isChecked = true
@@ -91,27 +91,28 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
                 view.answerButton.isChecked = isSelectedAnswer
             }
 
+            if (!view.answerButton.isChecked) {
+                view.answerButton.background = ContextCompat.getDrawable(view.context, R.drawable.unchecked_radio_button)
+                return
+            }
+
             // Set radio button background
             when (poll.state) {
                 PollState.live -> {
-                    view.answerButton.background = ContextCompat.getDrawable(view.context, R.drawable.live_radio_button_background)
+                    view.answerButton.background = ContextCompat.getDrawable(view.context, R.drawable.checked_live_radio_button)
                 }
 
                 PollState.ended -> {
-                    view.answerButton.background = ContextCompat.getDrawable(view.context, R.drawable.no_correct_radio_button_background)
+                    view.answerButton.background = ContextCompat.getDrawable(view.context, R.drawable.no_correct_radio_button)
                 }
 
                 PollState.shared -> {
-                    if (view.answerButton.isChecked) {
-                        view.answerButton.background =
-                            when (poll.correctAnswer) {
-                                "" -> ContextCompat.getDrawable(view.context, R.drawable.no_correct_radio_button)
-                                potentialUserAnswer?.first()?.letter -> ContextCompat.getDrawable(view.context, R.drawable.checked_correct_radio_button)
-                                else -> ContextCompat.getDrawable(view.context, R.drawable.checked_incorrect_radio_button)
-                            }
-                    } else {
-                        view.answerButton.background = ContextCompat.getDrawable(view.context, R.drawable.unchecked_radio_button)
-                    }
+                    view.answerButton.background =
+                        when (poll.correctAnswer) {
+                            "" -> ContextCompat.getDrawable(view.context, R.drawable.no_correct_radio_button)
+                            potentialUserAnswer?.first()?.letter -> ContextCompat.getDrawable(view.context, R.drawable.checked_correct_radio_button)
+                            else -> ContextCompat.getDrawable(view.context, R.drawable.checked_incorrect_radio_button)
+                        }
                 }
             }
         }
@@ -125,12 +126,11 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
             val answerPercentage = if (totalNumberOfResponses != 0) "(${((count.toDouble()/ totalNumberOfResponses) * 100).roundToInt()}%)" else "(0%)"
             view.answerPercentageTextView.text = answerPercentage
 
-            val defaultLevel = if (poll.state == PollState.live && totalNumberOfResponses == 0) 10000 else 0
-            setupProgressBar(poll, defaultLevel)
+            setupProgressBar(poll)
         }
 
         // Displays progress bar
-        private fun setupProgressBar(poll: Poll, defaultLevel: Int) {
+        private fun setupProgressBar(poll: Poll) {
             val correctAnswer = poll.correctAnswer
             if (poll.answerChoices[adapterPosition].letter == correctAnswer) {
                 view.progressBarWrapper.background = ContextCompat.getDrawable(view.context, R.drawable.correct_multiple_choice_progress_fill)
@@ -142,7 +142,7 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
             /* We need to set how much the background is filled based off the % of people that answered this.
                         the level property goes from 0 to 10000 */
             val count = poll.answerChoices[adapterPosition].count ?: 0
-            val level = if (count != 0 && totalNumberOfResponses != 0) ((count.toDouble() / totalNumberOfResponses.toDouble()) * 10000).toInt() else defaultLevel
+            val level = if (totalNumberOfResponses != 0) ((count.toDouble() / totalNumberOfResponses.toDouble()) * 10000).toInt() else 0
             view.progressBarWrapper.background.level = level
         }
 
