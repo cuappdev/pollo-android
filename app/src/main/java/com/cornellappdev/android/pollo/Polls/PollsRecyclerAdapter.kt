@@ -119,14 +119,14 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
 
             when (poll.state) {
                 PollState.live -> {
-                    view.questionMCSubtitleText.text = "Poll Live"
+                    view.questionMCSubtitleText.text = view.context.getString(R.string.poll_live)
                     if (role == User.Role.ADMIN) {
                         displayAdminLive(poll)
                     }
                 }
 
                 PollState.ended -> {
-                    view.questionMCSubtitleText.text = "Poll Closed"
+                    view.questionMCSubtitleText.text = view.context.getString(R.string.poll_closed)
                     if (role == User.Role.ADMIN) {
                         displayAdminEnded(poll)
                     }
@@ -165,13 +165,13 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
                 Socket.serverEnd()
                 timer.cancel()
             }
-            view.end_poll_button.text = "End Poll"
+            view.end_poll_button.text = view.context.getString(R.string.end_poll)
         }
 
         private fun displayAdminEnded(poll: Poll) {
             displayAdminNotShared()
             view.poll_timer.visibility = View.GONE
-            view.end_poll_button.text = "Share Results"
+            view.end_poll_button.text = view.context.getString(R.string.share_results)
             view.end_poll_button.setOnClickListener {
                 Socket.shareResults(poll)
                 displayAdminShared()
@@ -183,21 +183,17 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
             view.end_poll_button.background = ContextCompat.getDrawable(view.context, R.drawable.rounded_container_outline)
             view.end_poll_button.setTextColor(ContextCompat.getColor(view.context, R.color.actualWhite))
             view.resultsSharedIcon.setImageResource(R.drawable.results_not_shared)
-            view.resultsSharedText.text = "Only you can see results"
+            view.resultsSharedText.text = view.context.getString(R.string.admin_results_not_shared)
         }
 
         private fun displayAdminShared() {
             view.poll_timer.visibility = View.GONE
             view.end_poll_button.isEnabled = false
-            view.end_poll_button.text = "Results Shared"
+            view.end_poll_button.text = view.context.getString(R.string.results_shared)
             view.end_poll_button.background = ContextCompat.getDrawable(view.context, R.drawable.rounded_cool_grey_container_outline)
             view.end_poll_button.setTextColor(ContextCompat.getColor(view.context, R.color.cool_grey))
             view.resultsSharedIcon.setImageResource(R.drawable.results_shared)
-            view.resultsSharedText.text = "Shared with group"
-        }
-
-        companion object {
-            private val POLL_KEY = "POLL"
+            view.resultsSharedText.text = view.context.getString(R.string.admin_results_shared)
         }
     }
 }

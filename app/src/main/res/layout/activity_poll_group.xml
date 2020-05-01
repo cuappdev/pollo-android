@@ -235,7 +235,7 @@
                 android:background="@drawable/rounded_end_button"
                 android:paddingLeft="32dp"
                 android:paddingRight="32dp"
-                android:text="@string/end_question_text"
+                android:text="@string/end_poll"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textColorHighlight="@color/black"

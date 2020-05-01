@@ -203,7 +203,7 @@
             android:background="@drawable/rounded_container_outline"
             android:paddingLeft="30dp"
             android:paddingRight="30dp"
-            android:text="@string/end_question_text"
+            android:text="@string/end_poll"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textColorHighlight="@color/black"
