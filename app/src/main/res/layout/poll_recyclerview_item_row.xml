@@ -37,6 +37,39 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="HardcodedText" />
 
+            <LinearLayout
+                android:id="@+id/resultsSharedLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@id/questionHeaderView"
+                app:layout_constraintTop_toBottomOf="@id/questionMCTextView">
+
+                <ImageView
+                    android:id="@+id/resultsSharedIcon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/results_not_shared" />
+
+                <TextView
+                    android:id="@+id/resultsSharedText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Only you can see results"
+                    android:textAlignment="center"
+                    android:textColor="@color/settings_detail"
+                    android:textSize="12sp"
+                    android:textStyle="normal"
+                    tools:ignore="HardcodedText" />
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/questionMCSubtitleText"
                 android:layout_width="match_parent"
@@ -48,6 +81,23 @@
                 android:textColor="@color/settings_detail"
                 android:textSize="12sp"
                 android:textStyle="normal"
+                app:layout_constraintTop_toBottomOf="@id/questionMCTextView"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/adminResponsesCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="10 Responses"
+                android:textAlignment="center"
+                android:textColor="@color/settings_detail"
+                android:textSize="12sp"
+                android:textStyle="normal"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/questionHeaderView"
                 app:layout_constraintTop_toBottomOf="@id/questionMCTextView"
                 tools:ignore="HardcodedText" />
 
@@ -129,6 +179,7 @@
             android:id="@+id/pollsChoiceRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/actualWhite"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/questionHeaderView" />
 
@@ -152,7 +203,7 @@
             android:background="@drawable/rounded_container_outline"
             android:paddingLeft="30dp"
             android:paddingRight="30dp"
-            android:text="@string/end_question_text"
+            android:text="@string/end_poll"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textColorHighlight="@color/black"

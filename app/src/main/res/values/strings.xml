@@ -8,9 +8,6 @@
 
     <string name="created">Created</string>
 
-    <string name="end_question_text">End Question</string>
-    <string name="default_timer_text">00:00</string>
-
     <string name="join_group_hint">Enter a code…</string>
     <string name="create_group_hint">Enter a new group name…</string>
 
@@ -71,6 +68,16 @@
     <string name="drafts">Drafts</string>
     <string name="save_as_draft">Save as Draft</string>
     <string name="start_poll">Start Question</string>
+
+    <!-- Polls Recycler Adapter -->
+    <string name="poll_live">Poll Live</string>
+    <string name="poll_closed">Poll Closed</string>
+    <string name="end_poll">End Poll</string>
+    <string name="default_timer_text">00:00</string>
+    <string name="share_results">Share Results</string>
+    <string name="admin_results_not_shared">Only you can see results</string>
+    <string name="results_shared">Results Shared</string>
+    <string name="admin_results_shared">Shared with group</string>
 
     <!-- Create Poll Onboarding Messages -->
     <string name="welcome">Welcome to your first poll!</string>
