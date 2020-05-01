@@ -184,7 +184,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate {
                 }
                 return@launch
             } else {
-                Toast.makeText(context!!, "Loading Drafts Failed", Toast.LENGTH_LONG)
+                Toast.makeText(context!!, "Loading Drafts Failed", Toast.LENGTH_SHORT)
                         .show()
             }
         }
@@ -203,7 +203,8 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate {
                 drafts[0] = createDraftResponse.data
                 return@launch
             } else {
-                Log.e("network error", "failed to create draft")
+                Toast.makeText(context!!, "Saving Draft Failed", Toast.LENGTH_SHORT)
+                        .show()
             }
         }
     }
@@ -230,7 +231,8 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate {
                 }
                 return@launch
             } else {
-                Log.e("network error", "failed to update draft")
+                Toast.makeText(context!!, "Saving Draft Failed", Toast.LENGTH_SHORT)
+                        .show()
             }
         }
     }
