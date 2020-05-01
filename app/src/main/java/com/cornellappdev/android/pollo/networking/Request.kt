@@ -28,6 +28,15 @@ object Request {
 
         return responseBodyJSON.fromJson<T>(responseBodyString, typeToken)
     }
+
+    suspend inline fun makeRequest(request: okhttp3.Request): Boolean {
+        val response = httpClient.newCall(request).await()
+        val responseBody = response.body()
+        val responseBodyString = responseBody?.string() ?: ""
+        Log.d("NETWORK RESPONSE", responseBodyString)
+
+        return response.code() == 200
+    }
 }
 
 /**
