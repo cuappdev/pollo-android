@@ -17,14 +17,14 @@ import com.cornellappdev.android.pollo.models.User
 import java.util.*
 import kotlin.collections.ArrayList
 
-interface FreeResponseDelegate {
+interface AnswerChoiceDelegate {
     fun sendAnswer(position: Int)
 }
 
 class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
                            private val googleId: String,
                            private val role: User.Role,
-                           val callback: OnPollOptionsPressedListener) : RecyclerView.Adapter<PollsRecyclerAdapter.PollHolder>(), FreeResponseDelegate {
+                           val callback: OnPollOptionsPressedListener) : RecyclerView.Adapter<PollsRecyclerAdapter.PollHolder>(), AnswerChoiceDelegate {
 
     private val viewPool = RecyclerView.RecycledViewPool()
 
@@ -86,12 +86,12 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
 
         var view: View = v
         private var poll: Poll? = null
-        private var delegate: FreeResponseDelegate? = null
+        private var delegate: AnswerChoiceDelegate? = null
         private var role: User.Role? = null
 
         override fun onClick(v: View) {}
 
-        fun bindPoll(poll: Poll, delegate: FreeResponseDelegate, role: User.Role) {
+        fun bindPoll(poll: Poll, delegate: AnswerChoiceDelegate, role: User.Role) {
             this.poll = poll
             this.delegate = delegate
             this.role = role

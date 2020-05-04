@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class PollResult(val letter: String, val text: String, val count: Int?): Parcelable
+data class PollResult(val index: Int, val text: String, val count: Int?): Parcelable
 
 @Parcelize
 enum class PollState: Parcelable {
