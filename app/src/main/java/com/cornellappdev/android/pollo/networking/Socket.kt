@@ -101,11 +101,8 @@ object Socket {
 
     fun connect(id: String, accessToken: String) {
         val urlBuilder = HttpUrl.Builder()
-                .scheme("http")
-                .host("10.0.2.2")
-                .port(3000)
-                .addPathSegment("api")
-                .addPathSegment("2")
+                .scheme("https")
+                .host(BuildConfig.BACKEND_URI)
                 .build()
 
         Log.d("Socket URL", urlBuilder.url().toString())
