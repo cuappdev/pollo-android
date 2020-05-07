@@ -23,6 +23,10 @@ interface FreeResponseDelegate {
     fun sendAnswer(position: Int, answer: String)
 }
 
+interface DeletePollCallback {
+
+}
+
 class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
                            private val googleId: String,
                            private val role: User.Role) : RecyclerView.Adapter<PollsRecyclerAdapter.PollHolder>(), FreeResponseDelegate {
@@ -88,6 +92,18 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
         Socket.sendMCAnswer(pollChoice)
     }
 
+    fun setPollOptionsOnClick(poll : Poll, view : View) {
+        view.pollOptionsButton.setOnClickListener {
+            when (poll.state) {
+                PollState.live ->  {
+                    Socket.deleteLivePoll()
+                    (view.context as PollsActivity).onPollDeleteLive()
+                }
+                else -> Socket.deleteSavedPoll(poll)
+            }
+        }
+    }
+
     class PollHolder(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener {
 
         var view: View = v
@@ -106,15 +122,30 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
                 pollResult.count ?: 0
             }.sum()
             view.questionMCTextView.text = poll.text
-            view.adminPollControlsView.visibility = View.GONE
 
             if (role == User.Role.ADMIN) {
                 view.adminPollControlsView.visibility = View.VISIBLE
+                view.pollOptionsButton.visibility = View.VISIBLE
                 view.poll_timer.visibility = View.VISIBLE
                 view.resultsSharedLayout.visibility = View.VISIBLE
                 view.adminResponsesCount.visibility = View.VISIBLE
                 view.adminResponsesCount.text =  "$totalNumberOfResponses Response${if (totalNumberOfResponses == 1) "" else "s"}"
                 view.questionMCSubtitleText.visibility = View.GONE
+                view.pollOptionsButton.setOnClickListener {
+                    when (poll.state) {
+                        PollState.live ->  {
+                            Socket.deleteLivePoll()
+                            (view.context as PollsActivity).onPollDeleteLive()
+                        }
+                        else -> {
+                            Socket.deleteSavedPoll(poll)
+                            (view.context as PollsActivity).onPollDelete(poll.id ?: "")
+                        }
+                    }
+                }
+            } else {
+                view.adminPollControlsView.visibility = View.GONE
+                view.pollOptionsButton.visibility = View.GONE
             }
 
             when (poll.state) {

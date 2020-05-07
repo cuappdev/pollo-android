@@ -81,6 +81,7 @@
     <string name="admin_results_not_shared">Only you can see results</string>
     <string name="results_shared">Results Shared</string>
     <string name="admin_results_shared">Shared with group</string>
+    <string name="view_poll_options_content_description">View Poll Options</string>
 
     <!-- Create Poll Onboarding Messages -->
     <string name="welcome">Welcome to your first poll!</string>

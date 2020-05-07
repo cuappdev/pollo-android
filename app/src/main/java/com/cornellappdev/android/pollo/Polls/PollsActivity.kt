@@ -132,6 +132,7 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
             if (poll.id == pollID) {
                 removePollID = polls.indexOf(poll)
                 polls.remove(poll)
+                break
             }
         }
 
