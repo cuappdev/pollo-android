@@ -1,11 +1,13 @@
 package com.cornellappdev.android.pollo.polls
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.View
+import android.view.animation.TranslateAnimation
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
@@ -22,9 +24,11 @@ import java.util.Calendar
 import java.util.Date
 import kotlin.collections.ArrayList
 import kotlinx.android.synthetic.main.activity_polls.*
+import kotlinx.android.synthetic.main.poll_options_view.*
+import kotlinx.android.synthetic.main.poll_options_view.view.*
 
 
-class PollsActivity : AppCompatActivity(), SocketDelegate {
+class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.OnPollOptionsPressedListener {
 
     private var polls = ArrayList<Poll>()
     private var userCount: Int = 0
@@ -58,7 +62,7 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
 
         linearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         pollsRecyclerView.layoutManager = linearLayoutManager
-        adapter = PollsRecyclerAdapter(polls, googleId, role)
+        adapter = PollsRecyclerAdapter(polls, googleId, role, this)
         pollsRecyclerView.adapter = adapter
 
         if (polls[polls.size - 1].state == PollState.live) {
@@ -103,7 +107,7 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
                 firstCalendar.get(Calendar.YEAR) == secondCalendar.get(Calendar.YEAR)
 
         if (!datesSameDay) return // No need to handle a new poll if it is not the same day
-        if (poll.id == polls[polls.size - 1].id) return // No need to handle a new poll if it already exists
+        if (polls.isNotEmpty() && poll.id == polls[polls.size - 1].id) return // No need to handle a new poll if it already exists
 
         polls.add(poll)
         runOnUiThread {
@@ -138,16 +142,20 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
 
         if (removePollID == -1) return
 
+        if (polls.size == 0) {
+            finish()
+            return
+        }
+
         runOnUiThread {
             adapter.notifyItemRemoved(removePollID)
             adapter.notifyDataSetChanged()
             if (removePollID == polls.size) {
                 linearLayoutManager.scrollToPosition(polls.size - 1)
                 currentPollView.text = "${polls.size} / ${polls.size}"
-            }else{
+            } else{
                 currentPollView.text = "${linearLayoutManager.findFirstCompletelyVisibleItemPosition() + 1} / ${polls.size}"
             }
-
         }
     }
 
@@ -158,6 +166,9 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
             adapter.notifyDataSetChanged()
             linearLayoutManager.scrollToPosition(polls.size - 1)
             currentPollView.text = "${polls.size} / ${polls.size}"
+        }
+        if (polls.size == 0) {
+            finish()
         }
     }
 
@@ -219,5 +230,58 @@ class PollsActivity : AppCompatActivity(), SocketDelegate {
 
     fun goBack(view: View) {
         finish()
+    }
+
+    private fun setDim(shouldDim: Boolean) {
+        dimView.isClickable = shouldDim
+        if (shouldDim) {
+            dimView.setOnClickListener {
+                closePollOptions()
+            }
+        }
+
+        val newAlpha = if (shouldDim) 0.5f else 0.0f
+        val dimAnimation = ObjectAnimator.ofFloat(dimView, "alpha", newAlpha)
+        dimAnimation.duration = 500
+        dimAnimation.start()
+    }
+
+    private fun closePollOptions() {
+        setDim(false)
+        val animate = TranslateAnimation(0f, 0f, 0f, pollOptionsView.height.toFloat())
+        animate.duration = 300
+        animate.fillAfter = true
+        pollOptionsView.startAnimation(animate)
+        pollOptionsView.visibility = View.INVISIBLE
+    }
+
+    override fun onPollOptionsPressed(poll: Poll) {
+        setDim(true)
+        pollOptionsView.isClickable = true
+
+        pollNumberTextView.text = "Question: ${linearLayoutManager.findFirstCompletelyVisibleItemPosition() + 1} / ${polls.size}"
+        pollOptionsView.visibility = View.VISIBLE
+        val animate = TranslateAnimation(0f, 0f, pollOptionsView.height.toFloat(), 0f)
+        animate.duration = 300
+        animate.fillAfter = true
+        pollOptionsView.startAnimation(animate)
+
+        pollOptionsView.deletePollLayout.setOnClickListener {
+            when (poll.state) {
+                PollState.live ->  {
+                    Socket.deleteLivePoll()
+                    onPollDeleteLive()
+                }
+                else -> {
+                    Socket.deleteSavedPoll(poll)
+                    onPollDelete(poll.id ?: "")
+                }
+            }
+            closePollOptions()
+        }
+
+        pollOptionsView.closeButton.setOnClickListener {
+            closePollOptions()
+        }
     }
 }

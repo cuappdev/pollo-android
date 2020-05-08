@@ -23,13 +23,10 @@ interface FreeResponseDelegate {
     fun sendAnswer(position: Int, answer: String)
 }
 
-interface DeletePollCallback {
-
-}
-
 class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
                            private val googleId: String,
-                           private val role: User.Role) : RecyclerView.Adapter<PollsRecyclerAdapter.PollHolder>(), FreeResponseDelegate {
+                           private val role: User.Role,
+                           val callback: OnPollOptionsPressedListener) : RecyclerView.Adapter<PollsRecyclerAdapter.PollHolder>(), FreeResponseDelegate {
 
     private val viewPool = RecyclerView.RecycledViewPool()
 
@@ -69,9 +66,6 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
             val tmpHeight = headerHeight + cellHeight*poll.answerChoices.count() + adminControlsHeight // 53 is cell height including top margin
 
             height = if (tmpHeight <= 1250) tmpHeight else 1250
-
-            // height = 750
-            // height = 1250
         }
 
         holder.bindPoll(poll, this, role)
@@ -92,19 +86,7 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
         Socket.sendMCAnswer(pollChoice)
     }
 
-    fun setPollOptionsOnClick(poll : Poll, view : View) {
-        view.pollOptionsButton.setOnClickListener {
-            when (poll.state) {
-                PollState.live ->  {
-                    Socket.deleteLivePoll()
-                    (view.context as PollsActivity).onPollDeleteLive()
-                }
-                else -> Socket.deleteSavedPoll(poll)
-            }
-        }
-    }
-
-    class PollHolder(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener {
+    inner class PollHolder(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener {
 
         var view: View = v
         private var poll: Poll? = null
@@ -132,16 +114,7 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
                 view.adminResponsesCount.text =  "$totalNumberOfResponses Response${if (totalNumberOfResponses == 1) "" else "s"}"
                 view.questionMCSubtitleText.visibility = View.GONE
                 view.pollOptionsButton.setOnClickListener {
-                    when (poll.state) {
-                        PollState.live ->  {
-                            Socket.deleteLivePoll()
-                            (view.context as PollsActivity).onPollDeleteLive()
-                        }
-                        else -> {
-                            Socket.deleteSavedPoll(poll)
-                            (view.context as PollsActivity).onPollDelete(poll.id ?: "")
-                        }
-                    }
+                    callback.onPollOptionsPressed(poll)
                 }
             } else {
                 view.adminPollControlsView.visibility = View.GONE
@@ -226,5 +199,9 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
             view.resultsSharedIcon.setImageResource(R.drawable.results_shared)
             view.resultsSharedText.text = view.context.getString(R.string.admin_results_shared)
         }
+    }
+
+    interface OnPollOptionsPressedListener {
+        fun onPollOptionsPressed(poll: Poll)
     }
 }
