@@ -24,8 +24,7 @@ import java.util.Calendar
 import java.util.Date
 import kotlin.collections.ArrayList
 import kotlinx.android.synthetic.main.activity_polls.*
-import kotlinx.android.synthetic.main.poll_options_view.*
-import kotlinx.android.synthetic.main.poll_options_view.view.*
+import kotlinx.android.synthetic.main.manage_group_view.view.*
 
 
 class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.OnPollOptionsPressedListener {
@@ -259,14 +258,18 @@ class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.
         setDim(true)
         pollOptionsView.isClickable = true
 
-        pollNumberTextView.text = "Question: ${linearLayoutManager.findFirstCompletelyVisibleItemPosition() + 1} / ${polls.size}"
+        pollOptionsView.renameGroup.visibility = View.GONE
+        pollOptionsView.removeGroup.visibility = View.VISIBLE
+        pollOptionsView.removeGroupText.text = applicationContext.getString(R.string.delete)
+        pollOptionsView.removeGroup.removeGroupImage.setImageResource(R.drawable.ic_trash_can)
+        pollOptionsView.groupNameTextView.text = "Question: ${linearLayoutManager.findFirstCompletelyVisibleItemPosition() + 1} / ${polls.size}"
         pollOptionsView.visibility = View.VISIBLE
         val animate = TranslateAnimation(0f, 0f, pollOptionsView.height.toFloat(), 0f)
         animate.duration = 300
         animate.fillAfter = true
         pollOptionsView.startAnimation(animate)
 
-        pollOptionsView.deletePollLayout.setOnClickListener {
+        pollOptionsView.removeGroup.setOnClickListener {
             when (poll.state) {
                 PollState.live ->  {
                     Socket.deleteLivePoll()

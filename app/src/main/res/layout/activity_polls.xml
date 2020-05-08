@@ -94,7 +94,7 @@
 
     <include
         android:id="@+id/pollOptionsView"
-        layout="@layout/poll_options_view"
+        layout="@layout/manage_group_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
