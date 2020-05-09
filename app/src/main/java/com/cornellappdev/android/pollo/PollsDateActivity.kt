@@ -44,14 +44,11 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
                 noPollsTitle.setText(R.string.no_polls_created_title)
                 noPollsSubtext.setText(R.string.no_polls_created_subtext)
             }
-            User.Role.MEMBER -> {
-                newPollImageButton.visibility = View.GONE
-            }
+            User.Role.MEMBER -> {}
         }
 
+        togglePollCreation(group.isLive)
         toggleEmptyState()
-
-        val account = GoogleSignIn.getLastSignedInAccount(this)
 
         CoroutineScope(Dispatchers.IO).launch {
             val joinGroupEndpoint = Endpoint.joinGroupWithCode(group.code)
@@ -143,6 +140,14 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         }
     }
 
+    fun togglePollCreation(isLive: Boolean) {
+        // TODO: also call this when we send 'server/poll/delete/live'
+        when (isLive || role == User.Role.MEMBER) {
+            true -> newPollImageButton.visibility = View.GONE
+            false -> newPollImageButton.visibility = View.VISIBLE
+        }
+    }
+
     fun groupByDate(sortedPolls: ArrayList<GetSortedPollsResponse>): ArrayList<GetSortedPollsResponse> {
         var dateToPolls = HashMap<String, ArrayList<Poll>>()
         sortedPolls.forEach { poll ->
@@ -202,9 +207,9 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
             runOnUiThread {
                 adapter.updatePolls(sortedPolls)
                 toggleEmptyState()
+                togglePollCreation(true)
             }
         }
-        val pollResponse = poll
     }
 
     override fun onPollStartAdmin(poll: Poll) {
@@ -229,6 +234,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         runOnUiThread {
             adapter.updatePolls(sortedPolls)
             toggleEmptyState()
+            togglePollCreation(true)
         }
         val pollResponse = poll
     }
@@ -245,7 +251,10 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         sortedPolls[0].polls = ArrayList(pollsForToday)
         sortedPolls[0].isLive = false
 
-        runOnUiThread { adapter.updatePolls(sortedPolls) }
+        runOnUiThread {
+            adapter.updatePolls(sortedPolls)
+            togglePollCreation(false)
+        }
     }
 
     override fun onPollEndAdmin(poll: Poll) {
@@ -257,7 +266,10 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         sortedPolls[0].polls = ArrayList(pollsForToday)
         sortedPolls[0].isLive = false
 
-        runOnUiThread { adapter.updatePolls(sortedPolls) }
+        runOnUiThread {
+            adapter.updatePolls(sortedPolls)
+            togglePollCreation(false)
+        }
     }
 
     override fun onPollUpdateAdmin(poll: Poll) {}

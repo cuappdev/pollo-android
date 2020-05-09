@@ -13,6 +13,7 @@ import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -136,18 +137,38 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
             }
         }
 
+        addGroupEditText.setOnKeyListener { _, keyCode, keyEvent ->
+            if (
+                    keyCode == KeyEvent.KEYCODE_ENTER &&
+                    keyEvent.action == KeyEvent.ACTION_UP &&
+                    addGroupEditText.text.toString().trim().isNotEmpty() &&
+                    addGroupButton.isEnabled
+            ) {
+                when (role) {
+                    User.Role.MEMBER -> joinGroup(addGroupEditText.text.toString())
+                    User.Role.ADMIN -> createGroup(addGroupEditText.text.toString())
+                }
+                addGroupEditText.text.clear()
+                return@setOnKeyListener true
+            }
+            false
+        }
+
         when (role) {
             User.Role.MEMBER -> {
                 addGroupEditText.setHint(R.string.join_group_hint)
                 addGroupEditText.setTextColor(Color.WHITE)
                 addGroupEditText.filters = addGroupEditText.filters +
                         InputFilter.AllCaps() +
-                        InputFilter.LengthFilter(6)
+                        InputFilter.LengthFilter(6) +
+                        InputFilter { charSequence, _, _, _, _, _ ->
+                            charSequence.trim()
+                        }
 
                 addGroupButton.setText(R.string.join_button_text)
                 addGroupButton.setOnClickListener {
                     joinGroup(addGroupEditText.text.toString())
-                    addGroupEditText.setText("")
+                    addGroupEditText.text.clear()
                 }
 
                 addGroupBar.setBackgroundResource(R.color.black)
@@ -160,7 +181,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
                 addGroupButton.setText(R.string.create_button_text)
                 addGroupButton.setOnClickListener {
                     createGroup(addGroupEditText.text.toString())
-                    addGroupEditText.setText("")
+                    addGroupEditText.text.clear()
                 }
 
                 addGroupBar.setBackgroundResource(R.color.lightGray)
@@ -359,10 +380,9 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
             val canProceed = when (role) {
-                User.Role.MEMBER -> s?.length == 6
-                User.Role.ADMIN -> s?.length != 0
+                User.Role.MEMBER -> s?.trim()?.length == 6
+                User.Role.ADMIN -> s?.trim()?.length != 0
                 null -> return
             }
 
@@ -376,7 +396,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
      * Joins the group and launches a new `PollsDateActivity` associated with it
      */
     private fun joinGroup(code: String) {
-        val endpoint = Endpoint.joinGroupWithCode(code)
+        val endpoint = Endpoint.joinGroupWithCode(code.trim())
         CoroutineScope(Dispatchers.IO).launch {
             val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
             val typeTokenSortedPolls = object : TypeToken<ApiResponse<ArrayList<GetSortedPollsResponse>>>() {}.type
@@ -420,9 +440,9 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
             if (result?.success == true) {
                 val code = result.data.code
 
-                val joinSessionEndpoint = Endpoint.startSession(code, name)
+                val createSessionEndpoint = Endpoint.startSession(code, name.trim())
                 val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
-                val groupResponse = Request.makeRequest<ApiResponse<Group>>(joinSessionEndpoint.okHttpRequest(), typeTokenGroupNode)
+                val groupResponse = Request.makeRequest<ApiResponse<Group>>(createSessionEndpoint.okHttpRequest(), typeTokenGroupNode)
 
                 if (groupResponse?.success == false || groupResponse?.data == null) return@launch
 
