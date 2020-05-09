@@ -21,7 +21,7 @@ import java.util.*
 class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListener {
     private lateinit var adapter: PollsDateRecyclerAdapter
     private lateinit var group: Group
-    private lateinit  var linearLayoutManager: LinearLayoutManager
+    private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var role: User.Role
     private var currentUserCount = 0
 
@@ -85,13 +85,13 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         Socket.disconnect()
     }
 
-    fun goBackFragment(view: View){
+    fun goBackFragment(view: View) {
         supportFragmentManager.popBackStack()
         val imm = applicationContext.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.applicationWindowToken, 0)
     }
 
-    fun startNewPoll(newPoll : Poll){
+    fun startNewPoll(newPoll: Poll) {
         Socket.serverStart(newPoll)
         supportFragmentManager.popBackStack()
         refreshPolls(true)
@@ -103,7 +103,9 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
             val endpoint = Endpoint.joinGroupWithCode(group.code)
             val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
             val typeTokenSortedPolls = object : TypeToken<ApiResponse<ArrayList<GetSortedPollsResponse>>>() {}.type
-            val groupNodeResponse = withContext(Dispatchers.Default) { Request.makeRequest<ApiResponse<Group>>(endpoint.okHttpRequest(), typeTokenGroupNode) } ?: return@launch
+            val groupNodeResponse = withContext(Dispatchers.Default) {
+                Request.makeRequest<ApiResponse<Group>>(endpoint.okHttpRequest(), typeTokenGroupNode)
+            } ?: return@launch
 
 
             val allPollsEndpoint = Endpoint.getSortedPolls(groupNodeResponse!!.data.id)
@@ -148,7 +150,8 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
             val dateAsString = dateFormatter.format(dateForPoll)
 
             if (dateToPolls.containsKey(dateAsString)) {
-                val currListOfPolls = dateToPolls[dateAsString] ?: throw RuntimeException("Key does not exist")
+                val currListOfPolls = dateToPolls[dateAsString]
+                        ?: throw RuntimeException("Key does not exist")
                 val updatedListOfPolls = ArrayList(currListOfPolls + poll.polls)
                 dateToPolls[dateAsString] = updatedListOfPolls
             } else {
@@ -177,7 +180,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
 
         // Avoid index out of bounds exceptions
         if (sortedPolls.isNotEmpty())
-            for (p in sortedPolls[0].polls){
+            for (p in sortedPolls[0].polls) {
                 // Don't add duplicate polls
                 if (p.id == poll.id) return
             }
@@ -210,12 +213,12 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
 
         // Avoid index out of bounds exceptions
         if (sortedPolls.isNotEmpty())
-            for (p in sortedPolls[0].polls){
+            for (p in sortedPolls[0].polls) {
                 // Don't add duplicate polls
                 if (p.id == poll.id) return
             }
 
-        if(datesForPolls.contains(currentDate)) {
+        if (datesForPolls.contains(currentDate)) {
             sortedPolls[0].isLive = true
             sortedPolls[0].polls.add(poll)
         } else {
@@ -257,11 +260,11 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         runOnUiThread { adapter.updatePolls(sortedPolls) }
     }
 
-    override fun onPollUpdateAdmin(poll: Poll) { }
+    override fun onPollUpdateAdmin(poll: Poll) {}
 
-    override fun onPollResult(poll: Poll) { }
+    override fun onPollResult(poll: Poll) {}
 
-    override fun freeResponseUpdates(poll: Poll) { }
+    override fun freeResponseUpdates(poll: Poll) {}
 
     override fun onPollDelete(pollID: String) {
         for (pollGroup in sortedPolls) {
@@ -294,7 +297,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         toggleEmptyState()
     }
 
-    override fun freeResponseSubmissionSuccessful() { }
+    override fun freeResponseSubmissionSuccessful() {}
 
     override fun freeResponseSubmissionFailed(pollFilter: Socket.PollFilter) {
         println(pollFilter.filter)

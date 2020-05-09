@@ -63,7 +63,7 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
             val cellHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 55f, displayMetrics).toInt()
             val adminControlsHeight = if (role == User.Role.ADMIN) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 85f, displayMetrics).toInt() else 0
             // 86 dp is the height of header, 53dp is height of cell
-            val tmpHeight = headerHeight + cellHeight*poll.answerChoices.count() + adminControlsHeight // 53 is cell height including top margin
+            val tmpHeight = headerHeight + cellHeight * poll.answerChoices.count() + adminControlsHeight // 53 is cell height including top margin
 
             height = if (tmpHeight <= 1250) tmpHeight else 1250
         }
@@ -111,7 +111,7 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
                 view.poll_timer.visibility = View.VISIBLE
                 view.resultsSharedLayout.visibility = View.VISIBLE
                 view.adminResponsesCount.visibility = View.VISIBLE
-                view.adminResponsesCount.text =  "$totalNumberOfResponses Response${if (totalNumberOfResponses == 1) "" else "s"}"
+                view.adminResponsesCount.text = "$totalNumberOfResponses Response${if (totalNumberOfResponses == 1) "" else "s"}"
                 view.questionMCSubtitleText.visibility = View.GONE
                 view.pollOptionsButton.setOnClickListener {
                     callback.onPollOptionsPressed(poll)
@@ -149,7 +149,7 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
         private fun displayAdminLive(poll: Poll) {
             displayAdminNotShared()
             val timer = Timer("Poll Timer", false)
-            timer.schedule(object: TimerTask() {
+            timer.schedule(object : TimerTask() {
                 val pollCreatedAt = if (poll.createdAt != null) poll.createdAt.toLong() * 1000 else Date().time
                 val start = if (pollCreatedAt < Date().time) pollCreatedAt else Date().time
                 override fun run() {

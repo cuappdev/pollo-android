@@ -73,7 +73,6 @@
     <string name="start_poll">Start Question</string>
 
     <!-- Poll Options -->
-    <string name="close_poll_options_content_description">Close Poll Options</string>
     <string name="delete">Delete</string>
 
     <!-- Polls Recycler Adapter -->

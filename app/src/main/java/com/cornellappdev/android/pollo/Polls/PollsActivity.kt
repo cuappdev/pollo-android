@@ -105,8 +105,10 @@ class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.
         val datesSameDay = firstCalendar.get(Calendar.DAY_OF_YEAR) == secondCalendar.get(Calendar.DAY_OF_YEAR) &&
                 firstCalendar.get(Calendar.YEAR) == secondCalendar.get(Calendar.YEAR)
 
-        if (!datesSameDay) return // No need to handle a new poll if it is not the same day
-        if (polls.isNotEmpty() && poll.id == polls[polls.size - 1].id) return // No need to handle a new poll if it already exists
+        // No need to handle a new poll if it is not the same day
+        if (!datesSameDay) return
+        // No need to handle a new poll if it already exists
+        if (polls.isNotEmpty() && poll.id == polls[polls.size - 1].id) return
 
         polls.add(poll)
         runOnUiThread {
@@ -131,7 +133,7 @@ class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.
 
     override fun onPollDelete(pollID: String) {
         var removePollID = -1
-        for (poll in polls){
+        for (poll in polls) {
             if (poll.id == pollID) {
                 removePollID = polls.indexOf(poll)
                 polls.remove(poll)
@@ -152,7 +154,7 @@ class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.
             if (removePollID == polls.size) {
                 linearLayoutManager.scrollToPosition(polls.size - 1)
                 currentPollView.text = "${polls.size} / ${polls.size}"
-            } else{
+            } else {
                 currentPollView.text = "${linearLayoutManager.findFirstCompletelyVisibleItemPosition() + 1} / ${polls.size}"
             }
         }
@@ -182,8 +184,10 @@ class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.
         val datesSameDay = firstCalendar.get(Calendar.DAY_OF_YEAR) == secondCalendar.get(Calendar.DAY_OF_YEAR) &&
                 firstCalendar.get(Calendar.YEAR) == secondCalendar.get(Calendar.YEAR)
 
-        if (!datesSameDay) return // No need to handle a new poll if it is not the same day
-        if (poll.id == polls[polls.size - 1].id) return // No need to handle a new poll if it already exists
+        // No need to handle a new poll if it is not the same day
+        if (!datesSameDay) return
+        // No need to handle a new poll if it already exists
+        if (poll.id == polls[polls.size - 1].id) return
 
         polls.add(poll)
         runOnUiThread {
@@ -271,7 +275,7 @@ class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.
 
         pollOptionsView.removeGroup.setOnClickListener {
             when (poll.state) {
-                PollState.live ->  {
+                PollState.live -> {
                     Socket.deleteLivePoll()
                     onPollDeleteLive()
                 }
