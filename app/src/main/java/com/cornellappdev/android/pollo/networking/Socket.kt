@@ -177,6 +177,14 @@ object Socket {
         socket.emit("server/poll/results", poll.id ?: "")
     }
 
+    fun deleteSavedPoll(poll: Poll) {
+        socket.emit("server/poll/delete", poll.id ?: "")
+    }
+
+    fun deleteLivePoll() {
+        socket.emit("server/poll/delete/live")
+    }
+
     fun sendMCAnswer(pollChoice: PollChoice) {
         socket.emit("server/poll/answer", JSONObject(Gson().toJson(pollChoice)))
     }

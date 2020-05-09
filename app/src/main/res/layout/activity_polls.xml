@@ -85,4 +85,22 @@
         app:layout_constraintTop_toBottomOf="@id/headerView"
         app:layout_constraintVertical_bias="0.0" />
 
+    <View
+        android:id="@+id/dimView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        android:alpha="0.0" />
+
+    <include
+        android:id="@+id/pollOptionsView"
+        layout="@layout/manage_group_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
