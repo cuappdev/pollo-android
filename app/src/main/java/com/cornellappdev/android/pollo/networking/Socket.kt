@@ -157,6 +157,8 @@ object Socket {
     }
 
     fun deleteLivePoll() {
+        // Server does not send back this event, so we do this to notify all delegates of the event
+        onPollDeleteLive.call()
         socket.emit("server/poll/delete/live")
     }
 

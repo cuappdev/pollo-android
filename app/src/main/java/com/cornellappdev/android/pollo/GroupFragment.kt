@@ -118,6 +118,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         }
 
         // Setup for joining/creating groups
+        addGroupButton.isEnabled = false
         addGroupEditText.addTextChangedListener(addGroupTextWatcher)
         addGroupEditText.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> addGroupEditText.isCursorVisible = hasFocus }
         addGroupEditText.setOnEditorActionListener { _, actionId, _ ->

@@ -245,8 +245,7 @@ class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.
         pollOptionsView.removeGroup.setOnClickListener {
             when (poll.state) {
                 PollState.live -> {
-                    Socket.deleteLivePoll()
-                    onPollDeleteLive()
+                    Socket.deleteLivePoll() // This will call onPollDeleteLive
                 }
                 else -> {
                     Socket.deleteSavedPoll(poll)
