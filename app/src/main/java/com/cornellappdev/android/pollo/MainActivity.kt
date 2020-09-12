@@ -42,7 +42,6 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
      * The [ViewPager] that will host the section contents.
      */
     private var viewPager: ViewPager? = null
-    private var socket: Socket? = null
     private var joinedGroupFragment: GroupFragment? = null
     private var createdGroupFragment: GroupFragment? = null
 
@@ -112,6 +111,15 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
         // If account is null, we need to prompt them to login
         val signInIntent = Intent(this, LoginActivity::class.java)
         startActivityForResult(signInIntent, LOGIN_REQ_CODE)
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        if (mSectionsPagerAdapter != null) {
+            createdGroupFragment?.refreshGroups()
+            joinedGroupFragment?.refreshGroups()
+            return
+        }
     }
 
     override fun setDim(shouldDim: Boolean, groupFragment: GroupFragment) {

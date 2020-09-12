@@ -1,6 +1,5 @@
 package com.cornellappdev.android.pollo.polls
 
-import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -8,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.cornellappdev.android.pollo.R
 import com.cornellappdev.android.pollo.inflate
 import com.cornellappdev.android.pollo.models.Poll
-import com.cornellappdev.android.pollo.models.PollChoice
 import com.cornellappdev.android.pollo.models.PollState
 import com.cornellappdev.android.pollo.models.User
 import kotlinx.android.synthetic.main.poll_multiple_choice_item_row.view.*
@@ -39,9 +37,8 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
         if (poll.state == PollState.live && role == User.Role.MEMBER) {
             choiceHolder.view.setOnClickListener { _ ->
                 positionSelected = position
-                val answerSelected = poll.answerChoices[position]
                 choiceHolder.view.answerButton.isChecked = true
-                poll.userAnswers?.set(googleId, arrayListOf(PollChoice(letter = answerSelected.letter, text = answerSelected.text)))
+                poll.userAnswers[googleId] = arrayListOf(position)
                 notifyDataSetChanged()
                 sendAnswer(position)
             }
@@ -49,9 +46,7 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
     }
 
     private fun sendAnswer(index: Int) {
-        val answerSelected = poll.answerChoices[index];
-        val pollChoice = PollChoice(letter = answerSelected.letter, text = answerSelected.text)
-        Socket.sendMCAnswer(pollChoice)
+        Socket.sendMCAnswer(index)
     }
 
     class ChoiceHolder(v: View) : RecyclerView.ViewHolder(v) {
@@ -63,7 +58,7 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
 
         fun bindPoll(poll: Poll, googleId: String, role: User.Role) {
             this.poll = poll
-            this.totalNumberOfResponses = poll.answerChoices.map { it.count ?: 0}.sum()
+            this.totalNumberOfResponses = poll.userAnswers.count()
 
             if (role == User.Role.MEMBER && poll.state != PollState.shared) {
                 // hides responses
@@ -83,11 +78,11 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
             view.answerTextView.setTextColor(ContextCompat.getColor(view.context, answerTextColor))
 
             // See if radio button is checked
-            val potentialUserAnswer = poll.userAnswers?.get(googleId)
+            val potentialUserAnswer = poll.userAnswers[googleId]
             if (potentialUserAnswer == null || potentialUserAnswer.size < 1) {
                 view.answerButton.isChecked = false
             } else {
-                val isSelectedAnswer = potentialUserAnswer.first().letter == poll.answerChoices[adapterPosition].letter
+                val isSelectedAnswer = potentialUserAnswer.first() == poll.answerChoices[adapterPosition].index
                 view.answerButton.isChecked = isSelectedAnswer
             }
 
@@ -109,8 +104,8 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
                 PollState.shared -> {
                     view.answerButton.background =
                         when (poll.correctAnswer) {
-                            "" -> ContextCompat.getDrawable(view.context, R.drawable.no_correct_radio_button)
-                            potentialUserAnswer?.first()?.letter -> ContextCompat.getDrawable(view.context, R.drawable.checked_correct_radio_button)
+                            -1 -> ContextCompat.getDrawable(view.context, R.drawable.no_correct_radio_button)
+                            potentialUserAnswer?.first() -> ContextCompat.getDrawable(view.context, R.drawable.checked_correct_radio_button)
                             else -> ContextCompat.getDrawable(view.context, R.drawable.checked_incorrect_radio_button)
                         }
                 }
@@ -132,7 +127,7 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
         // Displays progress bar
         private fun setupProgressBar(poll: Poll) {
             val correctAnswer = poll.correctAnswer
-            if (poll.answerChoices[adapterPosition].letter == correctAnswer) {
+            if (poll.answerChoices[adapterPosition].index == correctAnswer) {
                 view.progressBarWrapper.background = ContextCompat.getDrawable(view.context, R.drawable.correct_multiple_choice_progress_fill)
                 view.progressBarBorder.background = ContextCompat.getDrawable(view.context, R.drawable.correct_rounded_multiple_choice_cell)
             } else {
@@ -144,10 +139,6 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
             val count = poll.answerChoices[adapterPosition].count ?: 0
             val level = if (totalNumberOfResponses != 0) ((count.toDouble() / totalNumberOfResponses.toDouble()) * 10000).toInt() else 0
             view.progressBarWrapper.background.level = level
-        }
-
-        companion object {
-            private val POLL_CHOICE_KEY = "POLL_CHOICE_MULTIPLE"
         }
     }
 }

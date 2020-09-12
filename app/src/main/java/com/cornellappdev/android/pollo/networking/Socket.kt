@@ -3,7 +3,6 @@ package com.cornellappdev.android.pollo.networking
 import android.util.Log
 import com.cornellappdev.android.pollo.BuildConfig
 import com.cornellappdev.android.pollo.models.Poll
-import com.cornellappdev.android.pollo.models.PollChoice
 import com.google.gson.Gson
 import io.socket.client.IO
 import io.socket.client.Manager
@@ -16,9 +15,6 @@ interface SocketDelegate {
     fun onPollStart(poll: Poll)
     fun onPollEnd(poll: Poll)
     fun onPollResult(poll: Poll)
-    fun freeResponseSubmissionSuccessful()
-    fun freeResponseSubmissionFailed(pollFilter: com.cornellappdev.android.pollo.networking.Socket.PollFilter)
-    fun freeResponseUpdates(poll: Poll)
     fun onPollDelete(pollID: String)
     fun onPollDeleteLive()
     fun onPollStartAdmin(poll: Poll)
@@ -72,25 +68,6 @@ object Socket {
         delegates.forEach { it.onPollEnd(poll) }
     }
 
-    private val onFreeResponseFilter = Emitter.Listener { args ->
-        if (args.isEmpty()) return@Listener
-        val json = args[0] as JSONObject
-        val pollFilter = Gson().fromJson<PollFilter>(json.toString(), PollFilter::class.java)
-        if (pollFilter.success) {
-            delegates.forEach { it.freeResponseSubmissionSuccessful() }
-        } else {
-            delegates.forEach { it.freeResponseSubmissionFailed(pollFilter) }
-        }
-    }
-
-    private val onFreeResponseLive = Emitter.Listener { args ->
-        if (args.isEmpty()) return@Listener
-        val json = args[0] as JSONObject
-        val poll = Gson().fromJson<Poll>(json.toString(), Poll::class.java)
-        delegates.forEach { it.freeResponseUpdates(poll) }
-    }
-
-
     private val onPollDelete = Emitter.Listener { args ->
         if (args.isEmpty()) return@Listener
         val pollID = args[0] as String
@@ -141,10 +118,8 @@ object Socket {
         socket.on("user/poll/start", onPollStart)
         socket.on("user/poll/end", onPollEnd)
         socket.on("user/poll/results", onResults)
-        socket.on("user/poll/fr/live", onFreeResponseLive)
         socket.on("user/poll/delete", onPollDelete)
         socket.on("user/poll/delete/live", onPollDeleteLive)
-        socket.on("user/poll/fr/filter", onFreeResponseFilter)
 
         socket.on("admin/poll/start", onPollStartAdmin)
         socket.on("admin/poll/updates", onPollUpdateAdmin)
@@ -182,15 +157,12 @@ object Socket {
     }
 
     fun deleteLivePoll() {
+        // Server does not send back this event, so we do this to notify all delegates of the event
+        onPollDeleteLive.call()
         socket.emit("server/poll/delete/live")
     }
 
-    fun sendMCAnswer(pollChoice: PollChoice) {
-        socket.emit("server/poll/answer", JSONObject(Gson().toJson(pollChoice)))
+    fun sendMCAnswer(pollIndex: Int) {
+        socket.emit("server/poll/answer", pollIndex)
     }
-
-    fun sendUpvoteAnswer(pollChoice: PollChoice) {
-        socket.emit("server/poll/upvote", JSONObject(Gson().toJson(pollChoice)))
-    }
-
 }

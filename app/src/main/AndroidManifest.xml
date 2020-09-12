@@ -26,9 +26,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".PollGroupActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:label="@string/title_activity_settings"
             android:name=".SettingsActivity"
             android:theme="@style/AppTheme.NoActionBar" />

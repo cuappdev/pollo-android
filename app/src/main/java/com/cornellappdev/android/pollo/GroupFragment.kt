@@ -61,10 +61,6 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     private var groups = ArrayList<Group>()
     private var groupSelected: Group? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         val rootView = inflater.inflate(R.layout.fragment_main, container, false)
@@ -122,6 +118,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         }
 
         // Setup for joining/creating groups
+        addGroupButton.isEnabled = false
         addGroupEditText.addTextChangedListener(addGroupTextWatcher)
         addGroupEditText.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> addGroupEditText.isCursorVisible = hasFocus }
         addGroupEditText.setOnEditorActionListener { _, actionId, _ ->
@@ -237,16 +234,14 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         CoroutineScope(Dispatchers.IO).launch {
             val typeToken = object : TypeToken<ApiResponse<String>>() {}.type
 
-            var response: ApiResponse<String>? = null
-
-            when (role) {
+            val response = when (role) {
                 User.Role.MEMBER -> {
                     val leaveGroupEndpoint = Endpoint.leaveGroup(groupId)
-                    response = Request.makeRequest<ApiResponse<String>>(leaveGroupEndpoint.okHttpRequest(), typeToken)
+                    Request.makeRequest<ApiResponse<String>>(leaveGroupEndpoint.okHttpRequest(), typeToken)
                 }
                 User.Role.ADMIN -> {
                     val deleteGroupEndpoint = Endpoint.deleteGroup(groupId)
-                    response = Request.makeRequest<ApiResponse<String>>(deleteGroupEndpoint.okHttpRequest(), typeToken)
+                    Request.makeRequest<ApiResponse<String>>(deleteGroupEndpoint.okHttpRequest(), typeToken)
                 }
                 null -> return@launch
             }
@@ -264,7 +259,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     }
 
 
-    fun addGroup(group: Group) {
+    private fun addGroup(group: Group) {
         groups.add(0, group)
         currentAdapter?.addAll(groups)
         currentAdapter?.notifyDataSetChanged()

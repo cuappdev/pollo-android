@@ -47,7 +47,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
             User.Role.MEMBER -> {}
         }
 
-        togglePollCreation(group.isLive)
+        togglePollCreation(group.isLive && sortedPolls.isNotEmpty())
         toggleEmptyState()
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -140,8 +140,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         }
     }
 
-    fun togglePollCreation(isLive: Boolean) {
-        // TODO: also call this when we send 'server/poll/delete/live'
+    private fun togglePollCreation(isLive: Boolean) {
         when (isLive || role == User.Role.MEMBER) {
             true -> newPollImageButton.visibility = View.GONE
             false -> newPollImageButton.visibility = View.VISIBLE
@@ -207,7 +206,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
             runOnUiThread {
                 adapter.updatePolls(sortedPolls)
                 toggleEmptyState()
-                togglePollCreation(true)
+                togglePollCreation(poll.state == PollState.live)
             }
         }
     }
@@ -234,9 +233,8 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         runOnUiThread {
             adapter.updatePolls(sortedPolls)
             toggleEmptyState()
-            togglePollCreation(true)
+            togglePollCreation(poll.state == PollState.live)
         }
-        val pollResponse = poll
     }
 
     override fun onPollEnd(poll: Poll) {
@@ -276,7 +274,6 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
 
     override fun onPollResult(poll: Poll) {}
 
-    override fun freeResponseUpdates(poll: Poll) {}
 
     override fun onPollDelete(pollID: String) {
         for (pollGroup in sortedPolls) {
@@ -305,14 +302,11 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
             }
         }
 
-        runOnUiThread { adapter.updatePolls(sortedPolls) }
+        runOnUiThread {
+            adapter.updatePolls(sortedPolls)
+            togglePollCreation(false)
+        }
         toggleEmptyState()
-    }
-
-    override fun freeResponseSubmissionSuccessful() {}
-
-    override fun freeResponseSubmissionFailed(pollFilter: Socket.PollFilter) {
-        println(pollFilter.filter)
     }
 
     fun openNewPollFragment(view: View) {

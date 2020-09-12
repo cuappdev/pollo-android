@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +17,7 @@ import com.cornellappdev.android.pollo.models.*
 import com.cornellappdev.android.pollo.models.PollResult
 import com.cornellappdev.android.pollo.networking.*
 import com.google.gson.reflect.TypeToken
+import com.cornellappdev.android.pollo.models.PollState
 import kotlinx.android.synthetic.main.create_poll_onboarding.view.*
 import kotlinx.android.synthetic.main.create_poll_options_list_item.view.*
 import kotlinx.android.synthetic.main.fragment_create_poll.*
@@ -110,14 +110,22 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate {
      * Starts poll and returns to group
      */
     private fun startPoll(correct: Int) {
+        if (selectedDraft != null) {
+            for (i in 0 until drafts.size) {
+                if (drafts[i].id == selectedDraft!!.id){
+                    draftDeleted(i)
+                    break
+                }
+            }
+        }
+
         CoroutineScope(Dispatchers.IO).launch {
-            val correctAnswer = if (correct == -1) null else (correct + 65).toChar().toString()
             val pollText = if (poll_question.text.toString().isBlank()) getString(R.string.untitled_poll) else poll_question.text.toString()
 
             val answerChoices = Poll((System.currentTimeMillis() / 1000).toString(), null, null, pollText,
-                    ArrayList(), PollType.multipleChoice, correctAnswer, mutableMapOf(), PollState.live)
+                    ArrayList(), correct, mutableMapOf(), PollState.live)
             for (x in 0 until options.size) {
-                answerChoices.answerChoices.add(PollResult((x + 65).toChar().toString(), options[x], 0))
+                answerChoices.answerChoices.add(PollResult(x, options[x], 0))
             }
 
             val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
