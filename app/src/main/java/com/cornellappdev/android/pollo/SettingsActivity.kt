@@ -13,6 +13,10 @@ import kotlinx.android.synthetic.main.activity_settings.*
 
 class SettingsActivity : AppCompatActivity() {
 
+    private val preferencesHelper: PreferencesHelper by lazy {
+        PreferencesHelper(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -48,6 +52,9 @@ class SettingsActivity : AppCompatActivity() {
                 .requestProfile()
                 .build()
         GoogleSignIn.getClient(this, gso).signOut()
+        preferencesHelper.accessToken = ""
+        preferencesHelper.refreshToken = ""
+        preferencesHelper.expiresAt = 0L
         val data = Intent()
         setResult(Activity.RESULT_OK, data)
         finish()

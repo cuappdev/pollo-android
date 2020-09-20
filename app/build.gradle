@@ -25,6 +25,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "web_client_id", keyProperties['web_client_id'])
         buildConfigField("String", "BACKEND_URI", "\"pollo-dev.cornellappdev.com\"")
+        buildConfigField("String", "TEMP_BACKEND_URI", "\"d76358a1348b.ngrok.io\"")
     }
     buildTypes {
         debug {

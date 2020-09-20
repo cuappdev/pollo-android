@@ -3,6 +3,7 @@
     <string name="action_settings">Settings</string>
 
     <string name="app_name">Pollo</string>
+    <string name="sign_in">Sign In</string>
 
     <string name="close_detail_menu_content_description">Close Detail Menu</string>
 
