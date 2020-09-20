@@ -74,10 +74,9 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
             }
         })
 
-        val account = GoogleSignIn.getLastSignedInAccount(this)
-        // If account is null, attempt to sign in, if not, launch the normal activity. updateUI(account);
+        // If there is no accessToken in preferences, attempt to sign in, otherwise launch the normal activity
 
-        if (account != null || preferencesHelper.accessToken.isNotEmpty()) {
+        if (preferencesHelper.accessToken.isNotEmpty()) {
             val expiresAt = preferencesHelper.expiresAt
             val dateAccessTokenExpires = Date(expiresAt * 1000)
             val currentDate = Date()
@@ -180,35 +179,15 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
         }
 
         if (requestCode == LOGIN_REQ_CODE && resultCode == Activity.RESULT_OK) {
-            val idToken = data?.getStringExtra("idToken") ?: ""
-            if (idToken.isNotEmpty()) {
-                val userAuthenticateEndpoint = Endpoint.userAuthenticate(idToken)
-                CoroutineScope(Dispatchers.Main).launch {
-                    val typeToken = object : TypeToken<ApiResponse<UserSession>>() {}.type
-                    val userSession = withContext(Dispatchers.IO) { Request.makeRequest<ApiResponse<UserSession>>(userAuthenticateEndpoint.okHttpRequest(), typeToken) }!!.data
+            val sessionInfo = data?.getStringExtra("sessionInfo")
+            val session = Gson().fromJson(sessionInfo, UserSession::class.java)
+            preferencesHelper.accessToken = session.accessToken
+            preferencesHelper.refreshToken = session.refreshToken
+            preferencesHelper.expiresAt = session.sessionExpiration.toLong()
 
-                    preferencesHelper.accessToken = userSession.accessToken
-                    preferencesHelper.refreshToken = userSession.refreshToken
-                    preferencesHelper.expiresAt = userSession.sessionExpiration.toLong()
+            User.currentSession = session
 
-                    println(userSession.refreshToken)
-                    println(userSession.sessionExpiration)
-
-                    User.currentSession = userSession
-
-                    finishAuthFlow()
-                }
-            } else {
-                val sessionInfo = data?.getStringExtra("sessionInfo")
-                val session = Gson().fromJson(sessionInfo, UserSession::class.java)
-                preferencesHelper.accessToken = session.accessToken
-                preferencesHelper.refreshToken = session.refreshToken
-                preferencesHelper.expiresAt = session.sessionExpiration.toLong()
-
-                User.currentSession = session
-
-                finishAuthFlow()
-            }
+            finishAuthFlow()
         }
     }
 

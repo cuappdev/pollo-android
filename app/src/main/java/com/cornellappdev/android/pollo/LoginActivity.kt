@@ -9,7 +9,6 @@ import android.view.View
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -57,17 +56,13 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     inner class WebAppClient : android.webkit.WebViewClient() {
-        /**
-         * Ensures that redirects in webview still load in the webview, and not in other browsers
-         */
+        // Ensures that redirects in webview still load in the webview, and not in other browsers
         override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
             return false
         }
     }
 
-    /**
-     * Interface that allows WebView to call Android functions using JavaScript
-     */
+    // Interface that allows WebView to call Android functions using JavaScript
     inner class WebAppInterface(private val context: Context) {
         @JavascriptInterface
         // tokens is a stringified version of UserSession JSON
