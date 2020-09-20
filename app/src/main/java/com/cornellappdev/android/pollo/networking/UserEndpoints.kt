@@ -1,19 +1,9 @@
 package com.cornellappdev.android.pollo.networking
 
-import okhttp3.MediaType
-import okhttp3.RequestBody
-import org.json.JSONException
-import org.json.JSONObject
+import com.cornellappdev.android.pollo.models.User
 
-fun Endpoint.Companion.userAuthenticate(idToken: String): Endpoint {
-    val codeJSON = JSONObject()
-    try {
-        codeJSON.put("idToken", idToken)
-    } catch (e: JSONException) {
-        e.printStackTrace()
-    }
-    val requestBody = RequestBody.create(MediaType.get("application/json; charset=utf-8"), codeJSON.toString())
-    return Endpoint(path = "/auth/mobile", body = requestBody, method = EndpointMethod.POST)
+fun Endpoint.Companion.getUserInfo(): Endpoint {
+    return Endpoint(path = "/users", headers = mapOf("Authorization" to "Bearer " + User.currentSession.accessToken), method = EndpointMethod.GET)
 }
 
 fun Endpoint.Companion.userRefreshSession(refreshToken: String): Endpoint {

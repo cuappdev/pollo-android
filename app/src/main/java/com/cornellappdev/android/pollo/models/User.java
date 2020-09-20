@@ -5,20 +5,20 @@ public class User {
     public static User currentUser;
     public static UserSession currentSession;
     private String id;
+    private String createdAt;
+    private String updatedAt;
     private String name;
-    private String netId;
-    private String givenName;
-    private String familyName;
-    private String email;
+    private String netID;
 
-    public User(String id, String name, String givenName, String familyName, String email) {
+    public User(String id, String createdAt, String updatedAt, String name, String netID) {
         this.id = id;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
         this.name = name;
-        this.netId = email.split("@")[0];
-        this.givenName = givenName;
-        this.familyName = familyName;
-        this.email = email;
+        this.netID = netID;
     }
+
+    public String getNetID() { return netID; }
 
     public enum Role {
         ADMIN,

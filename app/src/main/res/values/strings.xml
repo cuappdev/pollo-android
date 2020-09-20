@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
     <string name="action_settings">Settings</string>
+    <string name="user_email">%1$s@cornell.edu</string>
 
     <string name="app_name">Pollo</string>
     <string name="sign_in">Sign In</string>
