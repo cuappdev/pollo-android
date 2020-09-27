@@ -12,6 +12,7 @@
     <color name="darkGray02">#3D3D3D</color>
     <color name="darkGray">#6C6C6C</color>
     <color name="joinGroupGray">#9B9A9A</color>
+    <color name="loginGray">#767676</color>
     <color name="lightGray">#ECECEC</color>
     <color name="lightGrayDivider">#AEAEAE</color>
     <color name="lightGreen">#C7EFE6</color>
@@ -19,11 +20,11 @@
     <color name="mediumGray">#C1C1C1</color>
     <color name="multipleChoiceBorderColor">#9FA5B1</color>
     <color name="multipleChoiceIncorrectAnswerColor">#C4C4C4</color>
+    <color name="onboarding_background">#A6202020</color>
     <color name="paleGray">#F5F7F8</color>
     <color name="polloGreen">#29C09E</color>
     <color name="red">#E76366</color>
     <color name="settings_detail">#9EA7B3</color>
     <color name="settings_divider">#E1E1E1</color>
     <color name="white">#F6F6F6</color>
-    <color name="onboarding_background">#A6202020</color>
 </resources>

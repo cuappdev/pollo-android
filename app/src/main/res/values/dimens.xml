@@ -4,4 +4,7 @@
 
     <!-- Font Sizes -->
     <dimen name="header_font_size">18sp</dimen>
+
+    <!-- Size of Cornell SSO logo -->
+    <dimen name="cornell_logo_size">28dp</dimen>
 </resources>

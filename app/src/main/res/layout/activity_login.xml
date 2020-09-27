@@ -48,15 +48,22 @@
 
         <Button
             android:id="@+id/sso_button"
-            android:layout_width="269dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/sign_in" />
+            android:layout_marginTop="36dp"
+            android:backgroundTint="@color/actualWhite"
+            android:letterSpacing="0.01"
+            android:text="@string/sign_in"
+            android:textAllCaps="false"
+            android:textColor="@color/loginGray"
+            android:drawablePadding="7dp" />
 
         <com.google.android.gms.common.SignInButton
             android:id="@+id/sign_in_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="100dp">
+            android:layout_marginBottom="100dp"
+            android:visibility="gone">
 
         </com.google.android.gms.common.SignInButton>
 

@@ -3,6 +3,8 @@ package com.cornellappdev.android.pollo
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,6 +12,7 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -42,6 +45,11 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         setGoogleSignInButtonText(loginButton, "Continue with Google")
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
+
+        val ssoLogo = ContextCompat.getDrawable(this, R.drawable.cornell_sso_logo)
+        val ssoLogoColor = ContextCompat.getColor(this, R.color.loginGray)
+        ssoLogo?.colorFilter = PorterDuffColorFilter(ssoLogoColor, PorterDuff.Mode.SRC_ATOP)
+        sso_button.setCompoundDrawablesWithIntrinsicBounds(ssoLogo, null, null, null)
 
         sso_button.setOnClickListener {
             webview.settings.javaScriptEnabled = true
