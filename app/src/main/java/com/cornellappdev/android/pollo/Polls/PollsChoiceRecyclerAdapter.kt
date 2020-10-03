@@ -103,11 +103,11 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
 
                 PollState.shared -> {
                     view.answerButton.background =
-                            when (poll.correctAnswer) {
-                                -1 -> ContextCompat.getDrawable(view.context, R.drawable.no_correct_radio_button)
-                                potentialUserAnswer?.first() -> ContextCompat.getDrawable(view.context, R.drawable.checked_correct_radio_button)
-                                else -> ContextCompat.getDrawable(view.context, R.drawable.checked_incorrect_radio_button)
-                            }
+                        when (poll.correctAnswer) {
+                            -1 -> ContextCompat.getDrawable(view.context, R.drawable.no_correct_radio_button)
+                            potentialUserAnswer?.first() -> ContextCompat.getDrawable(view.context, R.drawable.checked_correct_radio_button)
+                            else -> ContextCompat.getDrawable(view.context, R.drawable.checked_incorrect_radio_button)
+                        }
                 }
             }
         }

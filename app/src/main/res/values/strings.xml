@@ -16,8 +16,6 @@
 
     <string name="group_details_button_content_description">Group Details Button</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
     <string name="join_button_text">Join</string>
     <string name="create_button_text">Create</string>
 
@@ -26,7 +24,6 @@
     <string name="live_indicator">•</string>
 
 <!--Home Screen Edit Group Strings-->
-    <string name="leave_group_content_description">Leave Group</string>
     <string name="leave_group">Leave Group</string>
     <string name="delete_group">Delete Group</string>
     <string name="edit_group_name">Edit Name</string>
@@ -46,8 +43,6 @@
     <string name="no_polls_created_title">Nothing to see here</string>
     <string name="no_polls_subtext">Waiting for the admin to post a poll…</string>
     <string name="no_polls_created_subtext">You haven’t made any polls yet! Tap “+” above to try it out.</string>
-    <string name="view_all">View All</string>
-    <string name="export">Export</string>
 
     <string name="pollo">Pollo</string>
     <string name="pollo_pronunciation">\'\'Poh-loh\'\'</string>
@@ -55,7 +50,6 @@
 <!--Settings Screen Strings-->
     <string name="user_email">%1$s@cornell.edu</string>
     <string name="settings_about">Pollo is made by Cornell AppDev, an engineering project team at Cornell University.</string>
-    <string name="settings_icon">⚙</string>
     <string name="settings_more">Let us know if you have any ideas, suggestions, or issues! Shake your phone to access the feedback form, or follow the link below.</string>
 
     <string name="title_activity_settings">Settings</string>
@@ -69,7 +63,6 @@
     <string name="ask_question">Ask a question…</string>
     <string name="create_question">Create Question</string>
     <string name="delete_poll">Delete Poll</string>
-    <string name="drafts">Drafts</string>
     <string name="untitled_poll">Untitled Poll</string>
     <string name="multiple_choice">Multiple Choice</string>
     <string name="save_as_draft">Save as Draft</string>
