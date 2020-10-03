@@ -16,7 +16,6 @@ import com.cornellappdev.android.pollo.models.Group
 import com.cornellappdev.android.pollo.models.User
 import com.cornellappdev.android.pollo.models.UserSession
 import com.cornellappdev.android.pollo.networking.*
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
@@ -149,7 +148,21 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
         startActivityForResult(settings, SETTINGS_CODE)
     }
 
+    // Saves current user information
+    private fun getUser() {
+        CoroutineScope(Dispatchers.Main).launch {
+            val getUserInfoEndpoint = Endpoint.getUserInfo()
+            val typeToken = object : TypeToken<ApiResponse<User>>() {}.type
+            val userInfo = withContext(Dispatchers.IO) {
+                Request.makeRequest<ApiResponse<User>>(getUserInfoEndpoint.okHttpRequest(), typeToken)
+            }!!.data
+
+            User.currentUser = userInfo
+        }
+    }
+
     private fun finishAuthFlow() {
+        getUser()
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         if (mSectionsPagerAdapter != null) {

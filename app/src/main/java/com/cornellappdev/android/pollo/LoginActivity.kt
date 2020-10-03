@@ -8,6 +8,7 @@ import android.graphics.PorterDuffColorFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.widget.TextView
@@ -51,13 +52,13 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         ssoLogo?.colorFilter = PorterDuffColorFilter(ssoLogoColor, PorterDuff.Mode.SRC_ATOP)
         sso_button.setCompoundDrawablesWithIntrinsicBounds(ssoLogo, null, null, null)
 
+        val cookieManager = CookieManager.getInstance()
+        cookieManager.removeAllCookies(null)
         sso_button.setOnClickListener {
             webview.settings.javaScriptEnabled = true
             webview.addJavascriptInterface(WebAppInterface(this), "Mobile")
             webview.webViewClient = WebAppClient()
-            // localhost for testing
-            // val host = "http://10.0.2.2:8000/"
-            val host = "https://" + BuildConfig.TEMP_BACKEND_URI + "/api/v2/auth/saml/cornell/"
+            val host = "https://" + BuildConfig.BACKEND_URI + "/api/v2/auth/saml/cornell/"
             webview.loadUrl(host)
             webview.visibility = View.VISIBLE
         }

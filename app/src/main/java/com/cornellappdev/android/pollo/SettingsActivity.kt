@@ -34,15 +34,7 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_settings)
         setSupportActionBar(toolbar)
 
-        CoroutineScope(Dispatchers.Main).launch {
-            val getUserInfoEndpoint = Endpoint.getUserInfo()
-            val typeToken = object : TypeToken<ApiResponse<User>>() {}.type
-            val userInfo = withContext(Dispatchers.IO) {
-                Request.makeRequest<ApiResponse<User>>(getUserInfoEndpoint.okHttpRequest(), typeToken)
-            }!!.data
-
-            emailText.text = getString(R.string.user_email, userInfo.netID)
-        }
+        emailText.text = getString(R.string.user_email, User.currentUser.netID)
 
     }
 

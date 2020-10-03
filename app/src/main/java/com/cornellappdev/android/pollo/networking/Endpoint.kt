@@ -12,8 +12,7 @@ enum class EndpointMethod {
 
 class Endpoint(private val path: String, private val headers: Map<String, String> = mapOf(), private val body: RequestBody? = null, private val method: EndpointMethod) {
 
-//    private val host = "https://" + BuildConfig.BACKEND_URI + "/api/v2"
-    private val host = "https://" + BuildConfig.TEMP_BACKEND_URI + "/api/v2"
+    private val host = "https://" + BuildConfig.BACKEND_URI + "/api/v2"
 
     companion object
 
