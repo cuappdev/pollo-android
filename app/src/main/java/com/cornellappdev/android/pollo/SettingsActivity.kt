@@ -6,21 +6,10 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.View
-import com.cornellappdev.android.pollo.models.ApiResponse
 import com.cornellappdev.android.pollo.models.User
-import com.cornellappdev.android.pollo.models.UserSession
-import com.cornellappdev.android.pollo.networking.Endpoint
-import com.cornellappdev.android.pollo.networking.Request
-import com.cornellappdev.android.pollo.networking.getUserInfo
-import com.cornellappdev.android.pollo.networking.userRefreshSession
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_settings.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 class SettingsActivity : AppCompatActivity() {

@@ -58,15 +58,6 @@
             android:textColor="@color/loginGray"
             android:drawablePadding="7dp" />
 
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/sign_in_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="100dp"
-            android:visibility="gone">
-
-        </com.google.android.gms.common.SignInButton>
-
     </LinearLayout>
 
     <WebView
