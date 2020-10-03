@@ -18,9 +18,13 @@ public class User {
         this.netID = netID;
     }
 
-    public String getId() { return id; }
+    public String getId() {
+        return id;
+    }
 
-    public String getNetID() { return netID; }
+    public String getNetID() {
+        return netID;
+    }
 
     public enum Role {
         ADMIN,

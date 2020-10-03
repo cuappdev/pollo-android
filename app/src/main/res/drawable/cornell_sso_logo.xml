@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:drawable="@drawable/cornell_logo"
         android:width="@dimen/cornell_logo_size"
-        android:height="@dimen/cornell_logo_size" />
+        android:height="@dimen/cornell_logo_size"
+        android:drawable="@drawable/cornell_logo" />
 </layer-list>

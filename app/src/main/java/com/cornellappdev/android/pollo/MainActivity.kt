@@ -214,11 +214,13 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
 
         override fun getItem(position: Int): Fragment {
             if (position == 0) {
-                joinedGroupFragment = joinedGroupFragment ?: GroupFragment.newInstance(position + 1, userRole = User.Role.MEMBER)
+                joinedGroupFragment = joinedGroupFragment
+                        ?: GroupFragment.newInstance(position + 1, userRole = User.Role.MEMBER)
                 return joinedGroupFragment!!
             }
 
-            createdGroupFragment = createdGroupFragment ?: GroupFragment.newInstance(position + 1, userRole= User.Role.ADMIN)
+            createdGroupFragment = createdGroupFragment
+                    ?: GroupFragment.newInstance(position + 1, userRole = User.Role.ADMIN)
             return createdGroupFragment!!
         }
 

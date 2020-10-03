@@ -52,11 +52,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="36dp"
             android:backgroundTint="@color/actualWhite"
+            android:drawablePadding="7dp"
             android:letterSpacing="0.01"
             android:text="@string/sign_in"
             android:textAllCaps="false"
-            android:textColor="@color/loginGray"
-            android:drawablePadding="7dp" />
+            android:textColor="@color/loginGray" />
 
     </LinearLayout>
 
@@ -64,6 +64,5 @@
         android:id="@+id/webview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
 </androidx.constraintlayout.widget.ConstraintLayout>

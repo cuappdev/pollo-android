@@ -103,11 +103,11 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
 
                 PollState.shared -> {
                     view.answerButton.background =
-                        when (poll.correctAnswer) {
-                            -1 -> ContextCompat.getDrawable(view.context, R.drawable.no_correct_radio_button)
-                            potentialUserAnswer?.first() -> ContextCompat.getDrawable(view.context, R.drawable.checked_correct_radio_button)
-                            else -> ContextCompat.getDrawable(view.context, R.drawable.checked_incorrect_radio_button)
-                        }
+                            when (poll.correctAnswer) {
+                                -1 -> ContextCompat.getDrawable(view.context, R.drawable.no_correct_radio_button)
+                                potentialUserAnswer?.first() -> ContextCompat.getDrawable(view.context, R.drawable.checked_correct_radio_button)
+                                else -> ContextCompat.getDrawable(view.context, R.drawable.checked_incorrect_radio_button)
+                            }
                 }
             }
         }
@@ -118,7 +118,7 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
 
             val count = poll.answerChoices[adapterPosition].count ?: 0
             view.answerCountTextView.text = count.toString()
-            val answerPercentage = if (totalNumberOfResponses != 0) "(${((count.toDouble()/ totalNumberOfResponses) * 100).roundToInt()}%)" else "(0%)"
+            val answerPercentage = if (totalNumberOfResponses != 0) "(${((count.toDouble() / totalNumberOfResponses) * 100).roundToInt()}%)" else "(0%)"
             view.answerPercentageTextView.text = answerPercentage
 
             setupProgressBar(poll)
