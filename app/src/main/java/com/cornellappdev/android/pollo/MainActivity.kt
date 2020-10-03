@@ -16,7 +16,7 @@ import com.cornellappdev.android.pollo.models.Group
 import com.cornellappdev.android.pollo.models.User
 import com.cornellappdev.android.pollo.models.UserSession
 import com.cornellappdev.android.pollo.networking.*
-import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
@@ -73,10 +73,9 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
             }
         })
 
-        val account = GoogleSignIn.getLastSignedInAccount(this)
-        // If account is null, attempt to sign in, if not, launch the normal activity. updateUI(account);
+        // If there is no accessToken in preferences, attempt to sign in, otherwise launch the normal activity
 
-        if (account != null) {
+        if (preferencesHelper.accessToken.isNotEmpty()) {
             val expiresAt = preferencesHelper.expiresAt
             val dateAccessTokenExpires = Date(expiresAt * 1000)
             val currentDate = Date()
@@ -149,7 +148,21 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
         startActivityForResult(settings, SETTINGS_CODE)
     }
 
+    // Saves current user information
+    private fun getUser() {
+        CoroutineScope(Dispatchers.Main).launch {
+            val getUserInfoEndpoint = Endpoint.getUserInfo()
+            val typeToken = object : TypeToken<ApiResponse<User>>() {}.type
+            val userInfo = withContext(Dispatchers.IO) {
+                Request.makeRequest<ApiResponse<User>>(getUserInfoEndpoint.okHttpRequest(), typeToken)
+            }!!.data
+
+            User.currentUser = userInfo
+        }
+    }
+
     private fun finishAuthFlow() {
+        getUser()
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         if (mSectionsPagerAdapter != null) {
@@ -179,23 +192,15 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
         }
 
         if (requestCode == LOGIN_REQ_CODE && resultCode == Activity.RESULT_OK) {
-            val idToken = data?.getStringExtra("idToken") ?: ""
-            val userAuthenticateEndpoint = Endpoint.userAuthenticate(idToken)
-            CoroutineScope(Dispatchers.Main).launch {
-                val typeToken = object : TypeToken<ApiResponse<UserSession>>() {}.type
-                val userSession = withContext(Dispatchers.IO) { Request.makeRequest<ApiResponse<UserSession>>(userAuthenticateEndpoint.okHttpRequest(), typeToken) }!!.data
+            val sessionInfo = data?.getStringExtra("sessionInfo")
+            val session = Gson().fromJson(sessionInfo, UserSession::class.java)
+            preferencesHelper.accessToken = session.accessToken
+            preferencesHelper.refreshToken = session.refreshToken
+            preferencesHelper.expiresAt = session.sessionExpiration.toLong()
 
-                preferencesHelper.accessToken = userSession.accessToken
-                preferencesHelper.refreshToken = userSession.refreshToken
-                preferencesHelper.expiresAt = userSession.sessionExpiration.toLong()
+            User.currentSession = session
 
-                println(userSession.refreshToken)
-                println(userSession.sessionExpiration)
-
-                User.currentSession = userSession
-
-                finishAuthFlow()
-            }
+            finishAuthFlow()
         }
     }
 
@@ -209,11 +214,13 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
 
         override fun getItem(position: Int): Fragment {
             if (position == 0) {
-                joinedGroupFragment = joinedGroupFragment ?: GroupFragment.newInstance(position + 1, userRole = User.Role.MEMBER)
+                joinedGroupFragment = joinedGroupFragment
+                        ?: GroupFragment.newInstance(position + 1, userRole = User.Role.MEMBER)
                 return joinedGroupFragment!!
             }
 
-            createdGroupFragment = createdGroupFragment ?: GroupFragment.newInstance(position + 1, userRole= User.Role.ADMIN)
+            createdGroupFragment = createdGroupFragment
+                    ?: GroupFragment.newInstance(position + 1, userRole = User.Role.ADMIN)
             return createdGroupFragment!!
         }
 

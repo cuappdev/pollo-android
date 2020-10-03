@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     tools:context=".LoginActivity">
 
     <LinearLayout
@@ -45,13 +46,23 @@
             android:textSize="18sp"
             android:textStyle="italic" />
 
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/sign_in_button"
+        <Button
+            android:id="@+id/sso_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="100dp">
+            android:layout_marginTop="36dp"
+            android:backgroundTint="@color/actualWhite"
+            android:drawablePadding="7dp"
+            android:letterSpacing="0.01"
+            android:text="@string/sign_in"
+            android:textAllCaps="false"
+            android:textColor="@color/loginGray" />
 
-        </com.google.android.gms.common.SignInButton>
     </LinearLayout>
 
+    <WebView
+        android:id="@+id/webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,7 +15,7 @@ import kotlin.math.roundToInt
 
 
 class PollsChoiceRecyclerAdapter(private val poll: Poll,
-                                 private val googleId: String,
+                                 private val userId: String,
                                  private val role: User.Role) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var positionSelected = -1
@@ -33,12 +33,12 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val choiceHolder = holder as ChoiceHolder
-        choiceHolder.bindPoll(poll, googleId, role)
+        choiceHolder.bindPoll(poll, userId, role)
         if (poll.state == PollState.live && role == User.Role.MEMBER) {
             choiceHolder.view.setOnClickListener { _ ->
                 positionSelected = position
                 choiceHolder.view.answerButton.isChecked = true
-                poll.userAnswers[googleId] = arrayListOf(position)
+                poll.userAnswers[userId] = arrayListOf(position)
                 notifyDataSetChanged()
                 sendAnswer(position)
             }
@@ -118,7 +118,7 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
 
             val count = poll.answerChoices[adapterPosition].count ?: 0
             view.answerCountTextView.text = count.toString()
-            val answerPercentage = if (totalNumberOfResponses != 0) "(${((count.toDouble()/ totalNumberOfResponses) * 100).roundToInt()}%)" else "(0%)"
+            val answerPercentage = if (totalNumberOfResponses != 0) "(${((count.toDouble() / totalNumberOfResponses) * 100).roundToInt()}%)" else "(0%)"
             view.answerPercentageTextView.text = answerPercentage
 
             setupProgressBar(poll)

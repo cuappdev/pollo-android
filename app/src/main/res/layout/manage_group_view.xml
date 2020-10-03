@@ -121,7 +121,6 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:inputType="text"
-            android:hint=""
             android:layout_marginStart="25dp"
             android:layout_marginEnd="25dp"
             android:layout_marginTop="25dp"

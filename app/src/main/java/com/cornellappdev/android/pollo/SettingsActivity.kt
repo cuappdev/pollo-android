@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.View
+import com.cornellappdev.android.pollo.models.User
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import kotlinx.android.synthetic.main.activity_settings.*
@@ -13,12 +14,16 @@ import kotlinx.android.synthetic.main.activity_settings.*
 
 class SettingsActivity : AppCompatActivity() {
 
+    private val preferencesHelper: PreferencesHelper by lazy {
+        PreferencesHelper(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
         setSupportActionBar(toolbar)
-        val googleAccount = GoogleSignIn.getLastSignedInAccount(this)
-        emailText.text = googleAccount?.email ?: "Unknown"
+
+        emailText.text = getString(R.string.user_email, User.currentUser.netID)
 
     }
 
@@ -48,6 +53,9 @@ class SettingsActivity : AppCompatActivity() {
                 .requestProfile()
                 .build()
         GoogleSignIn.getClient(this, gso).signOut()
+        preferencesHelper.accessToken = ""
+        preferencesHelper.refreshToken = ""
+        preferencesHelper.expiresAt = 0L
         val data = Intent()
         setResult(Activity.RESULT_OK, data)
         finish()

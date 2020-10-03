@@ -22,7 +22,7 @@ interface AnswerChoiceDelegate {
 }
 
 class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
-                           private val googleId: String,
+                           private val userId: String,
                            private val role: User.Role,
                            val callback: OnPollOptionsPressedListener) : RecyclerView.Adapter<PollsRecyclerAdapter.PollHolder>(), AnswerChoiceDelegate {
 
@@ -72,7 +72,7 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
         childLayoutManager.initialPrefetchItemCount = 4
         holder.view.pollsChoiceRecyclerView.apply {
             layoutManager = childLayoutManager
-            adapter = PollsChoiceRecyclerAdapter(poll, googleId, role)
+            adapter = PollsChoiceRecyclerAdapter(poll, userId, role)
             setRecycledViewPool(viewPool)
         }
 

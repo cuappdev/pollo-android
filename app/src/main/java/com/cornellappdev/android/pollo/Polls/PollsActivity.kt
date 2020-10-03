@@ -2,10 +2,6 @@ package com.cornellappdev.android.pollo.polls
 
 import android.animation.ObjectAnimator
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.view.View
 import android.view.animation.TranslateAnimation
 import androidx.appcompat.app.AppCompatActivity
@@ -18,7 +14,6 @@ import com.cornellappdev.android.pollo.models.PollState
 import com.cornellappdev.android.pollo.models.User
 import com.cornellappdev.android.pollo.networking.Socket
 import com.cornellappdev.android.pollo.networking.SocketDelegate
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -57,11 +52,10 @@ class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.
         codeTextView.text = "Code: $code"
         currentPollView.text = "1 / ${polls.size}"
 
-        val googleId = GoogleSignIn.getLastSignedInAccount(this)?.id ?: ""
-
+        val userId = User.currentUser.id
         linearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         pollsRecyclerView.layoutManager = linearLayoutManager
-        adapter = PollsRecyclerAdapter(polls, googleId, role, this)
+        adapter = PollsRecyclerAdapter(polls, userId, role, this)
         pollsRecyclerView.adapter = adapter
 
         if (polls[polls.size - 1].state == PollState.live) {
