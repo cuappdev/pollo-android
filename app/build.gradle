@@ -64,12 +64,11 @@ configurations {
 dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
     implementation 'com.github.nkzawa:socket.io-client:0.3.0'
-    implementation 'com.google.firebase:firebase-auth:19.0.0'
-    implementation 'com.google.android.gms:play-services-auth:17.0.0'
+    implementation 'com.google.firebase:firebase-auth:19.4.0'
+    implementation 'com.google.android.gms:play-services-auth:18.1.0'
     implementation 'com.google.firebase:firebase-crashlytics:17.2.2'
     implementation 'com.google.firebase:firebase-analytics:17.5.0'
-    implementation 'com.google.firebase:firebase-crashlytics:17.0.0-beta01'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.squareup.okhttp3:okhttp:3.13.1'
     implementation 'com.squareup.okio:okio:2.1.0'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
