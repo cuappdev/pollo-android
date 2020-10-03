@@ -20,7 +20,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        val ssoLogo = ContextCompat.getDrawable(this, R.drawable.cornell_sso_logo)
+        val ssoLogo = ContextCompat.getDrawable(this, R.drawable.cornell_logo)
         val ssoLogoColor = ContextCompat.getColor(this, R.color.loginGray)
         ssoLogo?.colorFilter = PorterDuffColorFilter(ssoLogoColor, PorterDuff.Mode.SRC_ATOP)
         sso_button.setCompoundDrawablesWithIntrinsicBounds(ssoLogo, null, null, null)
