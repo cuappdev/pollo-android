@@ -9,16 +9,19 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import androidx.core.content.ContextCompat
 import com.cornellappdev.android.pollo.models.Draft
+import com.cornellappdev.android.pollo.models.Group
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.snackbar.SnackbarContentLayout
 import kotlinx.android.synthetic.main.draft_list_item.view.*
 
 class DraftAdapter(private val context: Context,
                    private var drafts: ArrayList<Draft>,
-                   private var root: CreatePollFragment) :
+                   val callback: OnDraftOptionsPressedListener
+) :
         BaseAdapter() {
 
     var delegate: DraftsDelegate? = null
+
     private val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     private var selectedDraftItem: View? = null // draft_list_item that is currently selected
 
@@ -47,7 +50,8 @@ class DraftAdapter(private val context: Context,
         }
 
         rowView.draftOptionsButton.setOnClickListener {
-            draftOptionsSelected(rowView, position)
+            callback.OnDraftOptionsPressed(position)
+            //draftOptionsSelected(rowView, position)
         }
 
         return rowView
@@ -105,36 +109,31 @@ class DraftAdapter(private val context: Context,
         view?.findViewById<TextView>(R.id.questionTypeTextView)?.setTextColor(color)
     }
 
-    private fun draftOptionsSelected(view: View, position: Int) {
-        val snackBar = Snackbar.make(view, R.string.delete_poll, Snackbar.LENGTH_LONG)
-
-        val textView = snackBar.view.findViewById(R.id.snackbar_action) as TextView
-        val deleteImage = ImageView(context)
-        deleteImage.scaleType = ImageView.ScaleType.CENTER_INSIDE
-        deleteImage.scaleY = .6f
-        deleteImage.scaleX = .6f
-        deleteImage.setImageResource(R.drawable.ic_trash_can)
-        val layoutImageParams = ViewGroup.LayoutParams(WRAP_CONTENT, MATCH_PARENT)
-        (textView.parent as SnackbarContentLayout).addView(deleteImage, layoutImageParams)
-        deleteImage.setOnClickListener {
-            if (selectedDraftItem != null) {
-                // Reset selection
-                setDraftItemSelection(selectedDraftItem, SelectionAction.Deselect)
-                delegate?.draftDeselected()
-            }
-            delegate?.draftDeleted(position)
-            snackBar.dismiss()
-        }
-        snackBar.show()
-    }
 
     private enum class SelectionAction {
         Select, Deselect
+    }
+
+
+    fun resetSelection(position: Int) {
+        if (selectedDraftItem != null) {
+            // Reset selection
+            setDraftItemSelection(selectedDraftItem, SelectionAction.Deselect)
+            //clear draft text and options
+            delegate?.draftDeselected()
+        }
+        delegate?.draftDeleted(position)
+
     }
 
     interface DraftsDelegate {
         fun draftSelected(draft: Draft) // Populates draft creation fields appropriately
         fun draftDeselected()   // Clears draft creation fields
         fun draftDeleted(position: Int)
+
+    }
+
+    interface OnDraftOptionsPressedListener {
+        fun OnDraftOptionsPressed(position: Int)
     }
 }
