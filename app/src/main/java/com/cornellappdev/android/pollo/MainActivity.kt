@@ -75,14 +75,14 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
 
         // If there is no accessToken in preferences, attempt to sign in, otherwise launch the normal activity
 
-        if (preferencesHelper.accessToken.isNotEmpty()) {
+        if (preferencesHelper.accessToken!!.isNotEmpty()) {
             val expiresAt = preferencesHelper.expiresAt
             val dateAccessTokenExpires = Date(expiresAt * 1000)
             val currentDate = Date()
             val isAccessTokenExpired = currentDate >= dateAccessTokenExpires
             CoroutineScope(Dispatchers.Main).launch {
                 if (isAccessTokenExpired) {
-                    val refreshTokenEndpoint = Endpoint.userRefreshSession(preferencesHelper.refreshToken)
+                    val refreshTokenEndpoint = Endpoint.userRefreshSession(preferencesHelper.refreshToken as String)
                     val typeToken = object : TypeToken<ApiResponse<UserSession>>() {}.type
                     val userSession = withContext(Dispatchers.IO) {
                         Request.makeRequest<ApiResponse<UserSession>>(refreshTokenEndpoint.okHttpRequest(), typeToken)
