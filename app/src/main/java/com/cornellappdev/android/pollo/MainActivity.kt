@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        
         container.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
 
             override fun onPageScrollStateChanged(state: Int) {
@@ -192,14 +192,16 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
         }
 
         if (requestCode == LOGIN_REQ_CODE && resultCode == Activity.RESULT_OK) {
-            val sessionInfo = data?.getStringExtra("sessionInfo")
-            val session = Gson().fromJson(sessionInfo, UserSession::class.java)
-            preferencesHelper.accessToken = session.accessToken
-            preferencesHelper.refreshToken = session.refreshToken
-            preferencesHelper.expiresAt = session.sessionExpiration.toLong()
+            val accessToken = data?.getStringExtra("accessToken")
+            val refreshToken = data?.getStringExtra("refreshToken")
+            val expiresAt = data?.getStringExtra("sessionExpiration")
+            val session = UserSession(accessToken, refreshToken, expiresAt, true)
+
+            preferencesHelper.accessToken = accessToken
+            preferencesHelper.refreshToken = refreshToken
+            preferencesHelper.expiresAt = expiresAt!!.toLong()
 
             User.currentSession = session
-
             finishAuthFlow()
         }
     }
