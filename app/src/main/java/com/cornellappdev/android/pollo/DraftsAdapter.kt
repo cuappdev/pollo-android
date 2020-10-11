@@ -50,8 +50,7 @@ class DraftAdapter(private val context: Context,
         }
 
         rowView.draftOptionsButton.setOnClickListener {
-            callback.OnDraftOptionsPressed(position)
-            //draftOptionsSelected(rowView, position)
+            callback.onDraftOptionsPressed(position)
         }
 
         return rowView
@@ -134,6 +133,6 @@ class DraftAdapter(private val context: Context,
     }
 
     interface OnDraftOptionsPressedListener {
-        fun OnDraftOptionsPressed(position: Int)
+        fun onDraftOptionsPressed(position: Int)
     }
 }

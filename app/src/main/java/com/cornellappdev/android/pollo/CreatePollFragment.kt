@@ -121,11 +121,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         // Setup options menu for drafts
         groupMenuOptionsView.renameGroup.visibility = View.GONE
 
-        groupMenuOptionsView.closeButton.setOnClickListener {
-            dismissPopup()
-        }
-
-
+        groupMenuOptionsView.closeButton.setOnClickListener { dismissPopup() }
     }
 
     /**
@@ -381,12 +377,12 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
     }
 
 
-    override fun OnDraftOptionsPressed(position: Int) {
+    override fun onDraftOptionsPressed(position: Int) {
         if (isPopupActive) return
         isPopupActive = true
         setDim(true)
         groupMenuOptionsView.removeGroup.visibility = View.VISIBLE
-        groupMenuOptionsView.groupNameTextView.text = "Draft Options"
+        groupMenuOptionsView.groupNameTextView.text = getString(R.string.draft_options)
         groupMenuOptionsView.removeGroup.removeGroupImage.setImageResource(R.drawable.ic_trash_can)
         groupMenuOptionsView.removeGroup.removeGroupText.setText(R.string.delete_poll)
         headerView.elevation = 0f
@@ -400,9 +396,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         groupMenuOptionsView.removeGroup.setOnClickListener {
             // Reset selection
             draftAdapter!!.resetSelection(position)
-
             dismissPopup()
-
         }
     }
 
