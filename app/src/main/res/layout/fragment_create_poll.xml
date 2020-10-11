@@ -44,90 +44,94 @@
     </RelativeLayout>
 
 
-    <RelativeLayout
-        android:id="@+id/createPollView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/headerView">
-
-        <EditText
-            android:id="@+id/poll_question"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="24dp"
-            android:background="@android:color/transparent"
-            android:hint="@string/ask_question" />
-
-        <ListView
-            android:id="@+id/poll_options"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/poll_question"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="24dp"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="8dp" />
-
-        <Button
-            android:id="@+id/add_poll_option_button"
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:layout_below="@+id/poll_options"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="24dp"
-            android:backgroundTint="@color/cardHeaderGray"
-            android:drawableLeft="@drawable/plus_sign_grey"
-            android:elevation="4dp"
-            android:text="@string/add_option"
-            android:textAlignment="textStart"
-            android:textAllCaps="false"
-            android:textColor="@color/settings_detail"
-            android:textSize="18sp" />
-
-    </RelativeLayout>
-    
     <LinearLayout
-        android:id="@+id/drafts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="vertical"
-        android:layout_below="@id/createPollView"
-        >
-        
-        <TextView
-            android:id="@+id/draftsHeader"
-            android:layout_width="match_parent"
-            android:layout_height="26dp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:textAlignment="center"
-            android:visibility="gone"
-            />
+        android:layout_above="@id/footerView"
+        android:layout_below="@id/headerView"
+        android:orientation="vertical">
 
-        <ListView
-            android:id="@+id/draftsListView"
+        <RelativeLayout
+            android:id="@+id/createPollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/poll_question"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="24dp"
+                android:background="@android:color/transparent"
+                android:hint="@string/ask_question" />
+
+            <ListView
+                android:id="@+id/poll_options"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/poll_question"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="24dp"
+                android:divider="@android:color/transparent"
+                android:dividerHeight="8dp" />
+
+            <Button
+                android:id="@+id/add_poll_option_button"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_below="@+id/poll_options"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="24dp"
+                android:backgroundTint="@color/cardHeaderGray"
+                android:drawableLeft="@drawable/plus_sign_grey"
+                android:elevation="4dp"
+                android:text="@string/add_option"
+                android:textAlignment="textStart"
+                android:textAllCaps="false"
+                android:textColor="@color/settings_detail"
+                android:textSize="18sp" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/drafts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="6dp"
-            android:scrollbars="none"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="12dp"/>
-        
-        
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/draftsHeader"
+                android:layout_width="match_parent"
+                android:layout_height="26dp"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <ListView
+                android:id="@+id/draftsListView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="20dp"
+                android:divider="@android:color/transparent"
+                android:dividerHeight="12dp"
+                android:scrollbars="none" />
+
+
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -193,10 +197,23 @@
 
     </LinearLayout>
 
+    <View
+        android:id="@+id/dimView_draft"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.0"
+        android:background="@color/black" />
+
     <include
         android:id="@+id/onboardingView"
         layout="@layout/create_poll_onboarding"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone" />
+
+    <include
+        layout="@layout/manage_group_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
 </RelativeLayout>

@@ -1,17 +1,24 @@
 package com.cornellappdev.android.pollo
 
+import android.animation.LayoutTransition
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getColor
 import androidx.fragment.app.Fragment
 import com.cornellappdev.android.pollo.models.*
 import com.cornellappdev.android.pollo.models.PollResult
@@ -22,15 +29,21 @@ import kotlinx.android.synthetic.main.create_poll_onboarding.view.*
 import kotlinx.android.synthetic.main.create_poll_options_list_item.view.*
 import kotlinx.android.synthetic.main.fragment_create_poll.*
 import kotlinx.android.synthetic.main.fragment_create_poll.view.*
+import kotlinx.android.synthetic.main.fragment_create_poll.view.groupNameTextView
+import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.android.synthetic.main.manage_group_view.*
+import kotlinx.android.synthetic.main.manage_group_view.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @SuppressLint("ValidFragment")
-class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate {
+class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter.OnDraftOptionsPressedListener {
     var options: ArrayList<String> = arrayListOf()
     var createPollAdapter: CreatePollAdapter? = null
+    private var delegate: CreatePollDelegate? = null
+    private var isPopupActive: Boolean = false
     var drafts: ArrayList<Draft> = arrayListOf()
     var draftAdapter: DraftAdapter? = null
     var selectedDraft: Draft? = null
@@ -84,6 +97,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate {
             preferencesHelper.displayOnboarding = false
         }
 
+
         return rootView
     }
 
@@ -104,6 +118,10 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setDraftsHeader()
+        // Setup options menu for drafts
+        groupMenuOptionsView.renameGroup.visibility = View.GONE
+
+        groupMenuOptionsView.closeButton.setOnClickListener { dismissPopup() }
     }
 
     /**
@@ -112,7 +130,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate {
     private fun startPoll(correct: Int) {
         if (selectedDraft != null) {
             for (i in 0 until drafts.size) {
-                if (drafts[i].id == selectedDraft!!.id){
+                if (drafts[i].id == selectedDraft!!.id) {
                     draftDeleted(i)
                     break
                 }
@@ -291,7 +309,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate {
 
     // ONBOARDING
 
-    private fun setupOnboard(view : View) {
+    private fun setupOnboard(view: View) {
         currOnboardScreen = 0
 
         view.onboardingView.visibility = View.VISIBLE
@@ -310,14 +328,14 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate {
         outlineBubble(view.bubble_outline2)
     }
 
-    private fun outlinePollOption(view : View, text : String) {
+    private fun outlinePollOption(view: View, text: String) {
         outlineBubble(view)
         view.setBackgroundResource(R.drawable.rounded_container_outline)
         view.create_poll_options_text.setHintTextColor(Color.WHITE)
         view.create_poll_options_text.hint = text
     }
 
-    private fun outlineBubble(view : View) {
+    private fun outlineBubble(view: View) {
         view.setBackgroundColor(Color.TRANSPARENT)
         view.create_poll_options_text.setHintTextColor(Color.TRANSPARENT)
         view.create_poll_options_item.buttonTintList = ColorStateList.valueOf(Color.WHITE)
@@ -326,7 +344,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate {
     /**
      * Moves through onboarding screens
      */
-    private fun displayOnboard(view : ConstraintLayout) {
+    private fun displayOnboard(view: ConstraintLayout) {
         view.getChildAt(currOnboardScreen).visibility = View.GONE
         currOnboardScreen++
         if (currOnboardScreen < view.childCount) {
@@ -337,4 +355,75 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate {
             footerView.elevation = 4f
         }
     }
+
+    fun dismissPopup() {
+        if (!isPopupActive) return
+        isPopupActive = false
+        setDim(false)
+        val animate = TranslateAnimation(0f, 0f, 0f, groupMenuOptionsView.height.toFloat())
+        animate.duration = 300
+        animate.fillAfter = true
+        groupMenuOptionsView.startAnimation(animate)
+        groupMenuOptionsView.visibility = View.GONE
+        groupMenuOptionsView.removeGroup.visibility = View.GONE
+
+        if (animate.hasEnded()) {
+
+            headerView.elevation = 4f
+            footerView.elevation = 4f
+        }
+
+
+    }
+
+
+    override fun onDraftOptionsPressed(position: Int) {
+        if (isPopupActive) return
+        isPopupActive = true
+        setDim(true)
+        groupMenuOptionsView.removeGroup.visibility = View.VISIBLE
+        groupMenuOptionsView.groupNameTextView.text = getString(R.string.draft_options)
+        groupMenuOptionsView.removeGroup.removeGroupImage.setImageResource(R.drawable.ic_trash_can)
+        groupMenuOptionsView.removeGroup.removeGroupText.setText(R.string.delete_poll)
+        headerView.elevation = 0f
+        footerView.elevation = 0f
+        groupMenuOptionsView.visibility = View.VISIBLE
+
+        val animate = TranslateAnimation(0f, 0f, groupMenuOptionsView.height.toFloat(), 0f)
+        animate.duration = 300
+        animate.fillAfter = true
+        groupMenuOptionsView.startAnimation(animate)
+        groupMenuOptionsView.removeGroup.setOnClickListener {
+            // Reset selection
+            draftAdapter!!.resetSelection(position)
+            dismissPopup()
+        }
+    }
+
+    private fun setDim(shouldDim: Boolean) {
+        delegate?.setDim(shouldDim, this)
+        // Don't want to be able to open poll views when dimmed
+
+        setSelfDim(shouldDim)
+    }
+
+    fun setSelfDim(shouldDim: Boolean) {
+        // Don't want to be able to open poll views when dimmed
+        dimView_draft.isClickable = shouldDim
+
+        val alphaValue = if (shouldDim) 0.5f else 0.0f
+        val dimAnimation = ObjectAnimator.ofFloat(dimView_draft, "alpha", alphaValue)
+        dimAnimation.duration = 500
+        dimAnimation.start()
+    }
+
+    interface CreatePollDelegate {
+        /**
+         * Should dim any parts of the screen outside of `CreatePollFragment`
+         */
+        fun setDim(shouldDim: Boolean, createPollFragment: CreatePollFragment)
+
+    }
+
+
 }
