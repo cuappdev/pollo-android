@@ -115,15 +115,6 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
                     onPollStart(poll)
                 }
             }
-
-            if (!newPollCreated) {
-//                sortedPolls.clear()
-//                sortedPolls.addAll(groupByDate(sortedPollsRefreshed.data))
-//                runOnUiThread {
-//                    adapter.updatePolls(sortedPolls)
-//                    toggleEmptyState()
-//                }
-            }
         }
     }
 
