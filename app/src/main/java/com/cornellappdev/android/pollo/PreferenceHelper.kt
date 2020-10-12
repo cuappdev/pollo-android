@@ -1,10 +1,11 @@
 package com.cornellappdev.android.pollo
 
 import android.content.Context
+import androidx.preference.PreferenceManager
 
 class PreferencesHelper(context: Context) {
 
-    private val preferences = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+    private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     var accessToken = preferences.getString(ACCESS_TOKEN, "")
         set(value) {
