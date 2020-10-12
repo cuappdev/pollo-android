@@ -5,11 +5,8 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
 import androidx.appcompat.app.AppCompatActivity
 import android.view.View
-import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.cornellappdev.android.pollo.models.ApiResponse
@@ -18,7 +15,6 @@ import com.cornellappdev.android.pollo.models.User
 import com.cornellappdev.android.pollo.models.UserSession
 import com.cornellappdev.android.pollo.networking.*
 import com.google.android.material.tabs.TabLayoutMediator
-import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
@@ -181,7 +177,7 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
             }
         })
 
-        TabLayoutMediator(tabs, viewPager) { tab, position -> tab.text = if (position == 0) getString(R.string.joined) else getString(R.string.created)}.attach()
+        TabLayoutMediator(tabs, viewPager) { tab, position -> tab.text = if (position == 0) getString(R.string.joined) else getString(R.string.created) }.attach()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
