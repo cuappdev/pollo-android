@@ -4,18 +4,20 @@ import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.tabs.TabLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import androidx.viewpager.widget.ViewPager
 import androidx.appcompat.app.AppCompatActivity
 import android.view.View
+import androidx.lifecycle.Lifecycle
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.cornellappdev.android.pollo.models.ApiResponse
 import com.cornellappdev.android.pollo.models.Group
 import com.cornellappdev.android.pollo.models.User
 import com.cornellappdev.android.pollo.models.UserSession
 import com.cornellappdev.android.pollo.networking.*
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
@@ -29,19 +31,14 @@ import kotlin.collections.ArrayList
 class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
 
     /**
-     * The [android.support.v4.view.PagerAdapter] that will provide
-     * fragments for each of the sections. We use a
-     * [FragmentPagerAdapter] derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * [android.support.v4.app.FragmentStatePagerAdapter].
+     * [FragmentStateAdapter] that will provide
+     * fragments for each of the sections.
      */
-    private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
+    private var pagerAdapter: FragmentStateAdapter? = null
 
     /**
-     * The [ViewPager] that will host the section contents.
+     * Fragments for each section.
      */
-    private var viewPager: ViewPager? = null
     private var joinedGroupFragment: GroupFragment? = null
     private var createdGroupFragment: GroupFragment? = null
 
@@ -52,29 +49,8 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        
-        container.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-
-            override fun onPageScrollStateChanged(state: Int) {
-            }
-
-            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-            }
-
-            override fun onPageSelected(position: Int) {
-                when (position) {
-                    0 -> {
-                        createdGroupFragment?.dismissPopup()
-                    }
-                    1 -> {
-                        joinedGroupFragment?.dismissPopup()
-                    }
-                }
-            }
-        })
 
         // If there is no accessToken in preferences, attempt to sign in, otherwise launch the normal activity
-
         if (preferencesHelper.accessToken!!.isNotEmpty()) {
             val expiresAt = preferencesHelper.expiresAt
             val dateAccessTokenExpires = Date(expiresAt * 1000)
@@ -114,7 +90,7 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
 
     override fun onRestart() {
         super.onRestart()
-        if (mSectionsPagerAdapter != null) {
+        if (pagerAdapter != null) {
             createdGroupFragment?.refreshGroups()
             joinedGroupFragment?.refreshGroups()
             return
@@ -163,24 +139,49 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
 
     private fun finishAuthFlow() {
         getUser()
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        if (mSectionsPagerAdapter != null) {
+
+        if (pagerAdapter != null) {
             createdGroupFragment?.refreshGroups()
             joinedGroupFragment?.refreshGroups()
             return
         }
 
-        mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
+        // Create the adapter that will return a fragment for each of the three
+        // primary sections of the activity.
+        pagerAdapter = object : FragmentStateAdapter(this) {
+            override fun createFragment(position: Int): Fragment {
+                if (position == 0) {
+                    joinedGroupFragment = joinedGroupFragment
+                            ?: GroupFragment.newInstance(position + 1, userRole = User.Role.MEMBER)
+                    return joinedGroupFragment!!
+                }
 
-        // Set up the ViewPager with the sections adapter.
-        viewPager = findViewById(R.id.container)
-        viewPager!!.adapter = mSectionsPagerAdapter
+                createdGroupFragment = createdGroupFragment
+                        ?: GroupFragment.newInstance(position + 1, userRole = User.Role.ADMIN)
+                return createdGroupFragment!!
+            }
 
-        val tabLayout = findViewById<TabLayout>(R.id.tabs)
+            override fun getItemCount(): Int {
+                return 2
+            }
+        }
 
-        viewPager!!.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
-        tabLayout.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(viewPager))
+        viewPager.adapter = pagerAdapter
+
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                when (position) {
+                    0 -> {
+                        createdGroupFragment?.dismissPopup()
+                    }
+                    1 -> {
+                        joinedGroupFragment?.dismissPopup()
+                    }
+                }
+            }
+        })
+
+        TabLayoutMediator(tabs, viewPager) { tab, position -> tab.text = if (position == 0) getString(R.string.joined) else getString(R.string.created)}.attach()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -195,39 +196,14 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
             val accessToken = data?.getStringExtra("accessToken")
             val refreshToken = data?.getStringExtra("refreshToken")
             val expiresAt = data?.getStringExtra("sessionExpiration")
-            val session = UserSession(accessToken, refreshToken, expiresAt, true)
 
             preferencesHelper.accessToken = accessToken
             preferencesHelper.refreshToken = refreshToken
             preferencesHelper.expiresAt = expiresAt!!.toLong()
 
+            val session = UserSession(accessToken, refreshToken, expiresAt, true)
             User.currentSession = session
             finishAuthFlow()
-        }
-    }
-
-    /**
-     * A [FragmentPagerAdapter] that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     *
-     * getItem is called to instantiate the fragment for the given page.
-     */
-    inner class SectionsPagerAdapter internal constructor(fm: FragmentManager) : FragmentPagerAdapter(fm) {
-
-        override fun getItem(position: Int): Fragment {
-            if (position == 0) {
-                joinedGroupFragment = joinedGroupFragment
-                        ?: GroupFragment.newInstance(position + 1, userRole = User.Role.MEMBER)
-                return joinedGroupFragment!!
-            }
-
-            createdGroupFragment = createdGroupFragment
-                    ?: GroupFragment.newInstance(position + 1, userRole = User.Role.ADMIN)
-            return createdGroupFragment!!
-        }
-
-        override fun getCount(): Int {
-            return 2
         }
     }
 

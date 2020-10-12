@@ -86,8 +86,7 @@ class LoginActivity : AppCompatActivity() {
         // sessionInfo is a stringified version of UserSession JSON
         fun handleToken(sessionInfo: String) {
             runOnUiThread { webview.visibility = View.GONE }
-            val session = Gson().fromJson(sessionInfo, UserSession::class.java)
-            sendSessionInfo(session)
+            sendSessionInfo(Gson().fromJson(sessionInfo, UserSession::class.java))
         }
     }
 
