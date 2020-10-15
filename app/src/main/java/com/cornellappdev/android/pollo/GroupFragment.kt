@@ -338,8 +338,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
             groupMenuOptionsView.renameGroupDetail.renameGroupEditText.text.clear()
 
             if (context != null && view != null) {
-                val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(view!!.applicationWindowToken, 0)
+                val imm = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(requireView().applicationWindowToken, 0)
             }
         }
     }
@@ -473,8 +473,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
 
         // I'm not sure if this is necessary on a real device, going to leave in until I can confirm
         if (context != null && view != null) {
-            val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.showSoftInput(view!!, InputMethodManager.SHOW_IMPLICIT)
+            val imm = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(requireView(), InputMethodManager.SHOW_IMPLICIT)
         }
     }
 
