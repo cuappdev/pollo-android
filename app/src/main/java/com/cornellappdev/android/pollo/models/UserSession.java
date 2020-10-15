@@ -1,30 +1,29 @@
 package com.cornellappdev.android.pollo.models;
 
 public class UserSession {
-    private String uuid;
-    private String sessionToken;
-    private String expiresAt;
-    private String updateToken;
+
+    private String accessToken;
+    private String refreshToken;
+    private String sessionExpiration;
     private boolean isActive;
-    private User user;
 
     public UserSession(String accessToken, String refreshToken, String sessionExpiration, boolean isActive) {
-        this.sessionToken = accessToken;
-        this.updateToken = refreshToken;
-        this.expiresAt = sessionExpiration;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.sessionExpiration = sessionExpiration;
         this.isActive = isActive;
     }
 
     public String getAccessToken() {
-        return sessionToken;
+        return accessToken;
     }
 
     public String getRefreshToken() {
-        return updateToken;
+        return refreshToken;
     }
 
     public String getSessionExpiration() {
-        return expiresAt;
+        return sessionExpiration;
     }
 
     public boolean isActive() {
