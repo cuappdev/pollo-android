@@ -48,20 +48,6 @@ class LoginActivity : AppCompatActivity() {
             webview.loadUrl(host)
             webview.visibility = View.VISIBLE
         }
-
-        if (BuildConfig.DUMMY_LOGIN_ENABLED) {
-            dummy_login_button.visibility = View.VISIBLE
-            dummy_login_button.setOnClickListener {
-                CoroutineScope(Dispatchers.Main).launch {
-                    val dummyLoginEndpoint = Endpoint.dummyUserLogin()
-                    val typeToken = object : TypeToken<ApiResponse<UserSession>>() {}.type
-                    val userSession = withContext(Dispatchers.IO) {
-                        Request.makeRequest<ApiResponse<UserSession>>(dummyLoginEndpoint.okHttpRequest(), typeToken)
-                    }!!.data
-                    sendSessionInfo(userSession)
-                }
-            }
-        }
     }
 
     private fun sendSessionInfo(session: UserSession) {
