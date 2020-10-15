@@ -32,8 +32,8 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_polls_date)
-        sortedPolls = groupByDate(intent.getParcelableArrayListExtra<GetSortedPollsResponse>("SORTED_POLLS"))
-        group = intent.getParcelableExtra("GROUP_NODE")
+        sortedPolls = groupByDate(intent.getParcelableArrayListExtra<GetSortedPollsResponse>("SORTED_POLLS")!!)
+        group = intent.getParcelableExtra("GROUP_NODE")!!
 
         backButton.setOnClickListener(this)
 
@@ -95,7 +95,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         onPollStart(newPoll)
     }
 
-    fun refreshPolls(newPollCreated: Boolean) {
+    private fun refreshPolls(newPollCreated: Boolean) {
         CoroutineScope(Dispatchers.Main).launch {
             val endpoint = Endpoint.joinGroupWithCode(group.code)
             val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
@@ -105,7 +105,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
             } ?: return@launch
 
 
-            val allPollsEndpoint = Endpoint.getSortedPolls(groupNodeResponse!!.data.id)
+            val allPollsEndpoint = Endpoint.getSortedPolls(groupNodeResponse.data.id)
             val sortedPollsRefreshed = withContext(Dispatchers.Default) {
                 Request.makeRequest<ApiResponse<ArrayList<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest(), typeTokenSortedPolls)
             } ?: return@launch
@@ -113,15 +113,6 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
             if (sortedPollsRefreshed.data.isNotEmpty()) {
                 for (poll in sortedPollsRefreshed.data.last().polls) {
                     onPollStart(poll)
-                }
-            }
-
-            if (!newPollCreated) {
-                sortedPolls.clear()
-                sortedPolls.addAll(groupByDate(sortedPollsRefreshed.data))
-                runOnUiThread {
-                    adapter.updatePolls(sortedPolls)
-                    toggleEmptyState()
                 }
             }
         }

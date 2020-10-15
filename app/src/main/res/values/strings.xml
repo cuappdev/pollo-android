@@ -4,10 +4,9 @@
 
     <string name="app_name">Pollo</string>
     <string name="sign_in">Sign in with Cornell SSO</string>
+    <string name="dummy_login">Dummy Login</string>
 
     <string name="close_detail_menu_content_description">Close Detail Menu</string>
-
-    <string name="created">Created</string>
 
     <string name="join_group_hint">Enter a code…</string>
     <string name="create_group_hint">Enter a new group name…</string>
@@ -19,6 +18,8 @@
     <string name="join_button_text">Join</string>
     <string name="create_button_text">Create</string>
 
+<!--Tab Names-->
+    <string name="created">Created</string>
     <string name="joined">Joined</string>
 
     <string name="live_indicator">•</string>
