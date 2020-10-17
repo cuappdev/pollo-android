@@ -89,7 +89,7 @@ object Socket {
         if (args.isEmpty()) return@Listener
         val json = args[0] as JSONObject
         val poll = Gson().fromJson<Poll>(json.toString(), Poll::class.java)
-        delegates.forEach { it.onPollResult(poll) }
+        delegates.forEach { it.onPollUpdateAdmin(poll) }
     }
 
     private val onPollEndAdmin = Emitter.Listener { args ->
@@ -153,6 +153,7 @@ object Socket {
     }
 
     fun deleteSavedPoll(poll: Poll) {
+        onPollDelete.call(poll.id)
         socket.emit("server/poll/delete", poll.id ?: "")
     }
 
