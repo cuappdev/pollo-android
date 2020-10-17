@@ -41,6 +41,7 @@ class LoginActivity : AppCompatActivity() {
         val cookieManager = CookieManager.getInstance()
         cookieManager.removeAllCookies(null)
         sso_button.setOnClickListener {
+            WebView.setWebContentsDebuggingEnabled(false)
             webview.settings.javaScriptEnabled = true
             webview.addJavascriptInterface(WebAppInterface(this), "Mobile")
             webview.webViewClient = WebAppClient()
