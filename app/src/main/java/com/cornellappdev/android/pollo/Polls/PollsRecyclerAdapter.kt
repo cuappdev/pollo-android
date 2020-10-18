@@ -41,7 +41,7 @@ class PollsRecyclerAdapter(
     override fun onBindViewHolder(holder: PollHolder, position: Int) {
 
         val poll = polls[position]
-        var recyclerviewHeight = 0;
+        var recyclerviewHeight=0;
 
         holder.view.layoutParams = (holder.view.layoutParams as RecyclerView.LayoutParams).apply {
             val displayMetrics = Resources.getSystem().displayMetrics
@@ -68,13 +68,13 @@ class PollsRecyclerAdapter(
             val tmpHeight = headerHeight + cellHeight * poll.answerChoices.count() + adminControlsHeight // 53 is cell height including top margin
             height = if (tmpHeight <= 1500) tmpHeight else 1500
 
-            recyclerviewHeight = cellHeight * poll.answerChoices.count();
+            recyclerviewHeight=cellHeight*poll.answerChoices.count();
         }
 
         holder.bindPoll(poll, this, role)
-        holder.view.pollsChoiceRecyclerView.layoutParams = (holder.view.pollsChoiceRecyclerView.layoutParams
+        holder.view.pollsChoiceRecyclerView.layoutParams= ( holder.view.pollsChoiceRecyclerView.layoutParams
                 as ConstraintLayout.LayoutParams).apply {
-            height = if (recyclerviewHeight <= 600) recyclerviewHeight else 600
+            height=if(recyclerviewHeight<=600) recyclerviewHeight else 600
         }
         val childLayoutManager = LinearLayoutManager(holder.view.pollsChoiceRecyclerView.context)
         childLayoutManager.initialPrefetchItemCount = 4

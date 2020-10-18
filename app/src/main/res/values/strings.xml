@@ -66,6 +66,7 @@
     <string name="untitled_poll">Untitled Poll</string>
     <string name="multiple_choice">Multiple Choice</string>
     <string name="save_as_draft">Save as Draft</string>
+    <string name="draft_options">Draft Options</string>
     <string name="start_poll">Start Question</string>
 
     <!-- Poll Options -->
