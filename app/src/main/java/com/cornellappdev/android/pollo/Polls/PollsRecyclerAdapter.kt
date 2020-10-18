@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.cornellappdev.android.pollo.R
 import com.cornellappdev.android.pollo.inflate
 import com.cornellappdev.android.pollo.networking.Socket
@@ -21,10 +22,12 @@ interface AnswerChoiceDelegate {
     fun sendAnswer(position: Int)
 }
 
-class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
-                           private val userId: String,
-                           private val role: User.Role,
-                           val callback: OnPollOptionsPressedListener) : RecyclerView.Adapter<PollsRecyclerAdapter.PollHolder>(), AnswerChoiceDelegate {
+class PollsRecyclerAdapter(
+        private var polls: ArrayList<Poll>,
+        private val userId: String,
+        private val role: User.Role,
+        val callback: OnPollOptionsPressedListener
+) : RecyclerView.Adapter<PollsRecyclerAdapter.PollHolder>(), AnswerChoiceDelegate {
 
     private val viewPool = RecyclerView.RecycledViewPool()
 
@@ -38,6 +41,7 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
     override fun onBindViewHolder(holder: PollHolder, position: Int) {
 
         val poll = polls[position]
+        var recyclerviewHeight = 0;
 
         holder.view.layoutParams = (holder.view.layoutParams as RecyclerView.LayoutParams).apply {
             val displayMetrics = Resources.getSystem().displayMetrics
@@ -57,17 +61,21 @@ class PollsRecyclerAdapter(private var polls: ArrayList<Poll>,
             marginStart = if (position == 0) endAdjustment else 16
             marginEnd = if (position == (itemCount - 1)) endAdjustment else 16
 
-            val headerHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100f, displayMetrics).toInt()
+            val headerHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 140f, displayMetrics).toInt()
             val cellHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 55f, displayMetrics).toInt()
             val adminControlsHeight = if (role == User.Role.ADMIN) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 85f, displayMetrics).toInt() else 0
             // 86 dp is the height of header, 53dp is height of cell
             val tmpHeight = headerHeight + cellHeight * poll.answerChoices.count() + adminControlsHeight // 53 is cell height including top margin
+            height = if (tmpHeight <= 1500) tmpHeight else 1500
 
-            height = if (tmpHeight <= 1250) tmpHeight else 1250
+            recyclerviewHeight = cellHeight * poll.answerChoices.count();
         }
 
         holder.bindPoll(poll, this, role)
-
+        holder.view.pollsChoiceRecyclerView.layoutParams = (holder.view.pollsChoiceRecyclerView.layoutParams
+                as ConstraintLayout.LayoutParams).apply {
+            height = if (recyclerviewHeight <= 600) recyclerviewHeight else 600
+        }
         val childLayoutManager = LinearLayoutManager(holder.view.pollsChoiceRecyclerView.context)
         childLayoutManager.initialPrefetchItemCount = 4
         holder.view.pollsChoiceRecyclerView.apply {
