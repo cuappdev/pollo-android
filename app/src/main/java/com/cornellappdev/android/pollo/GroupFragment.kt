@@ -120,7 +120,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         // Setup for joining/creating groups
         addGroupButton.isEnabled = false
         addGroupEditText.addTextChangedListener(addGroupTextWatcher)
-        addGroupEditText.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> addGroupEditText.isCursorVisible = hasFocus }
+        addGroupEditText.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus -> addGroupEditText.isCursorVisible = hasFocus }
         addGroupEditText.setOnEditorActionListener { _, actionId, _ ->
             when (actionId) {
                 EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_SEARCH -> {
@@ -186,7 +186,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         }
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
 
         if (context is GroupFragmentDelegate) {
@@ -338,8 +338,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
             groupMenuOptionsView.renameGroupDetail.renameGroupEditText.text.clear()
 
             if (context != null && view != null) {
-                val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(view!!.applicationWindowToken, 0)
+                val imm = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(requireView().applicationWindowToken, 0)
             }
         }
     }
@@ -473,8 +473,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
 
         // I'm not sure if this is necessary on a real device, going to leave in until I can confirm
         if (context != null && view != null) {
-            val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.showSoftInput(view!!, InputMethodManager.SHOW_IMPLICIT)
+            val imm = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(requireView(), InputMethodManager.SHOW_IMPLICIT)
         }
     }
 
