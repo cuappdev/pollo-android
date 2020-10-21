@@ -313,7 +313,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         if (isPopupActive) return
         isPopupActive = true
         setDim(true)
-        dimView.setOnClickListener{
+        dimView.setOnClickListener {
             dismissPopup()
         }
         groupSelected = group
@@ -358,7 +358,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     /**
      * Dims the `GroupFragment` and calls the delegates dim method according to `shouldDim`
      */
-     private fun setDim(shouldDim: Boolean) {
+    private fun setDim(shouldDim: Boolean) {
         delegate?.setDim(shouldDim, this)
 
         // Don't want to be able to open group views when dimmed
@@ -493,7 +493,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
      * Resets the group options menu to its default state (edit/delete group options for admins) and
      * renames group (locally and to backend). Does not dismiss the group options menu.
      */
-    private fun finishRenameGroup(){
+    private fun finishRenameGroup() {
         val newGroupName = renameGroupEditText.text.toString().trim()
         if (newGroupName == "" || groupSelected == null) {
             AlertDialog.Builder(context)
