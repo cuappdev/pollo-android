@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
+import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
@@ -81,6 +82,10 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        swipeRefresh.setOnRefreshListener {
+            refreshGroups()
+        }
 
         setNoGroups()
         dimView.bringToFront()
@@ -155,6 +160,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
             User.Role.MEMBER -> {
                 addGroupEditText.setHint(R.string.join_group_hint)
                 addGroupEditText.setTextColor(Color.WHITE)
+                addGroupEditText.isAllCaps = true
+                addGroupEditText.inputType = InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
                 addGroupEditText.filters = addGroupEditText.filters +
                         InputFilter.AllCaps() +
                         InputFilter.LengthFilter(6) +
@@ -224,6 +231,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
                 currentAdapter?.addAll(groups)
                 currentAdapter?.notifyDataSetChanged()
                 setNoGroups()
+                swipeRefresh?.isRefreshing = false
             }
         }
     }
@@ -305,6 +313,9 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         if (isPopupActive) return
         isPopupActive = true
         setDim(true)
+        dimView.setOnClickListener{
+            dismissPopup()
+        }
         groupSelected = group
         groupMenuOptionsView.groupNameTextView.text = group?.name ?: "Pollo Group"
         groupMenuOptionsView.visibility = View.VISIBLE

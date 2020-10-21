@@ -93,6 +93,15 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
         }
     }
 
+    override fun onBackPressed() {
+        if (appbar.alpha < 1.0f) {
+            joinedGroupFragment?.dismissPopup()
+            createdGroupFragment?.dismissPopup()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     override fun setDim(shouldDim: Boolean, groupFragment: GroupFragment) {
         when (groupFragment) {
             joinedGroupFragment -> createdGroupFragment?.setSelfDim(shouldDim)
