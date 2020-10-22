@@ -2,6 +2,7 @@ package com.cornellappdev.android.pollo.polls
 
 import android.content.res.Resources
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -41,8 +42,6 @@ class PollsRecyclerAdapter(
     override fun onBindViewHolder(holder: PollHolder, position: Int) {
 
         val poll = polls[position]
-        var recyclerviewHeight=0;
-
         holder.view.layoutParams = (holder.view.layoutParams as RecyclerView.LayoutParams).apply {
             val displayMetrics = Resources.getSystem().displayMetrics
 
@@ -60,21 +59,15 @@ class PollsRecyclerAdapter(
             val endAdjustment = (widthSubtraction / 2) - fudgeFactor
             marginStart = if (position == 0) endAdjustment else 16
             marginEnd = if (position == (itemCount - 1)) endAdjustment else 16
-
-            val headerHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 140f, displayMetrics).toInt()
-            val cellHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 55f, displayMetrics).toInt()
-            val adminControlsHeight = if (role == User.Role.ADMIN) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 85f, displayMetrics).toInt() else 0
-            // 86 dp is the height of header, 53dp is height of cell
-            val tmpHeight = headerHeight + cellHeight * poll.answerChoices.count() + adminControlsHeight // 53 is cell height including top margin
-            height = if (tmpHeight <= 1500) tmpHeight else 1500
-
-            recyclerviewHeight=cellHeight*poll.answerChoices.count();
         }
 
         holder.bindPoll(poll, this, role)
-        holder.view.pollsChoiceRecyclerView.layoutParams= ( holder.view.pollsChoiceRecyclerView.layoutParams
-                as ConstraintLayout.LayoutParams).apply {
-            height=if(recyclerviewHeight<=600) recyclerviewHeight else 600
+        //Choices Recyclerview Height
+        holder.view.pollsChoiceRecyclerView.layoutParams = (holder.view.pollsChoiceRecyclerView.layoutParams as ConstraintLayout.LayoutParams).apply {
+            val displayMetrics = Resources.getSystem().displayMetrics
+            val cellHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 55f, displayMetrics).toInt()
+            val recyclerviewHeight = cellHeight * poll.answerChoices.count()
+            height = if (recyclerviewHeight <= 500) recyclerviewHeight else 500
         }
         val childLayoutManager = LinearLayoutManager(holder.view.pollsChoiceRecyclerView.context)
         childLayoutManager.initialPrefetchItemCount = 4
@@ -83,7 +76,6 @@ class PollsRecyclerAdapter(
             adapter = PollsChoiceRecyclerAdapter(poll, userId, role)
             setRecycledViewPool(viewPool)
         }
-
     }
 
     override fun sendAnswer(position: Int) {
@@ -120,6 +112,7 @@ class PollsRecyclerAdapter(
                 view.pollOptionsButton.setOnClickListener {
                     callback.onPollOptionsPressed(poll)
                 }
+                setAdminQuestionViewLayout(view)
             } else {
                 view.adminPollControlsView.visibility = View.GONE
                 view.pollOptionsButton.visibility = View.GONE
@@ -147,6 +140,18 @@ class PollsRecyclerAdapter(
                     }
                 }
             }
+        }
+
+        //set QuestionView for admin users to be aligned to the start, for student, default center alignment
+        private fun setAdminQuestionViewLayout(view: View) {
+            view.questionMCTextView.layoutParams = (view.questionMCTextView.layoutParams as ConstraintLayout.LayoutParams).apply {
+                val displayMetrics = Resources.getSystem().displayMetrics
+
+                marginStart = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16f, displayMetrics).toInt()
+                marginEnd = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 35f, displayMetrics).toInt()
+            }
+            view.questionMCTextView.gravity = Gravity.START
+            view.questionMCTextView.textAlignment = View.TEXT_ALIGNMENT_VIEW_START
         }
 
         // Sets up timer and end poll controls when poll is live

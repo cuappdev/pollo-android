@@ -125,11 +125,14 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
 
         poll_question.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                val questionLength=s?.length
-                    word_count.visibility=View.VISIBLE;
-                    word_count.text = "$questionLength"+"/120"}
+                val questionLength = s?.length
+                if (questionLength == 0) word_count.visibility = View.INVISIBLE
+                else {
+                    word_count.visibility = View.VISIBLE
+                    word_count.text = "$questionLength/120"
+                }
 
-
+            }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }

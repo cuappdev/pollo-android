@@ -16,7 +16,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/questionHeaderView"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="wrap_content"
             android:background="@drawable/rounded_poll_header"
             app:layout_constraintBottom_toTopOf="@id/pollsChoiceRecyclerView"
             app:layout_constraintTop_toTopOf="parent">
@@ -24,23 +24,18 @@
             <TextView
                 android:id="@+id/questionMCTextView"
                 android:layout_width="0dp"
-                android:layout_height="55dp"
-                android:layout_marginStart="42dp"
-                android:layout_marginEnd="42dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="1dp"
+                android:layout_marginEnd="20dp"
                 android:fontFamily="sans-serif"
                 android:gravity="center"
                 android:letterSpacing="0.03"
-                android:maxLines="3"
                 android:text="Favorite Ice Cream \n Favorite Ice Cream \n Favorite Ice Cream"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                app:autoSizeMaxTextSize="20sp"
-                app:autoSizeMinTextSize="13sp"
-                app:autoSizeStepGranularity="1sp"
-                app:autoSizeTextType="uniform"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -63,14 +58,14 @@
                     android:layout_width="15dp"
                     android:layout_height="15dp"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginStart="16dp"
                     android:src="@drawable/results_not_shared" />
 
                 <TextView
                     android:id="@+id/resultsSharedText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="2dp"
+                    android:layout_marginStart="10dp"
                     android:fontFamily="sans-serif-medium"
                     android:text="Only you can see results"
                     android:textAlignment="center"
@@ -115,12 +110,12 @@
                 android:id="@+id/pollOptionsButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginStart="1dp"
+                android:layout_marginTop="36dp"
+                android:layout_marginEnd="10dp"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/view_poll_options_content_description"
                 android:src="@drawable/more_dots"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -128,8 +123,9 @@
                 android:id="@+id/headerDivider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:layout_marginTop="32dp"
                 android:background="@color/settings_divider"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/questionMCTextView" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
