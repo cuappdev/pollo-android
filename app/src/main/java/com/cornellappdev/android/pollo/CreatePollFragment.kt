@@ -53,7 +53,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
     var currOnboardScreen: Int = -1
 
     private val preferencesHelper: PreferencesHelper by lazy {
-        PreferencesHelper(context!!)
+        PreferencesHelper(requireContext())
     }
 
     override fun onCreateView(
@@ -64,12 +64,12 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         val rootView = inflater.inflate(R.layout.fragment_create_poll, container, false)
 
         options = arrayListOf()
-        createPollAdapter = CreatePollAdapter(context!!, options, correct, this)
+        createPollAdapter = CreatePollAdapter(requireContext(), options, correct, this)
         rootView.poll_options.adapter = createPollAdapter
         resetOptions()
 
         drafts = arrayListOf()
-        draftAdapter = DraftAdapter(context!!, drafts, this)
+        draftAdapter = DraftAdapter(requireContext(), drafts, this)
         draftAdapter?.delegate = this
         rootView.drafts.draftsListView.adapter = draftAdapter
         getDrafts()
@@ -98,8 +98,6 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
             }
             preferencesHelper.displayOnboarding = false
         }
-
-
 
 
         return rootView
@@ -164,8 +162,8 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
                 answerChoices.answerChoices.add(PollResult(x, options[x], 0))
             }
 
-            val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(view!!.applicationWindowToken, 0)
+            val imm = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(requireView().applicationWindowToken, 0)
 
             (activity as PollsDateActivity).startNewPoll(answerChoices)
         }
@@ -198,8 +196,8 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         poll_question.text.clear()
         resetOptions()
 
-        val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view!!.applicationWindowToken, 0)
+        val imm = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(requireView().applicationWindowToken, 0)
     }
 
     private fun setDraftsHeader() {
@@ -228,7 +226,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
                 }
                 return@launch
             } else {
-                Toast.makeText(context!!, "Loading Drafts Failed", Toast.LENGTH_SHORT)
+                Toast.makeText(requireContext(), "Loading Drafts Failed", Toast.LENGTH_SHORT)
                         .show()
             }
         }
@@ -247,7 +245,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
                 drafts[0] = createDraftResponse.data
                 return@launch
             } else {
-                Toast.makeText(context!!, "Saving Draft Failed", Toast.LENGTH_SHORT)
+                Toast.makeText(requireContext(), "Saving Draft Failed", Toast.LENGTH_SHORT)
                         .show()
             }
         }
@@ -275,7 +273,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
                 }
                 return@launch
             } else {
-                Toast.makeText(context!!, "Saving Draft Failed", Toast.LENGTH_SHORT)
+                Toast.makeText(requireContext(), "Saving Draft Failed", Toast.LENGTH_SHORT)
                         .show()
             }
         }
@@ -317,7 +315,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
                         }
                         return@launch
                     } else {
-                        Toast.makeText(context!!, "Failed to delete draft", Toast.LENGTH_LONG)
+                        Toast.makeText(requireContext(), "Failed to delete draft", Toast.LENGTH_LONG)
                                 .show()
                     }
                 }
@@ -442,6 +440,5 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         fun setDim(shouldDim: Boolean, createPollFragment: CreatePollFragment)
 
     }
-
 
 }

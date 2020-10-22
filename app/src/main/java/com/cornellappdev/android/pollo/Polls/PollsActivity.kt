@@ -1,6 +1,7 @@
 package com.cornellappdev.android.pollo.polls
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.view.animation.TranslateAnimation
@@ -40,10 +41,10 @@ class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.
         val helper = PagerSnapHelper()
         helper.attachToRecyclerView(pollsRecyclerView)
 
-        polls = intent.getParcelableArrayListExtra<Poll>("POLLS")
-        name = intent.getStringExtra("GROUP_NAME")
-        code = intent.getStringExtra("GROUP_CODE")
-        date = intent.getStringExtra("POLLS_DATE")
+        polls = intent.getParcelableArrayListExtra<Poll>("POLLS")!!
+        name = intent.getStringExtra("GROUP_NAME")!!
+        code = intent.getStringExtra("GROUP_CODE")!!
+        date = intent.getStringExtra("POLLS_DATE")!!
         userCount = intent.getIntExtra("USER_COUNT", 0)
         role = intent.getSerializableExtra("USER_ROLE") as User.Role
         Socket.add(this)
@@ -89,11 +90,12 @@ class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.
     }
 
     // Socket Delegate
+    @SuppressLint("SimpleDateFormat")
     override fun onPollStart(poll: Poll) {
         val firstCalendar = Calendar.getInstance()
         val secondCalendar = Calendar.getInstance()
         val parser = SimpleDateFormat("MMMM d yyyy")
-        firstCalendar.time = parser.parse(date)
+        firstCalendar.time = parser.parse(date)!!
         secondCalendar.time = Date()
 
         val datesSameDay = firstCalendar.get(Calendar.DAY_OF_YEAR) == secondCalendar.get(Calendar.DAY_OF_YEAR) &&
@@ -108,7 +110,7 @@ class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.
         runOnUiThread {
             adapter.notifyItemChanged(polls.size - 1)
             linearLayoutManager.scrollToPosition(polls.size - 1)
-            currentPollView.text = "${linearLayoutManager.findFirstCompletelyVisibleItemPosition() + 1} / ${polls.size}"
+            currentPollView.text = "${polls.size} / ${polls.size}"
         }
     }
 
@@ -163,11 +165,12 @@ class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.
     }
 
 
+    @SuppressLint("SimpleDateFormat")
     override fun onPollStartAdmin(poll: Poll) {
         val firstCalendar = Calendar.getInstance()
         val secondCalendar = Calendar.getInstance()
         val parser = SimpleDateFormat("MMMM d yyyy")
-        firstCalendar.time = parser.parse(date)
+        firstCalendar.time = parser.parse(date)!!
         secondCalendar.time = Date()
 
         val datesSameDay = firstCalendar.get(Calendar.DAY_OF_YEAR) == secondCalendar.get(Calendar.DAY_OF_YEAR) &&

@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
+import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
@@ -82,6 +83,10 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        swipeRefresh.setOnRefreshListener {
+            refreshGroups()
+        }
+
         setNoGroups()
         dimView.bringToFront()
 
@@ -120,7 +125,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         // Setup for joining/creating groups
         addGroupButton.isEnabled = false
         addGroupEditText.addTextChangedListener(addGroupTextWatcher)
-        addGroupEditText.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus -> addGroupEditText.isCursorVisible = hasFocus }
+        addGroupEditText.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus -> addGroupEditText.isCursorVisible = hasFocus }
         addGroupEditText.setOnEditorActionListener { _, actionId, _ ->
             when (actionId) {
                 EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_SEARCH -> {
@@ -155,6 +160,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
             User.Role.MEMBER -> {
                 addGroupEditText.setHint(R.string.join_group_hint)
                 addGroupEditText.setTextColor(Color.WHITE)
+                addGroupEditText.isAllCaps = true
+                addGroupEditText.inputType = InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
                 addGroupEditText.filters = addGroupEditText.filters +
                         InputFilter.AllCaps() +
                         InputFilter.LengthFilter(6) +
@@ -186,7 +193,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         }
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
 
         if (context is GroupFragmentDelegate) {
@@ -224,6 +231,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
                 currentAdapter?.addAll(groups)
                 currentAdapter?.notifyDataSetChanged()
                 setNoGroups()
+                swipeRefresh?.isRefreshing = false
             }
         }
     }
@@ -305,6 +313,9 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         if (isPopupActive) return
         isPopupActive = true
         setDim(true)
+        dimView.setOnClickListener {
+            dismissPopup()
+        }
         groupSelected = group
         groupMenuOptionsView.groupNameTextView.text = group?.name ?: "Pollo Group"
         groupMenuOptionsView.visibility = View.VISIBLE
@@ -338,8 +349,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
             groupMenuOptionsView.renameGroupDetail.renameGroupEditText.text.clear()
 
             if (context != null && view != null) {
-                val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(view!!.applicationWindowToken, 0)
+                val imm = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(requireView().applicationWindowToken, 0)
             }
         }
     }
@@ -347,7 +358,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     /**
      * Dims the `GroupFragment` and calls the delegates dim method according to `shouldDim`
      */
-     private fun setDim(shouldDim: Boolean) {
+    private fun setDim(shouldDim: Boolean) {
         delegate?.setDim(shouldDim, this)
 
         // Don't want to be able to open group views when dimmed
@@ -473,8 +484,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
 
         // I'm not sure if this is necessary on a real device, going to leave in until I can confirm
         if (context != null && view != null) {
-            val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.showSoftInput(view!!, InputMethodManager.SHOW_IMPLICIT)
+            val imm = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(requireView(), InputMethodManager.SHOW_IMPLICIT)
         }
     }
 
@@ -482,7 +493,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
      * Resets the group options menu to its default state (edit/delete group options for admins) and
      * renames group (locally and to backend). Does not dismiss the group options menu.
      */
-    private fun finishRenameGroup(){
+    private fun finishRenameGroup() {
         val newGroupName = renameGroupEditText.text.toString().trim()
         if (newGroupName == "" || groupSelected == null) {
             AlertDialog.Builder(context)

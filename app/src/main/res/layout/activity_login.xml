@@ -58,6 +58,16 @@
             android:textAllCaps="false"
             android:textColor="@color/loginGray" />
 
+        <Button
+            android:id="@+id/dummy_login_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="@color/actualWhite"
+            android:text="@string/dummy_login"
+            android:textColor="@color/loginGray"
+            android:visibility="gone" />
+
     </LinearLayout>
 
     <WebView

@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cornellappdev.android.pollo.models.*
 import com.cornellappdev.android.pollo.networking.*
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_polls_date.*
 import kotlinx.coroutines.CoroutineScope
@@ -32,8 +31,8 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_polls_date)
-        sortedPolls = groupByDate(intent.getParcelableArrayListExtra<GetSortedPollsResponse>("SORTED_POLLS"))
-        group = intent.getParcelableExtra("GROUP_NODE")
+        sortedPolls = groupByDate(intent.getParcelableArrayListExtra<GetSortedPollsResponse>("SORTED_POLLS")!!)
+        group = intent.getParcelableExtra("GROUP_NODE")!!
 
         backButton.setOnClickListener(this)
 
@@ -74,7 +73,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
 
     override fun onResume() {
         super.onResume()
-        refreshPolls(false)
+        refreshPolls()
     }
 
     fun goBack(view: View) {
@@ -91,11 +90,11 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
     fun startNewPoll(newPoll: Poll) {
         Socket.serverStart(newPoll)
         supportFragmentManager.popBackStack()
-        refreshPolls(true)
+        refreshPolls()
         onPollStart(newPoll)
     }
 
-    fun refreshPolls(newPollCreated: Boolean) {
+    private fun refreshPolls() {
         CoroutineScope(Dispatchers.Main).launch {
             val endpoint = Endpoint.joinGroupWithCode(group.code)
             val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
@@ -105,7 +104,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
             } ?: return@launch
 
 
-            val allPollsEndpoint = Endpoint.getSortedPolls(groupNodeResponse!!.data.id)
+            val allPollsEndpoint = Endpoint.getSortedPolls(groupNodeResponse.data.id)
             val sortedPollsRefreshed = withContext(Dispatchers.Default) {
                 Request.makeRequest<ApiResponse<ArrayList<GetSortedPollsResponse>>>(allPollsEndpoint.okHttpRequest(), typeTokenSortedPolls)
             } ?: return@launch
@@ -113,15 +112,6 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
             if (sortedPollsRefreshed.data.isNotEmpty()) {
                 for (poll in sortedPollsRefreshed.data.last().polls) {
                     onPollStart(poll)
-                }
-            }
-
-            if (!newPollCreated) {
-                sortedPolls.clear()
-                sortedPolls.addAll(groupByDate(sortedPollsRefreshed.data))
-                runOnUiThread {
-                    adapter.updatePolls(sortedPolls)
-                    toggleEmptyState()
                 }
             }
         }
@@ -243,7 +233,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         }
         // Replace the old live poll with the new, now ended, poll
         val pollsForToday = sortedPolls[0].polls.map { currPoll ->
-            if (poll.id == currPoll.id) poll else currPoll
+            if (poll.id == currPoll.id || currPoll.id == null) poll else currPoll
         }
 
         sortedPolls[0].polls = ArrayList(pollsForToday)
@@ -258,7 +248,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
     override fun onPollEndAdmin(poll: Poll) {
         // Replace the old live poll with the new, now ended, poll
         val pollsForToday = sortedPolls[0].polls.map { currPoll ->
-            if (poll.id == currPoll.id) poll else currPoll
+            if (poll.id == currPoll.id || currPoll.id == null) poll else currPoll
         }
 
         sortedPolls[0].polls = ArrayList(pollsForToday)
@@ -270,7 +260,18 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         }
     }
 
-    override fun onPollUpdateAdmin(poll: Poll) {}
+    override fun onPollUpdateAdmin(poll: Poll) {
+        if (sortedPolls.isEmpty()) {
+            return
+        }
+        val currPolls = sortedPolls[0].polls
+        val index = currPolls.indexOfFirst { it.id == poll.id }
+        val indexOfCurrPoll = if (index == -1) currPolls.size - 1 else index
+        currPolls[indexOfCurrPoll] = poll
+        runOnUiThread {
+            adapter.updatePolls(sortedPolls)
+        }
+    }
 
     override fun onPollResult(poll: Poll) {}
 

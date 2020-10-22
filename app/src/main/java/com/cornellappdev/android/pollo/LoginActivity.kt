@@ -12,7 +12,20 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.cornellappdev.android.pollo.models.ApiResponse
+import com.cornellappdev.android.pollo.models.User
+import com.cornellappdev.android.pollo.models.UserSession
+import com.cornellappdev.android.pollo.networking.Endpoint
+import com.cornellappdev.android.pollo.networking.Request
+import com.cornellappdev.android.pollo.networking.dummyUserLogin
+import com.cornellappdev.android.pollo.networking.userRefreshSession
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LoginActivity : AppCompatActivity() {
 
@@ -28,6 +41,7 @@ class LoginActivity : AppCompatActivity() {
         val cookieManager = CookieManager.getInstance()
         cookieManager.removeAllCookies(null)
         sso_button.setOnClickListener {
+            WebView.setWebContentsDebuggingEnabled(false)
             webview.settings.javaScriptEnabled = true
             webview.addJavascriptInterface(WebAppInterface(this), "Mobile")
             webview.webViewClient = WebAppClient()
@@ -35,6 +49,15 @@ class LoginActivity : AppCompatActivity() {
             webview.loadUrl(host)
             webview.visibility = View.VISIBLE
         }
+    }
+
+    private fun sendSessionInfo(session: UserSession) {
+        val data = Intent()
+        data.putExtra("accessToken", session.accessToken)
+        data.putExtra("refreshToken", session.refreshToken)
+        data.putExtra("sessionExpiration", session.sessionExpiration)
+        setResult(Activity.RESULT_OK, data)
+        finish()
     }
 
     inner class WebAppClient : android.webkit.WebViewClient() {
@@ -50,10 +73,7 @@ class LoginActivity : AppCompatActivity() {
         // sessionInfo is a stringified version of UserSession JSON
         fun handleToken(sessionInfo: String) {
             runOnUiThread { webview.visibility = View.GONE }
-            val data = Intent()
-            data.putExtra("sessionInfo", sessionInfo)
-            setResult(Activity.RESULT_OK, data)
-            finish()
+            sendSessionInfo(Gson().fromJson(sessionInfo, UserSession::class.java))
         }
     }
 
