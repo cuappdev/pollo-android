@@ -179,14 +179,14 @@
             android:id="@+id/poll_question_reference"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
             android:layout_marginStart="24dp"
             android:layout_marginTop="77dp"
             android:layout_marginEnd="24dp"
             android:background="@android:color/transparent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <include
             android:id="@+id/autofill_a_outline"
