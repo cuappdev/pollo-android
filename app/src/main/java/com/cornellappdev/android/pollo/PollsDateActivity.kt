@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cornellappdev.android.pollo.models.*
 import com.cornellappdev.android.pollo.networking.*
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_polls_date.*
 import kotlinx.coroutines.CoroutineScope
@@ -74,7 +73,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
 
     override fun onResume() {
         super.onResume()
-        refreshPolls(false)
+        refreshPolls()
     }
 
     fun goBack(view: View) {
@@ -91,11 +90,11 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
     fun startNewPoll(newPoll: Poll) {
         Socket.serverStart(newPoll)
         supportFragmentManager.popBackStack()
-        refreshPolls(true)
+        refreshPolls()
         onPollStart(newPoll)
     }
 
-    private fun refreshPolls(newPollCreated: Boolean) {
+    private fun refreshPolls() {
         CoroutineScope(Dispatchers.Main).launch {
             val endpoint = Endpoint.joinGroupWithCode(group.code)
             val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
@@ -234,7 +233,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         }
         // Replace the old live poll with the new, now ended, poll
         val pollsForToday = sortedPolls[0].polls.map { currPoll ->
-            if (poll.id == currPoll.id) poll else currPoll
+            if (poll.id == currPoll.id || currPoll.id == null) poll else currPoll
         }
 
         sortedPolls[0].polls = ArrayList(pollsForToday)
@@ -249,7 +248,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
     override fun onPollEndAdmin(poll: Poll) {
         // Replace the old live poll with the new, now ended, poll
         val pollsForToday = sortedPolls[0].polls.map { currPoll ->
-            if (poll.id == currPoll.id) poll else currPoll
+            if (poll.id == currPoll.id || currPoll.id == null) poll else currPoll
         }
 
         sortedPolls[0].polls = ArrayList(pollsForToday)
@@ -261,7 +260,18 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         }
     }
 
-    override fun onPollUpdateAdmin(poll: Poll) {}
+    override fun onPollUpdateAdmin(poll: Poll) {
+        if (sortedPolls.isEmpty()) {
+            return
+        }
+        val currPolls = sortedPolls[0].polls
+        val index = currPolls.indexOfFirst { it.id == poll.id }
+        val indexOfCurrPoll = if (index == -1) currPolls.size - 1 else index
+        currPolls[indexOfCurrPoll] = poll
+        runOnUiThread {
+            adapter.updatePolls(sortedPolls)
+        }
+    }
 
     override fun onPollResult(poll: Poll) {}
 

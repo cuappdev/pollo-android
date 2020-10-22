@@ -13,21 +13,21 @@ android {
         applicationId "com.cornellappdev.android.pollo"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode 8
+        versionName "1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "web_client_id", keyProperties['web_client_id'])
         buildConfigField("String", "BACKEND_URI", "\"pollo-dev.cornellappdev.com\"")
     }
     buildTypes {
         debug {
-            manifestPlaceholders = [crashlyticsCollectionEnabled:"false"]
+            manifestPlaceholders = [crashlyticsCollectionEnabled: "false"]
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField("boolean", "DUMMY_LOGIN_ENABLED", "true")
         }
         release {
-            manifestPlaceholders = [crashlyticsCollectionEnabled:"true"]
+            manifestPlaceholders = [crashlyticsCollectionEnabled: "true"]
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField("boolean", "DUMMY_LOGIN_ENABLED", "false")
@@ -62,7 +62,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:19.4.0'
     implementation 'com.google.android.gms:play-services-auth:18.1.0'
     implementation 'com.google.firebase:firebase-crashlytics:17.2.2'
-    implementation 'com.google.firebase:firebase-analytics:17.5.0'
+    implementation 'com.google.firebase:firebase-analytics:17.6.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.squareup.okhttp3:okhttp:3.13.1'
     implementation 'com.squareup.okio:okio:2.1.0'
@@ -72,6 +72,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
     implementation 'androidx.preference:preference-ktx:1.1.1'
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'androidx.fragment:fragment-ktx:1.2.5'
     implementation 'com.google.code.gson:gson:2.8.6'

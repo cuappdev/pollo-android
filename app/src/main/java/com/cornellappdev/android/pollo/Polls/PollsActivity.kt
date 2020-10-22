@@ -110,7 +110,7 @@ class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.
         runOnUiThread {
             adapter.notifyItemChanged(polls.size - 1)
             linearLayoutManager.scrollToPosition(polls.size - 1)
-            currentPollView.text = "${linearLayoutManager.findFirstCompletelyVisibleItemPosition() + 1} / ${polls.size}"
+            currentPollView.text = "${polls.size} / ${polls.size}"
         }
     }
 

@@ -58,7 +58,9 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
 
         fun bindPoll(poll: Poll, googleId: String, role: User.Role) {
             this.poll = poll
-            this.totalNumberOfResponses = poll.userAnswers.count()
+            this.totalNumberOfResponses = poll.answerChoices.fold(0, { acc, i ->
+                acc + (i.count ?: 0)
+            })
 
             if (role == User.Role.MEMBER && poll.state != PollState.shared) {
                 // hides responses
