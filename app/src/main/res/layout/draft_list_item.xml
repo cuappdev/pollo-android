@@ -27,9 +27,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/draftOptionsButton"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-
-            />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/draftOptionsButton"
@@ -40,7 +38,6 @@
             android:background="@android:color/transparent"
             android:padding="10dp"
             android:src="@drawable/more_dots"
-            android:textColor="@color/mediumGray"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
