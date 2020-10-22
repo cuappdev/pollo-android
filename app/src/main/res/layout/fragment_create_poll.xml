@@ -44,13 +44,17 @@
     </RelativeLayout>
 
 
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/midView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/footerView"
         android:layout_below="@id/headerView"
         android:orientation="vertical">
-
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
         <RelativeLayout
             android:id="@+id/createPollView"
             android:layout_width="match_parent"
@@ -94,7 +98,8 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="24dp"
                 android:divider="@android:color/transparent"
-                android:dividerHeight="8dp" />
+                android:dividerHeight="8dp"
+                android:scrollbars="none"/>
 
             <Button
                 android:id="@+id/add_poll_option_button"
@@ -144,9 +149,10 @@
                 android:dividerHeight="12dp"
                 android:scrollbars="none" />
 
-
         </LinearLayout>
-    </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
 
     <LinearLayout
         android:id="@+id/footerView"

@@ -1,27 +1,24 @@
 package com.cornellappdev.android.pollo
 
-import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.res.ColorStateList
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getColor
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import com.cornellappdev.android.pollo.models.*
 import com.cornellappdev.android.pollo.models.PollResult
 import com.cornellappdev.android.pollo.networking.*
@@ -41,8 +38,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @SuppressLint("ValidFragment")
-class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter.OnDraftOptionsPressedListener {
+class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter.OnDraftOptionsPressedListener, CreatePollAdapter.OnPollChoicesDeleteListener {
     var options: ArrayList<String> = arrayListOf()
+    var optionsContent: ArrayList<String> = arrayListOf()
     var createPollAdapter: CreatePollAdapter? = null
     private var delegate: CreatePollDelegate? = null
     private var isPopupActive: Boolean = false
@@ -67,6 +65,8 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         createPollAdapter = CreatePollAdapter(requireContext(), options, correct, this)
         rootView.poll_options.adapter = createPollAdapter
         resetOptions()
+        rootView.poll_options.adapter = createPollAdapter
+
 
         drafts = arrayListOf()
         draftAdapter = DraftAdapter(requireContext(), drafts, this)
@@ -80,10 +80,16 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
 
         addOption.setOnClickListener {
             addOptionToList()
+            resetPollHeight()
+
+
         }
 
         saveDraft.setOnClickListener {
             saveDraft()
+            resetDraftHeight()
+            resetPollHeight()
+
         }
 
         startPoll.setOnClickListener {
@@ -109,6 +115,18 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         createPollAdapter?.notifyDataSetChanged()
     }
 
+    private fun resetPollHeight() {
+        poll_options.layoutParams = (poll_options.layoutParams as RelativeLayout.LayoutParams).apply {
+            val displayMetrics = Resources.getSystem().displayMetrics
+            val cellHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 58f, displayMetrics).toInt()
+
+            height = cellHeight * poll_options.count - 8; //extra padding in the end
+
+        }
+        poll_options.requestLayout()
+        midView.requestLayout()
+    }
+
     private fun resetOptions() {
         // ASCII Math, 0 is 'A', going up from there.
         options.clear()
@@ -126,10 +144,10 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         groupMenuOptionsView.closeButton.setOnClickListener { dismissPopup() }
         poll_question.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                val questionLength=s?.length
-                    word_count.visibility=View.VISIBLE;
-                    word_count.text = "$questionLength"+"/120"}
-
+                val questionLength = s?.length
+                word_count.visibility = View.VISIBLE;
+                word_count.text = "$questionLength" + "/120"
+            }
 
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -138,7 +156,9 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             }
         })
+        resetPollHeight()
     }
+
 
     /**
      * Starts poll and returns to group
@@ -170,6 +190,17 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
     }
 
     // DRAFTS
+    private fun resetDraftHeight() {
+        draftsListView.layoutParams = (draftsListView.layoutParams as LinearLayout.LayoutParams).apply {
+            val displayMetrics = Resources.getSystem().displayMetrics
+            val cellHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 114f, displayMetrics).toInt()
+
+            height = cellHeight * drafts.size - 12; //extra padding in the end
+            draftsListView.requestLayout()
+            midView.requestLayout()
+
+        }
+    }
 
     private fun saveDraft() {
         val text = if (poll_question.text.toString().isBlank()) getString(R.string.untitled_poll) else poll_question.text.toString()
@@ -184,6 +215,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
                 createDraft(draft)
                 draftAdapter?.notifyDataSetChanged()
                 setDraftsHeader()
+
             }
             else -> {
                 draft = selectedDraft!!
@@ -191,10 +223,12 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
                 draft.options = draftOptions
                 updateDraft(draft)
                 selectedDraft = null
+
             }
         }
         poll_question.text.clear()
         resetOptions()
+        word_count.visibility = View.INVISIBLE
 
         val imm = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(requireView().applicationWindowToken, 0)
@@ -223,6 +257,8 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
                     drafts.addAll(getDraftsResponse.data)
                     draftAdapter?.notifyDataSetChanged()
                     setDraftsHeader()
+                    resetDraftHeight()
+
                 }
                 return@launch
             } else {
@@ -285,12 +321,18 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         options.clear()
         options.addAll(draft.options)
         createPollAdapter?.notifyDataSetChanged()
+        resetPollHeight()
+
+
     }
 
     override fun draftDeselected() {
         selectedDraft = null
         poll_question.text.clear()
         resetOptions()
+        resetPollHeight()
+        word_count.visibility = View.INVISIBLE
+
     }
 
     override fun draftDeleted(position: Int) {
@@ -412,7 +454,11 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         groupMenuOptionsView.removeGroup.setOnClickListener {
             // Reset selection
             draftAdapter!!.resetSelection(position)
+            resetDraftHeight()
+            resetPollHeight()
+
             dismissPopup()
+
         }
     }
 
@@ -440,5 +486,19 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         fun setDim(shouldDim: Boolean, createPollFragment: CreatePollFragment)
 
     }
+
+    override fun onPollChoicesDelete(position: Int) {
+        options.removeAt(position)
+
+            for (x in 0..options.size - 1) {
+                if (options[x] == "Option " + (x + 66).toChar()) {
+                options[x] = "Option " + (x + 65).toChar()
+            }
+        }
+        createPollAdapter?.notifyDataSetChanged()
+        resetPollHeight()
+
+    }
+
 
 }

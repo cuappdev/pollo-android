@@ -12,7 +12,7 @@ import android.widget.CheckBox
 import android.widget.EditText
 import kotlinx.android.synthetic.main.create_poll_options_list_item.view.*
 
-class CreatePollAdapter(private val context: Context, private val options: ArrayList<String>, private var correct: Int, private var root: CreatePollFragment) :
+class CreatePollAdapter(private val context: Context, private val options: ArrayList<String>, private var correct: Int, private var root: CreatePollFragment, val callback: CreatePollAdapter.OnPollChoicesDeleteListener) :
         BaseAdapter() {
 
     private val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -25,6 +25,7 @@ class CreatePollAdapter(private val context: Context, private val options: Array
         val rowView = inflater.inflate(R.layout.create_poll_options_list_item, parent, false)
 
         val rightAnswerButton = rowView.create_poll_options_item as CheckBox
+
         rightAnswerButton.isChecked = (correct == position)
         val optionPollName = rowView.create_poll_options_text as EditText
 
@@ -51,6 +52,16 @@ class CreatePollAdapter(private val context: Context, private val options: Array
             }
         })
 
+
+        rowView.deleteOption.setOnClickListener{
+            callback.onPollChoicesDelete(position)
+        }
+
+
         return rowView
+    }
+
+    interface OnPollChoicesDeleteListener {
+        fun onPollChoicesDelete(position: Int)
     }
 }
