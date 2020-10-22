@@ -37,7 +37,7 @@
                         android:layout_marginStart="15dp"
                         android:background="@color/black"
                         android:contentDescription="@string/go_back_content_description"
-                        android:src="@drawable/arrow_back" />
+                        android:src="@drawable/ic_back_arrow" />
 
                     <TextView
                         android:id="@+id/groupNameTextView"
