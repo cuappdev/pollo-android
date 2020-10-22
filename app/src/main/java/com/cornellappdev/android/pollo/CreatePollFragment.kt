@@ -104,8 +104,6 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
             }
             preferencesHelper.displayOnboarding = false
         }
-
-
         return rootView
     }
 
@@ -142,13 +140,17 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         groupMenuOptionsView.renameGroup.visibility = View.GONE
 
         groupMenuOptionsView.closeButton.setOnClickListener { dismissPopup() }
+
         poll_question.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val questionLength = s?.length
-                word_count.visibility = View.VISIBLE;
-                word_count.text = "$questionLength" + "/120"
-            }
+                if (questionLength == 0) word_count.visibility = View.INVISIBLE
+                else {
+                    word_count.visibility = View.VISIBLE
+                    word_count.text = "$questionLength/120"
+                }
 
+            }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -486,6 +488,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         fun setDim(shouldDim: Boolean, createPollFragment: CreatePollFragment)
 
     }
+}
 
     override fun onPollChoicesDelete(position: Int) {
         options.removeAt(position)
