@@ -62,7 +62,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         val rootView = inflater.inflate(R.layout.fragment_create_poll, container, false)
 
         options = arrayListOf()
-        createPollAdapter = CreatePollAdapter(requireContext(), options, correct, this)
+        createPollAdapter = CreatePollAdapter(requireContext(), options, correct, this,this)
         rootView.poll_options.adapter = createPollAdapter
         resetOptions()
         rootView.poll_options.adapter = createPollAdapter
