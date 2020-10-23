@@ -31,7 +31,7 @@ class CreatePollAdapter(private val context: Context, private val options: Array
         val optionPollName = rowView.create_poll_options_text as EditText
 
         // ASCII Math, 0 is 'A', going up from there.
-        val default="Option " + (position + 65).toChar()
+        val default = "Option " + (position + 65).toChar()
         if (options[position] != default)
             optionPollName.text = SpannableStringBuilder(options[position])
         optionPollName.hint = default
@@ -47,35 +47,37 @@ class CreatePollAdapter(private val context: Context, private val options: Array
 
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-            override fun onTextChanged(s: CharSequence, start: Int,
-                                       before: Int, count: Int) {
+            override fun onTextChanged(
+                    s: CharSequence, start: Int,
+                    before: Int, count: Int
+            ) {
                 options[position] = s.toString()
             }
         })
 
 
-        rowView.deleteOption.setOnClickListener{
+        rowView.deleteOption.setOnClickListener {
             callback.onPollChoicesDelete(position)
         }
 
-        if(deletable) rowView.deleteOption.visibility = View.VISIBLE
+        if (deletable) rowView.deleteOption.visibility = View.VISIBLE
         else rowView.deleteOption.visibility = View.INVISIBLE
 
 
         return rowView
     }
-     fun  getCorrectness():Int{
-         return correct
-     }
-    fun resetCorrectness(){
-        correct=-1
+
+    fun getCorrectness(): Int {
+        return correct
     }
-    fun decreaseCorrectness(){
+
+    fun resetCorrectness() {
+        correct = -1
+    }
+
+    fun decreaseCorrectness() {
         correct--
     }
-
-
-
 
 
     interface OnPollChoicesDeleteListener {
