@@ -166,6 +166,15 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
      * Starts poll and returns to group
      */
     private fun startPoll(correct: Int) {
+        if (selectedDraft != null) {
+            for (i in 0 until drafts.size) {
+                if (drafts[i].id == selectedDraft!!.id) {
+                    draftDeleted(i)
+                    break
+                }
+            }
+        }
+
         CoroutineScope(Dispatchers.IO).launch {
             val pollText = if (poll_question.text.toString().isBlank()) getString(R.string.untitled_poll) else poll_question.text.toString()
 
