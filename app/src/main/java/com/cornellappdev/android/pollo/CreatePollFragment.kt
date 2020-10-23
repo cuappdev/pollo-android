@@ -15,22 +15,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
 import com.cornellappdev.android.pollo.models.*
 import com.cornellappdev.android.pollo.models.PollResult
 import com.cornellappdev.android.pollo.networking.*
 import com.google.gson.reflect.TypeToken
-import com.cornellappdev.android.pollo.models.PollState
-import com.cornellappdev.android.pollo.polls.PollsChoiceRecyclerAdapter
 import kotlinx.android.synthetic.main.create_poll_onboarding.view.*
 import kotlinx.android.synthetic.main.create_poll_options_list_item.view.*
 import kotlinx.android.synthetic.main.fragment_create_poll.*
 import kotlinx.android.synthetic.main.fragment_create_poll.view.*
 import kotlinx.android.synthetic.main.fragment_create_poll.view.groupNameTextView
-import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.manage_group_view.*
 import kotlinx.android.synthetic.main.manage_group_view.view.*
 import kotlinx.coroutines.CoroutineScope
@@ -118,7 +117,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
             val displayMetrics = Resources.getSystem().displayMetrics
             val cellHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 58f, displayMetrics).toInt()
 
-            height = cellHeight * poll_options.count - 8; //extra padding in the end
+            height = cellHeight * poll_options.count - 8 //extra padding in the end
 
         }
         poll_options.requestLayout()
@@ -197,7 +196,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
             val displayMetrics = Resources.getSystem().displayMetrics
             val cellHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 114f, displayMetrics).toInt()
 
-            height = cellHeight * drafts.size - 12; //extra padding in the end
+            height = cellHeight * drafts.size - 12 //extra padding in the end
             draftsListView.requestLayout()
             midView.requestLayout()
 
