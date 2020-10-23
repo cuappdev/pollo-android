@@ -24,6 +24,7 @@ import com.cornellappdev.android.pollo.models.PollResult
 import com.cornellappdev.android.pollo.networking.*
 import com.google.gson.reflect.TypeToken
 import com.cornellappdev.android.pollo.models.PollState
+import com.cornellappdev.android.pollo.polls.PollsChoiceRecyclerAdapter
 import kotlinx.android.synthetic.main.create_poll_onboarding.view.*
 import kotlinx.android.synthetic.main.create_poll_options_list_item.view.*
 import kotlinx.android.synthetic.main.fragment_create_poll.*
@@ -62,11 +63,10 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         val rootView = inflater.inflate(R.layout.fragment_create_poll, container, false)
 
         options = arrayListOf()
-        createPollAdapter = CreatePollAdapter(requireContext(), options, correct, this,this)
+        createPollAdapter = CreatePollAdapter(requireContext(), options, correct, this, this)
         rootView.poll_options.adapter = createPollAdapter
         resetOptions()
         rootView.poll_options.adapter = createPollAdapter
-
 
         drafts = arrayListOf()
         draftAdapter = DraftAdapter(requireContext(), drafts, this)
@@ -80,8 +80,8 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
 
         addOption.setOnClickListener {
             addOptionToList()
+            if (options.size > 2) createPollAdapter?.deletable = true
             resetPollHeight()
-
 
         }
 
@@ -325,7 +325,6 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         createPollAdapter?.notifyDataSetChanged()
         resetPollHeight()
 
-
     }
 
     override fun draftDeselected() {
@@ -344,6 +343,8 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
                 drafts.removeAt(position)
                 draftAdapter?.notifyDataSetChanged()
                 setDraftsHeader()
+                resetDraftHeight()
+                resetPollHeight()
             }
 
             else -> {
@@ -356,6 +357,8 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
                             drafts.removeAt(position)
                             draftAdapter?.notifyDataSetChanged()
                             setDraftsHeader()
+                            resetDraftHeight()
+                            resetPollHeight()
                         }
                         return@launch
                     } else {
@@ -428,12 +431,10 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         groupMenuOptionsView.removeGroup.visibility = View.GONE
 
         if (animate.hasEnded()) {
-
             headerView.elevation = 4f
             footerView.elevation = 4f
+
         }
-
-
     }
 
 
@@ -456,9 +457,6 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         groupMenuOptionsView.removeGroup.setOnClickListener {
             // Reset selection
             draftAdapter!!.resetSelection(position)
-            resetDraftHeight()
-            resetPollHeight()
-
             dismissPopup()
 
         }
@@ -488,20 +486,25 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         fun setDim(shouldDim: Boolean, createPollFragment: CreatePollFragment)
 
     }
-}
 
     override fun onPollChoicesDelete(position: Int) {
         options.removeAt(position)
-
-            for (x in 0..options.size - 1) {
-                if (options[x] == "Option " + (x + 66).toChar()) {
-                options[x] = "Option " + (x + 65).toChar()
-            }
+        for (int in position until options.size) {
+            val default = "Option " + (int + 66).toChar()
+            if (options[int] == default)
+                options[int] = "Option " + (int + 65).toChar()
         }
+
+        val correct = createPollAdapter?.getCorrectness()
+        if (correct == position) createPollAdapter?.resetCorrectness()
+        if (correct!! > position) createPollAdapter?.decreaseCorrectness()
+        if (options.size < 3) createPollAdapter?.deletable = false
+
         createPollAdapter?.notifyDataSetChanged()
         resetPollHeight()
-
     }
 
-
 }
+
+
+
