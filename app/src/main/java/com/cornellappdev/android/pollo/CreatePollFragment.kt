@@ -485,6 +485,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         fun setDim(shouldDim: Boolean, createPollFragment: CreatePollFragment)
 
     }
+}
 
     override fun onPollChoicesDelete(position: Int) {
         options.removeAt(position)
@@ -504,6 +505,3 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
     }
 
 }
-
-
-
