@@ -38,15 +38,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @SuppressLint("ValidFragment")
-class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter.OnDraftOptionsPressedListener, CreatePollAdapter.OnPollChoicesDeleteListener {
+class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, SavedPollAdapter.OnSavedPollOptionsPressedListener, CreatePollAdapter.OnPollChoicesDeleteListener {
     var options: ArrayList<String> = arrayListOf()
     var optionsContent: ArrayList<String> = arrayListOf()
     var createPollAdapter: CreatePollAdapter? = null
     private var delegate: CreatePollDelegate? = null
     private var isPopupActive: Boolean = false
-    var drafts: ArrayList<Draft> = arrayListOf()
-    var draftAdapter: DraftAdapter? = null
-    var selectedDraft: Draft? = null
+    var savedPolls: ArrayList<SavedPoll> = arrayListOf()
+    var savedPollAdapter: SavedPollAdapter? = null
+    var selectedSavedPoll: SavedPoll? = null
     var correct: Int = -1
     var currOnboardScreen: Int = -1
 
@@ -67,14 +67,14 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         resetOptions()
         rootView.poll_options.adapter = createPollAdapter
 
-        drafts = arrayListOf()
-        draftAdapter = DraftAdapter(requireContext(), drafts, this)
-        draftAdapter?.delegate = this
-        rootView.drafts.draftsListView.adapter = draftAdapter
-        getDrafts()
+        savedPolls = arrayListOf()
+        savedPollAdapter = SavedPollAdapter(requireContext(), savedPolls, this)
+        savedPollAdapter?.delegate = this
+        rootView.savedPoll.savedPollListView.adapter = savedPollAdapter
+        getSavedPolls()
 
         val addOption = rootView.add_poll_option_button as Button
-        val saveDraft = rootView.save_draft as Button
+        val savePoll = rootView.save_poll as Button
         val startPoll = rootView.start_poll as Button
 
         addOption.setOnClickListener {
@@ -84,9 +84,9 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
 
         }
 
-        saveDraft.setOnClickListener {
-            saveDraft()
-            resetDraftHeight()
+        savePoll.setOnClickListener {
+            savePoll()
+            resetSavedPollHeight()
             resetPollHeight()
 
         }
@@ -134,8 +134,8 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setDraftsHeader()
-        // Setup options menu for drafts
+        setSavedPollsHeader()
+        // Setup options menu for saved polls
         groupMenuOptionsView.renameGroup.visibility = View.GONE
 
         groupMenuOptionsView.closeButton.setOnClickListener { dismissPopup() }
@@ -165,15 +165,6 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
      * Starts poll and returns to group
      */
     private fun startPoll(correct: Int) {
-        if (selectedDraft != null) {
-            for (i in 0 until drafts.size) {
-                if (drafts[i].id == selectedDraft!!.id) {
-                    draftDeleted(i)
-                    break
-                }
-            }
-        }
-
         CoroutineScope(Dispatchers.IO).launch {
             val pollText = if (poll_question.text.toString().isBlank()) getString(R.string.untitled_poll) else poll_question.text.toString()
 
@@ -190,40 +181,39 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         }
     }
 
-    // DRAFTS
-    private fun resetDraftHeight() {
-        draftsListView.layoutParams = (draftsListView.layoutParams as LinearLayout.LayoutParams).apply {
+    // Saved Polls
+    private fun resetSavedPollHeight() {
+        savedPollListView.layoutParams = (savedPollListView.layoutParams as LinearLayout.LayoutParams).apply {
             val displayMetrics = Resources.getSystem().displayMetrics
             val cellHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 114f, displayMetrics).toInt()
 
-            height = cellHeight * drafts.size - 12 //extra padding in the end
-            draftsListView.requestLayout()
+            height = cellHeight * savedPolls.size - 12 //extra padding in the end
+            savedPollListView.requestLayout()
             midView.requestLayout()
 
         }
     }
 
-    private fun saveDraft() {
+    private fun savePoll() {
         val text = if (poll_question.text.toString().isBlank()) getString(R.string.untitled_poll) else poll_question.text.toString()
-        val draftOptions = arrayListOf<String>()
-        draftOptions.addAll(options)
-        val draft: Draft
+        val pollOptions = arrayListOf<String>()
+        pollOptions.addAll(options)
+        val savedPoll: SavedPoll
 
-        when (selectedDraft) {
+        when (selectedSavedPoll) {
             null -> {
-                draft = Draft(text = text, options = draftOptions)
-                drafts.add(0, draft)
-                createDraft(draft)
-                draftAdapter?.notifyDataSetChanged()
-                setDraftsHeader()
-
+                savedPoll = SavedPoll(text = text, options = pollOptions)
+                savedPolls.add(0, savedPoll)
+                createSavedPoll(savedPoll)
+                savedPollAdapter?.notifyDataSetChanged()
+                setSavedPollsHeader()
             }
             else -> {
-                draft = selectedDraft!!
-                draft.text = text
-                draft.options = draftOptions
-                updateDraft(draft)
-                selectedDraft = null
+                savedPoll = selectedSavedPoll!!
+                savedPoll.text = text
+                savedPoll.options = pollOptions
+                updateSavedPoll(savedPoll)
+                selectedSavedPoll = null
 
             }
         }
@@ -235,99 +225,99 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         imm.hideSoftInputFromWindow(requireView().applicationWindowToken, 0)
     }
 
-    private fun setDraftsHeader() {
-        if (drafts.size == 0) {
-            draftsHeader?.visibility = View.GONE
+    private fun setSavedPollsHeader() {
+        if (savedPolls.size == 0) {
+            savedPollHeader?.visibility = View.GONE
         } else {
-            draftsHeader?.visibility = View.VISIBLE
-            draftsHeader?.text = "Drafts (${drafts.size})"
+            savedPollHeader?.visibility = View.VISIBLE
+            savedPollHeader?.text = "Saved Polls (${savedPolls.size})"
         }
     }
 
-    private fun getDrafts() {
-        val getDraftsEndpoint = Endpoint.getAllDrafts()
-        val typeTokenDrafts = object : TypeToken<ApiResponse<ArrayList<Draft>>>() {}.type
+    private fun getSavedPolls() {
+        val getSavedPollsEndpoint = Endpoint.getAllSavedPoll()
+        val typeTokenSavedPoll = object : TypeToken<ApiResponse<ArrayList<SavedPoll>>>() {}.type
         CoroutineScope(Dispatchers.IO).launch {
-            val getDraftsResponse = Request.makeRequest<ApiResponse<ArrayList<Draft>>>(
-                    getDraftsEndpoint.okHttpRequest(),
-                    typeTokenDrafts
+            val getSavedPollResponse = Request.makeRequest<ApiResponse<ArrayList<SavedPoll>>>(
+                    getSavedPollsEndpoint.okHttpRequest(),
+                    typeTokenSavedPoll
             )
 
-            if (getDraftsResponse?.success == true) {
+            if (getSavedPollResponse?.success == true) {
                 withContext(Dispatchers.Main) {
-                    drafts.addAll(getDraftsResponse.data)
-                    draftAdapter?.notifyDataSetChanged()
-                    setDraftsHeader()
-                    resetDraftHeight()
+                    savedPolls.addAll(getSavedPollResponse.data)
+                    savedPollAdapter?.notifyDataSetChanged()
+                    setSavedPollsHeader()
+                    resetSavedPollHeight()
 
                 }
                 return@launch
             } else {
-                Toast.makeText(requireContext(), "Loading Drafts Failed", Toast.LENGTH_SHORT)
+                Toast.makeText(requireContext(), "Loading Saved Polls Failed", Toast.LENGTH_SHORT)
                         .show()
             }
         }
     }
 
-    private fun createDraft(draft: Draft) {
-        val createDraftEndpoint = Endpoint.createDraft(draft)
-        val typeTokenDraft = object : TypeToken<ApiResponse<Draft>>() {}.type
+    private fun createSavedPoll(savedPoll: SavedPoll) {
+        val createSavedPollEndpoint = Endpoint.createSavedPoll(savedPoll)
+        val typeTokenSavedPoll = object : TypeToken<ApiResponse<SavedPoll>>() {}.type
         CoroutineScope(Dispatchers.IO).launch {
-            val createDraftResponse = Request.makeRequest<ApiResponse<Draft>>(
-                    createDraftEndpoint.okHttpRequest(),
-                    typeTokenDraft
+            val createSavedPollResponse = Request.makeRequest<ApiResponse<SavedPoll>>(
+                    createSavedPollEndpoint.okHttpRequest(),
+                    typeTokenSavedPoll
             )
 
-            if (createDraftResponse?.success == true) {
-                drafts[0] = createDraftResponse.data
+            if (createSavedPollResponse?.success == true) {
+                savedPolls[0] = createSavedPollResponse.data
                 return@launch
             } else {
-                Toast.makeText(requireContext(), "Saving Draft Failed", Toast.LENGTH_SHORT)
+                Toast.makeText(requireContext(), "Saving Poll Failed", Toast.LENGTH_SHORT)
                         .show()
             }
         }
     }
 
-    private fun updateDraft(draft: Draft) {
-        val updateDraftEndpoint = Endpoint.updateDraft(draft)
-        val typeTokenDraft = object : TypeToken<ApiResponse<Draft>>() {}.type
+    private fun updateSavedPoll(savedPoll: SavedPoll) {
+        val updateSavedPollEndpoint = Endpoint.updateSavedPoll(savedPoll)
+        val typeTokenSavedPoll = object : TypeToken<ApiResponse<SavedPoll>>() {}.type
         CoroutineScope(Dispatchers.IO).launch {
-            val createDraftResponse = Request.makeRequest<ApiResponse<Draft>>(
-                    updateDraftEndpoint.okHttpRequest(),
-                    typeTokenDraft
+            val createSavedPollResponse = Request.makeRequest<ApiResponse<SavedPoll>>(
+                    updateSavedPollEndpoint.okHttpRequest(),
+                    typeTokenSavedPoll
             )
 
-            if (createDraftResponse?.success == true) {
-                for (i in 0 until drafts.size) {
-                    if (drafts[i].id == createDraftResponse.data.id) {
-                        drafts.removeAt(i)
-                        drafts.add(0, draft)
+            if (createSavedPollResponse?.success == true) {
+                for (i in 0 until savedPolls.size) {
+                    if (savedPolls[i].id == createSavedPollResponse.data.id) {
+                        savedPolls.removeAt(i)
+                        savedPolls.add(0, savedPoll)
                         withContext(Dispatchers.Main) {
-                            draftAdapter?.notifyDataSetChanged()
+                            savedPollAdapter?.notifyDataSetChanged()
                         }
                         break
                     }
                 }
                 return@launch
             } else {
-                Toast.makeText(requireContext(), "Saving Draft Failed", Toast.LENGTH_SHORT)
+                Toast.makeText(requireContext(), "Saving Poll Failed", Toast.LENGTH_SHORT)
                         .show()
             }
         }
     }
 
-    override fun draftSelected(draft: Draft) {
-        selectedDraft = draft
-        poll_question.setText(draft.text)
+    override fun savedPollSelected(savedPoll: SavedPoll) {
+        selectedSavedPoll = savedPoll
+        poll_question.setText(savedPoll.text)
         options.clear()
-        options.addAll(draft.options)
+        options.addAll(savedPoll.options)
         createPollAdapter?.notifyDataSetChanged()
         resetPollHeight()
 
     }
 
-    override fun draftDeselected() {
-        selectedDraft = null
+    override fun savedPollDeselected() {
+        selectedSavedPoll = null
         poll_question.text.clear()
         resetOptions()
         resetPollHeight()
@@ -335,33 +325,33 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
 
     }
 
-    override fun draftDeleted(position: Int) {
-        when (drafts[position].id) {
+    override fun savedPollDeleted(position: Int) {
+        when (savedPolls[position].id) {
             null -> {
                 // No id --> doesn't exist on backend, if we're here, we're probably in an error state already
-                drafts.removeAt(position)
-                draftAdapter?.notifyDataSetChanged()
-                setDraftsHeader()
-                resetDraftHeight()
+                savedPolls.removeAt(position)
+                savedPollAdapter?.notifyDataSetChanged()
+                setSavedPollsHeader()
+                resetSavedPollHeight()
                 resetPollHeight()
             }
 
             else -> {
-                val deleteDraftEndpoint = Endpoint.deleteDraft(drafts[position].id!!)
+                val deleteSavedPollEndpoint = Endpoint.deleteSavedPoll(savedPolls[position].id!!)
                 CoroutineScope(Dispatchers.IO).launch {
-                    val success = Request.makeRequest(deleteDraftEndpoint.okHttpRequest())
+                    val success = Request.makeRequest(deleteSavedPollEndpoint.okHttpRequest())
 
                     if (success) {
                         withContext(Dispatchers.Main) {
-                            drafts.removeAt(position)
-                            draftAdapter?.notifyDataSetChanged()
-                            setDraftsHeader()
-                            resetDraftHeight()
+                            savedPolls.removeAt(position)
+                            savedPollAdapter?.notifyDataSetChanged()
+                            setSavedPollsHeader()
+                            resetSavedPollHeight()
                             resetPollHeight()
                         }
                         return@launch
                     } else {
-                        Toast.makeText(requireContext(), "Failed to delete draft", Toast.LENGTH_LONG)
+                        Toast.makeText(requireContext(), "Failed to delete saved poll", Toast.LENGTH_LONG)
                                 .show()
                     }
                 }
@@ -379,9 +369,9 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         view.footerView.elevation = 0f
 
         // Converts included XML elements into outlines
-        view.start_poll_outline.save_draft.visibility = View.INVISIBLE
-        view.save_draft_outline.start_poll.visibility = View.INVISIBLE
-        view.start_poll_outline2.save_draft.visibility = View.INVISIBLE
+        view.start_poll_outline.save_poll.visibility = View.INVISIBLE
+        view.save_poll_outline.start_poll.visibility = View.INVISIBLE
+        view.start_poll_outline2.save_poll.visibility = View.INVISIBLE
         outlinePollOption(view.option_a_outline, "Option A")
         outlinePollOption(view.option_b_outline, "Option B")
         outlinePollOption(view.autofill_a_outline, "A")
@@ -437,12 +427,12 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
     }
 
 
-    override fun onDraftOptionsPressed(position: Int) {
+    override fun onSavedPollOptionsPressed(position: Int) {
         if (isPopupActive) return
         isPopupActive = true
         setDim(true)
         groupMenuOptionsView.removeGroup.visibility = View.VISIBLE
-        groupMenuOptionsView.groupNameTextView.text = getString(R.string.draft_options)
+        groupMenuOptionsView.groupNameTextView.text = getString(R.string.save_poll_options)
         groupMenuOptionsView.removeGroup.removeGroupImage.setImageResource(R.drawable.ic_trash_can)
         groupMenuOptionsView.removeGroup.removeGroupText.setText(R.string.delete_poll)
         headerView.elevation = 0f
@@ -455,7 +445,7 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
         groupMenuOptionsView.startAnimation(animate)
         groupMenuOptionsView.removeGroup.setOnClickListener {
             // Reset selection
-            draftAdapter!!.resetSelection(position)
+            savedPollAdapter!!.resetSelection(position)
             dismissPopup()
 
         }
@@ -470,10 +460,10 @@ class CreatePollFragment : Fragment(), DraftAdapter.DraftsDelegate, DraftAdapter
 
     fun setSelfDim(shouldDim: Boolean) {
         // Don't want to be able to open poll views when dimmed
-        dimView_draft.isClickable = shouldDim
+        dimView_savedPoll.isClickable = shouldDim
 
         val alphaValue = if (shouldDim) 0.5f else 0.0f
-        val dimAnimation = ObjectAnimator.ofFloat(dimView_draft, "alpha", alphaValue)
+        val dimAnimation = ObjectAnimator.ofFloat(dimView_savedPoll, "alpha", alphaValue)
         dimAnimation.duration = 500
         dimAnimation.start()
     }

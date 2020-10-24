@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
+    android:orientation="horizontal"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent">
 
     <Button
-        android:id="@+id/save_draft"
+        android:id="@+id/save_poll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="18dp"
@@ -20,7 +20,7 @@
         android:background="@drawable/rounded_container_outline"
         android:clickable="false"
         android:fontFamily="sans-serif"
-        android:text="@string/save_as_draft"
+        android:text="@string/save_poll"
         android:textAllCaps="false"
         android:textColor="@color/actualWhite"
         android:textSize="16sp"

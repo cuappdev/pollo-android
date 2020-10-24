@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/draft_list_item"
+    android:id="@+id/savedPoll_list_item"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/rounded_drafts_background_deselected"
+    android:background="@drawable/rounded_savedpoll_background_deselected"
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -25,12 +25,12 @@
             android:textColor="@color/mediumGray"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/draftOptionsButton"
+            app:layout_constraintEnd_toStartOf="@id/savedPollOptionsButton"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
-            android:id="@+id/draftOptionsButton"
+            android:id="@+id/savedPollOptionsButton"
             android:layout_width="23dp"
             android:layout_height="35dp"
             android:layout_marginTop="20dp"

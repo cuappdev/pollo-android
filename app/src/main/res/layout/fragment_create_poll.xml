@@ -126,14 +126,14 @@
             </RelativeLayout>
 
             <LinearLayout
-                android:id="@+id/drafts"
+                android:id="@+id/savedPoll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/draftsHeader"
+                    android:id="@+id/savedPollHeader"
                     android:layout_width="match_parent"
                     android:layout_height="26dp"
                     android:textAlignment="center"
@@ -142,7 +142,7 @@
                     android:visibility="gone" />
 
                 <ListView
-                    android:id="@+id/draftsListView"
+                    android:id="@+id/savedPollListView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
@@ -171,7 +171,7 @@
         android:elevation="4dp">
 
         <Button
-            android:id="@+id/save_draft"
+            android:id="@+id/save_poll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="18dp"
@@ -183,7 +183,7 @@
             android:clickable="true"
             android:focusable="true"
             android:fontFamily="sans-serif"
-            android:text="@string/save_as_draft"
+            android:text="@string/save_poll"
             android:textAllCaps="false"
             android:textColor="@color/colorPrimaryDark"
             android:textColorHighlight="@color/black"
@@ -221,7 +221,7 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/dimView_draft"
+        android:id="@+id/dimView_savedPoll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.0"

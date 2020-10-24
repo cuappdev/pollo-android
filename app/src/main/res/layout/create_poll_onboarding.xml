@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/onboarding_background">
@@ -300,7 +299,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/saveDraftLayout"
+        android:id="@+id/savePollLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
@@ -310,22 +309,22 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/saveDraftTextView"
+            android:id="@+id/savePollTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="127dp"
             android:layout_marginBottom="5dp"
-            android:text="@string/save_draft"
+            android:text="@string/save_poll_message"
             android:textColor="@color/actualWhite"
             android:textSize="20sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/save_draft_outline"
+            app:layout_constraintBottom_toTopOf="@id/save_poll_outline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <include
-            android:id="@+id/save_draft_outline"
+            android:id="@+id/save_poll_outline"
             layout="@layout/create_poll_footer_outline" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
