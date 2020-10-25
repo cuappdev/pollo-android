@@ -12,7 +12,7 @@ import android.widget.CheckBox
 import android.widget.EditText
 import kotlinx.android.synthetic.main.create_poll_options_list_item.view.*
 
-class CreatePollAdapter(private val context: Context, private val options: ArrayList<String>, private var correct: Int, private var root: CreatePollFragment, val callback: CreatePollAdapter.OnPollChoicesDeleteListener) :
+class CreatePollAdapter(private val context: Context, private val options: ArrayList<String>, private var correct: Int, private val callback: OnPollChoicesDeleteListener) :
         BaseAdapter() {
 
     private val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -39,7 +39,6 @@ class CreatePollAdapter(private val context: Context, private val options: Array
         rightAnswerButton.setOnClickListener {
             correct = if (correct == position) -1 else position
             this.notifyDataSetChanged()
-            root.correct = correct
         }
 
         optionPollName.addTextChangedListener(object : TextWatcher {
@@ -60,8 +59,7 @@ class CreatePollAdapter(private val context: Context, private val options: Array
             callback.onPollChoicesDelete(position)
         }
 
-        if (deletable) rowView.deleteOption.visibility = View.VISIBLE
-        else rowView.deleteOption.visibility = View.INVISIBLE
+        rowView.deleteOption.visibility = if (deletable) View.VISIBLE else View.INVISIBLE
 
 
         return rowView

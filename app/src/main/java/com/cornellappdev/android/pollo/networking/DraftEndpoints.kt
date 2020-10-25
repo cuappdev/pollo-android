@@ -7,7 +7,7 @@ import okhttp3.RequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 
-fun Endpoint.Companion.getAllSavedPoll(): Endpoint {
+fun Endpoint.Companion.getAllSavedPolls(): Endpoint {
     return Endpoint(
             "/drafts",
             headers = mapOf("Authorization" to "Bearer " + User.currentSession.accessToken),

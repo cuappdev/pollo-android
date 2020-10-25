@@ -47,7 +47,6 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
     var savedPolls: ArrayList<SavedPoll> = arrayListOf()
     var savedPollAdapter: SavedPollAdapter? = null
     var selectedSavedPoll: SavedPoll? = null
-    var correct: Int = -1
     var currOnboardScreen: Int = -1
 
     private val preferencesHelper: PreferencesHelper by lazy {
@@ -62,10 +61,9 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
         val rootView = inflater.inflate(R.layout.fragment_create_poll, container, false)
 
         options = arrayListOf()
-        createPollAdapter = CreatePollAdapter(requireContext(), options, correct, this, this)
+        createPollAdapter = CreatePollAdapter(requireContext(), options, -1, this)
         rootView.poll_options.adapter = createPollAdapter
         resetOptions()
-        rootView.poll_options.adapter = createPollAdapter
 
         savedPolls = arrayListOf()
         savedPollAdapter = SavedPollAdapter(requireContext(), savedPolls, this)
@@ -92,7 +90,7 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
         }
 
         startPoll.setOnClickListener {
-            startPoll(correct)
+            startPoll(createPollAdapter!!.getCorrectness())
         }
 
         if (preferencesHelper.displayOnboarding) {
@@ -235,7 +233,7 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
     }
 
     private fun getSavedPolls() {
-        val getSavedPollsEndpoint = Endpoint.getAllSavedPoll()
+        val getSavedPollsEndpoint = Endpoint.getAllSavedPolls()
         val typeTokenSavedPoll = object : TypeToken<ApiResponse<ArrayList<SavedPoll>>>() {}.type
         CoroutineScope(Dispatchers.IO).launch {
             val getSavedPollResponse = Request.makeRequest<ApiResponse<ArrayList<SavedPoll>>>(
