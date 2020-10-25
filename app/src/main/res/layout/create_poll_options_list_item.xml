@@ -17,7 +17,7 @@
 
     <EditText
         android:id="@+id/create_poll_options_text"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="1"
@@ -25,5 +25,12 @@
         android:ems="10"
         android:hint="Option A"
         android:inputType="textPersonName" />
+    <ImageButton
+        android:id="@+id/deleteOption"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="@drawable/ic_trash_can_grey"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="13dp"/>
 
 </LinearLayout>

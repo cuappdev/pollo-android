@@ -66,8 +66,8 @@
     <string name="delete_poll">Delete Poll</string>
     <string name="untitled_poll">Untitled Poll</string>
     <string name="multiple_choice">Multiple Choice</string>
-    <string name="save_as_draft">Save as Draft</string>
-    <string name="draft_options">Draft Options</string>
+    <string name="save_poll">Save Poll</string>
+    <string name="save_poll_options">Saved Poll Options</string>
     <string name="start_poll">Start Question</string>
 
     <!-- Poll Options -->
@@ -91,7 +91,7 @@
     <string name="customize">To customize this question, type here and add additional options</string>
     <string name="autofill">To autofill choices A, B, … , tap here to start live polling</string>
     <string name="quiz_mode">To use quiz mode, select a right answer</string>
-    <string name="save_draft">To come back to this question later, tap here</string>
+    <string name="save_poll_message">To come back to this question later, tap here</string>
     <string name="ready">That\'s it! You\'re good to go.</string>
     <string name="start_question">To start polling now, tap here</string>
 </resources>
