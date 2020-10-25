@@ -307,6 +307,7 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
     override fun savedPollSelected(savedPoll: SavedPoll) {
         selectedSavedPoll = savedPoll
         poll_question.setText(savedPoll.text)
+        createPollAdapter!!.resetCorrectness()
         options.clear()
         options.addAll(savedPoll.options)
         createPollAdapter?.notifyDataSetChanged()
@@ -317,6 +318,7 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
     override fun savedPollDeselected() {
         selectedSavedPoll = null
         poll_question.text.clear()
+        createPollAdapter!!.resetCorrectness()
         resetOptions()
         resetPollHeight()
         word_count.visibility = View.INVISIBLE
