@@ -9,6 +9,7 @@ import com.cornellappdev.android.pollo.models.Group
 import com.cornellappdev.android.pollo.models.User
 import com.cornellappdev.android.pollo.networking.*
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.group_list_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +35,7 @@ class GroupRecyclerAdapter(
     }
 
 
-    inner class ViewHolder internal constructor(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view), View.OnClickListener {
+    inner class ViewHolder internal constructor(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view), View.OnClickListener, ExceptionHelper.ResettableView {
 
         private var view = view
         private var group: Group? = null
@@ -56,8 +57,8 @@ class GroupRecyclerAdapter(
             view.groupDetailsButton.visibility = View.GONE
             view.groupLoadingIndicator.visibility = View.VISIBLE
 
-
-            CoroutineScope(Dispatchers.Main).launch {
+            val handler = ExceptionHelper.getCoroutineExceptionHandler(view.context, "Failed to Enter Group", this)
+            CoroutineScope(Dispatchers.Main).launch(handler) {
                 val endpoint = Endpoint.joinGroupWithCode(group?.code ?: "")
                 val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
                 val typeTokenSortedPolls = object : TypeToken<ApiResponse<ArrayList<GetSortedPollsResponse>>>() {}.type
@@ -84,7 +85,7 @@ class GroupRecyclerAdapter(
             this.group = group
             view.groupNameTextView.text = group.name
 
-            if (group.isLive == true) {
+            if (group.isLive) {
                 view.groupLiveTextView.text = "• Live Now"
                 view.groupLiveTextView.setTextColor(ContextCompat.getColor(view.context, R.color.liveNow))
             } else {
@@ -106,6 +107,12 @@ class GroupRecyclerAdapter(
                 view.groupLiveTextView.text = "${group.code}  •  Last live $timeResult ago"
                 view.groupLiveTextView.setTextColor(ContextCompat.getColor(view.context, R.color.settings_detail))
             }
+        }
+
+        override fun reset() {
+            view.groupDetailsButton.visibility = View.VISIBLE
+            view.groupLoadingIndicator.visibility = View.GONE
+            isLoading = false
         }
     }
 

@@ -49,7 +49,7 @@ import kotlinx.coroutines.withContext
  * create an instance of this fragment.
  */
 @SuppressLint("ValidFragment")
-class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListener {
+class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListener, ExceptionHelper.ResettableView {
 
     private var sectionNumber: Int = 0
     private var currentAdapter: GroupRecyclerAdapter? = null
@@ -75,6 +75,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
             groupRecyclerView.adapter = currentAdapter
         }
 
+        setExceptionHandler()
         refreshGroups()
 
         return rootView
@@ -203,9 +204,19 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        setExceptionHandler()
+    }
+
+    private fun setExceptionHandler() {
+        Thread.setDefaultUncaughtExceptionHandler(ExceptionHelper.getThreadExceptionHandler(requireContext(), "Group Operation Failed", this))
+    }
+
     fun refreshGroups() {
         if (role == null) return
-        CoroutineScope(Dispatchers.IO).launch {
+        val handler = ExceptionHelper.getCoroutineExceptionHandler(requireContext(), "Could Not Fetch Groups", this)
+        CoroutineScope(Dispatchers.IO).launch(handler) {
             val getGroupsEndpoint = Endpoint.getAllGroups(role!!.name.toLowerCase())
             val typeTokenGroups = object : TypeToken<ApiResponse<ArrayList<Group>>>() {}.type
             val getGroupsResponse = Request.makeRequest<ApiResponse<ArrayList<Group>>>(getGroupsEndpoint.okHttpRequest(), typeTokenGroups)
@@ -213,11 +224,7 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
             withContext(Dispatchers.Main.immediate) {
                 if (getGroupsResponse?.success == false || getGroupsResponse?.data == null) {
                     withContext(Dispatchers.Main) {
-                        AlertDialog.Builder(context)
-                                .setTitle("Could Not Fetch Groups")
-                                .setMessage("Please try again later.")
-                                .setNeutralButton(android.R.string.ok, null)
-                                .show()
+                        ExceptionHelper.displayAlert(requireContext(), "Could Not Fetch Groups"){}
                     }
                     return@withContext
                 }
@@ -238,7 +245,6 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
 
     private fun removeGroup() {
         val groupId = groupSelected?.id ?: return
-
         CoroutineScope(Dispatchers.IO).launch {
             val typeToken = object : TypeToken<ApiResponse<String>>() {}.type
 
@@ -439,7 +445,6 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     private fun createGroup(name: String) {
         val typeTokenGroupCode = object : TypeToken<ApiResponse<GroupCode>>() {}.type
         val generateCodeEndpoint = Endpoint.generateCode()
-
         CoroutineScope(Dispatchers.IO).launch {
             val result = Request.makeRequest<ApiResponse<GroupCode>>(generateCodeEndpoint.okHttpRequest(), typeTokenGroupCode)
 
@@ -505,18 +510,13 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
         }
 
         val endpoint = Endpoint.renameGroup(groupSelected!!.id, newGroupName)
-
         CoroutineScope(Dispatchers.IO).launch {
             val typeTokenGroup = object : TypeToken<ApiResponse<Group>>() {}.type
             val groupResponse = Request.makeRequest<ApiResponse<Group>>(endpoint.okHttpRequest(), typeTokenGroup)
 
             if (groupResponse?.success == false || groupResponse?.data == null) {
                 withContext(Dispatchers.Main) {
-                    AlertDialog.Builder(context)
-                            .setTitle("Group Rename Failed")
-                            .setMessage("Please try again!")
-                            .setNeutralButton(android.R.string.ok, null)
-                            .show()
+                    ExceptionHelper.displayAlert(requireContext(), "Group Rename Failed"){}
                 }
                 return@launch
             }
@@ -564,5 +564,10 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
          * Launches a `PollsDateActivity` for the given group and parameters
          */
         fun startGroupActivity(role: User.Role, group: Group, polls: ArrayList<GetSortedPollsResponse>)
+    }
+
+    override fun reset() {
+        swipeRefresh?.isRefreshing = false
+        dismissPopup()
     }
 }
