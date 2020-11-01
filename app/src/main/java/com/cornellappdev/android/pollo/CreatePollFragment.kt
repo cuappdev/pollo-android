@@ -40,7 +40,6 @@ import kotlinx.coroutines.withContext
 @SuppressLint("ValidFragment")
 class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, SavedPollAdapter.OnSavedPollOptionsPressedListener, CreatePollAdapter.OnPollChoicesDeleteListener {
     var options: ArrayList<String> = arrayListOf()
-    var optionsContent: ArrayList<String> = arrayListOf()
     var createPollAdapter: CreatePollAdapter? = null
     private var delegate: CreatePollDelegate? = null
     private var isPopupActive: Boolean = false
@@ -79,14 +78,12 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
             addOptionToList()
             if (options.size > 2) createPollAdapter?.deletable = true
             resetPollHeight()
-
         }
 
         savePoll.setOnClickListener {
             savePoll()
             resetSavedPollHeight()
             resetPollHeight()
-
         }
 
         startPoll.setOnClickListener {
@@ -101,6 +98,8 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
             }
             preferencesHelper.displayOnboarding = false
         }
+
+        Thread.setDefaultUncaughtExceptionHandler(ExceptionHelper.getThreadExceptionHandler(requireContext(), "Poll Request Failed") {})
         return rootView
     }
 
@@ -163,7 +162,10 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
      * Starts poll and returns to group
      */
     private fun startPoll(correct: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
+        val handler = ExceptionHelper.getCoroutineExceptionHandler(requireContext(), "Failed to Start Poll") {
+            (activity as PollsDateActivity).onPollDeleteLive()
+        }
+        CoroutineScope(Dispatchers.IO).launch(handler) {
             val pollText = if (poll_question.text.toString().isBlank()) getString(R.string.untitled_poll) else poll_question.text.toString()
 
             val answerChoices = Poll((System.currentTimeMillis() / 1000).toString(), null, null, pollText,
@@ -235,7 +237,8 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
     private fun getSavedPolls() {
         val getSavedPollsEndpoint = Endpoint.getAllSavedPolls()
         val typeTokenSavedPoll = object : TypeToken<ApiResponse<ArrayList<SavedPoll>>>() {}.type
-        CoroutineScope(Dispatchers.IO).launch {
+        val handler = ExceptionHelper.getCoroutineExceptionHandler(requireContext(), "Failed to Load Saved Polls") {}
+        CoroutineScope(Dispatchers.IO).launch(handler) {
             val getSavedPollResponse = Request.makeRequest<ApiResponse<ArrayList<SavedPoll>>>(
                     getSavedPollsEndpoint.okHttpRequest(),
                     typeTokenSavedPoll
@@ -260,7 +263,12 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
     private fun createSavedPoll(savedPoll: SavedPoll) {
         val createSavedPollEndpoint = Endpoint.createSavedPoll(savedPoll)
         val typeTokenSavedPoll = object : TypeToken<ApiResponse<SavedPoll>>() {}.type
-        CoroutineScope(Dispatchers.IO).launch {
+        val handler = ExceptionHelper.getCoroutineExceptionHandler(requireContext(), "Saving Poll Failed") {
+            savedPolls.remove(savedPoll)
+            savedPollAdapter?.notifyDataSetChanged()
+            setSavedPollsHeader()
+        }
+        CoroutineScope(Dispatchers.IO).launch(handler) {
             val createSavedPollResponse = Request.makeRequest<ApiResponse<SavedPoll>>(
                     createSavedPollEndpoint.okHttpRequest(),
                     typeTokenSavedPoll
@@ -270,8 +278,7 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
                 savedPolls[0] = createSavedPollResponse.data
                 return@launch
             } else {
-                Toast.makeText(requireContext(), "Saving Poll Failed", Toast.LENGTH_SHORT)
-                        .show()
+                ExceptionHelper.displayAlert(requireContext(), "Saving Poll Failed") {}
             }
         }
     }
@@ -279,7 +286,8 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
     private fun updateSavedPoll(savedPoll: SavedPoll) {
         val updateSavedPollEndpoint = Endpoint.updateSavedPoll(savedPoll)
         val typeTokenSavedPoll = object : TypeToken<ApiResponse<SavedPoll>>() {}.type
-        CoroutineScope(Dispatchers.IO).launch {
+        val handler = ExceptionHelper.getCoroutineExceptionHandler(requireContext(), "Saving Poll Failed") {}
+        CoroutineScope(Dispatchers.IO).launch(handler) {
             val createSavedPollResponse = Request.makeRequest<ApiResponse<SavedPoll>>(
                     updateSavedPollEndpoint.okHttpRequest(),
                     typeTokenSavedPoll
@@ -298,8 +306,7 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
                 }
                 return@launch
             } else {
-                Toast.makeText(requireContext(), "Saving Poll Failed", Toast.LENGTH_SHORT)
-                        .show()
+                ExceptionHelper.displayAlert(requireContext(), "Saving Poll Failed") {}
             }
         }
     }
@@ -312,7 +319,6 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
         options.addAll(savedPoll.options)
         createPollAdapter?.notifyDataSetChanged()
         resetPollHeight()
-
     }
 
     override fun savedPollDeselected() {
@@ -322,7 +328,6 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
         resetOptions()
         resetPollHeight()
         word_count.visibility = View.INVISIBLE
-
     }
 
     override fun savedPollDeleted(position: Int) {
@@ -338,7 +343,8 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
 
             else -> {
                 val deleteSavedPollEndpoint = Endpoint.deleteSavedPoll(savedPolls[position].id!!)
-                CoroutineScope(Dispatchers.IO).launch {
+                val handler = ExceptionHelper.getCoroutineExceptionHandler(requireContext(), "Saved Poll Deletion Failed") {}
+                CoroutineScope(Dispatchers.IO).launch(handler) {
                     val success = Request.makeRequest(deleteSavedPollEndpoint.okHttpRequest())
 
                     if (success) {
@@ -351,8 +357,7 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
                         }
                         return@launch
                     } else {
-                        Toast.makeText(requireContext(), "Failed to delete saved poll", Toast.LENGTH_LONG)
-                                .show()
+                        ExceptionHelper.displayAlert(requireContext(), "Saved Poll Deletion Failed") {}
                     }
                 }
             }
