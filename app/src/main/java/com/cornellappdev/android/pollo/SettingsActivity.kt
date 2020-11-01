@@ -49,10 +49,6 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     fun logoutButtonClicked(view: View) {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestProfile()
-                .build()
-        GoogleSignIn.getClient(this, gso).signOut()
         preferencesHelper.accessToken = ""
         preferencesHelper.refreshToken = ""
         preferencesHelper.expiresAt = 0L
