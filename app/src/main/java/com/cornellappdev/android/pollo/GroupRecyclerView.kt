@@ -35,7 +35,7 @@ class GroupRecyclerAdapter(
     }
 
 
-    inner class ViewHolder internal constructor(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view), View.OnClickListener, ExceptionHelper.ResettableView {
+    inner class ViewHolder internal constructor(view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view), View.OnClickListener {
 
         private var view = view
         private var group: Group? = null
@@ -57,7 +57,11 @@ class GroupRecyclerAdapter(
             view.groupDetailsButton.visibility = View.GONE
             view.groupLoadingIndicator.visibility = View.VISIBLE
 
-            val handler = ExceptionHelper.getCoroutineExceptionHandler(view.context, "Failed to Enter Group", this)
+            val handler = ExceptionHelper.getCoroutineExceptionHandler(view.context, "Failed to Enter Group") {
+                view.groupDetailsButton.visibility = View.VISIBLE
+                view.groupLoadingIndicator.visibility = View.GONE
+                isLoading = false
+            }
             CoroutineScope(Dispatchers.Main).launch(handler) {
                 val endpoint = Endpoint.joinGroupWithCode(group?.code ?: "")
                 val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
@@ -72,7 +76,7 @@ class GroupRecyclerAdapter(
                 val pollsDateActivity = Intent(context, PollsDateActivity::class.java)
                 pollsDateActivity.putExtra("SORTED_POLLS", sortedPolls!!.data)
                 pollsDateActivity.putExtra("GROUP_NODE", group)
-                pollsDateActivity.putExtra("USER_ROLE",role)
+                pollsDateActivity.putExtra("USER_ROLE", role)
                 context.startActivity(pollsDateActivity)
 
                 view.groupDetailsButton.visibility = View.VISIBLE
@@ -98,7 +102,7 @@ class GroupRecyclerAdapter(
                     if (timeSplit[i] > 0) break
 
                     // To handle issue where `group.updatedAt` is greater than the current time
-                    if (i == TIME_LABELS.size-1) timeResult = "1 " + TIME_LABELS[i]
+                    if (i == TIME_LABELS.size - 1) timeResult = "1 " + TIME_LABELS[i]
                 }
 
                 if (timeResult[0] == '1') {
@@ -107,12 +111,6 @@ class GroupRecyclerAdapter(
                 view.groupLiveTextView.text = "${group.code}  •  Last live $timeResult ago"
                 view.groupLiveTextView.setTextColor(ContextCompat.getColor(view.context, R.color.settings_detail))
             }
-        }
-
-        override fun reset() {
-            view.groupDetailsButton.visibility = View.VISIBLE
-            view.groupLoadingIndicator.visibility = View.GONE
-            isLoading = false
         }
     }
 

@@ -10,25 +10,25 @@ import java.util.concurrent.atomic.AtomicBoolean
 object ExceptionHelper {
     private var alertShown = AtomicBoolean(false)
 
-    fun getThreadExceptionHandler(context: Context, errorTitle: String, callback: ResettableView?): Thread.UncaughtExceptionHandler {
+    fun getThreadExceptionHandler(context: Context, errorTitle: String, callback: () -> Unit): Thread.UncaughtExceptionHandler {
         return Thread.UncaughtExceptionHandler { _, exception ->
             handleException(context, errorTitle, callback, exception)
         }
     }
 
-    fun getCoroutineExceptionHandler(context: Context, errorTitle: String, callback: ResettableView?): CoroutineExceptionHandler {
+    fun getCoroutineExceptionHandler(context: Context, errorTitle: String, callback: () -> Unit): CoroutineExceptionHandler {
         return CoroutineExceptionHandler { _, exception ->
             handleException(context, errorTitle, callback, exception)
         }
     }
 
-    private fun handleException(context: Context, errorMessage: String, callback: ResettableView?, exception: Throwable) {
+    private fun handleException(context: Context, errorMessage: String, callback: () -> Unit, exception: Throwable) {
         Log.d("CoroutineException", "Exception $exception thrown. Error message: $errorMessage")
         if (!alertShown.get()) {
             alertShown.set(true)
             displayAlert(context, errorMessage) { alertShown.set(false) }
         }
-        callback?.reset()
+        callback()
     }
 
     fun displayAlert(context: Context, errorTitle: String, alertClosedAction: () -> Unit) {
@@ -39,9 +39,5 @@ object ExceptionHelper {
                     .setNeutralButton(android.R.string.ok) { _, _ -> alertClosedAction() }
                     .show()
         }
-    }
-
-    interface ResettableView {
-        fun reset()
     }
 }
