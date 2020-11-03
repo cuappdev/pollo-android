@@ -10,9 +10,10 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 
 object ConnectivityBanner {
-    private var currContext: Context? = null;
+    private var currContext: Context? = null
     private var currView: View? = null
     private var isConnected = true
+    private var currSnackbar: Snackbar? = null
 
     // Registers a new NetworkCallback if one does not currently exist or updates existing network callback
     fun setUpConnectivityBanners(context: Context, view: View) {
@@ -43,13 +44,15 @@ object ConnectivityBanner {
             }
         }
     }
-    
+
     // Displays appropriate connectivity banner based on current connectivity status
     private fun displaySnackbar() {
+        currSnackbar?.dismiss()
         val color = ContextCompat.getColor(currContext!!, if (isConnected) R.color.polloGreen else R.color.red)
         val text = if (isConnected) "Connected" else "Not Connected"
         val duration = if (isConnected) Snackbar.LENGTH_SHORT else Snackbar.LENGTH_INDEFINITE
         val snackbar = Snackbar.make(currView!!, text, duration).setBackgroundTint(color)
         snackbar.show()
+        currSnackbar = snackbar
     }
 }
