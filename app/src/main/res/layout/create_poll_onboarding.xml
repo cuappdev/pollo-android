@@ -142,9 +142,9 @@
         <Button
             android:id="@+id/add_poll_option_outline"
             android:layout_width="0dp"
-            android:layout_height="54dp"
+            android:layout_height="56dp"
             android:layout_marginStart="25dp"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="25dp"
             android:background="@drawable/rounded_container_outline"
             android:drawableStart="@drawable/plus_sign_white"
