@@ -10,45 +10,42 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 
 object ConnectivityBanner {
-    private var currContext: Context? = null
     private var currView: View? = null
     private var isConnected = true
     private var currSnackbar: Snackbar? = null
 
     // Registers a new NetworkCallback if one does not currently exist or updates existing network callback
     fun setUpConnectivityBanners(context: Context, view: View) {
-        if (currContext == null) {
-            currContext = context
+        if (currView == null) {
             currView = view
-            val cm = currContext!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val builder = NetworkRequest.Builder()
             val callback = object : ConnectivityManager.NetworkCallback() {
                 override fun onAvailable(network: Network) {
                     super.onAvailable(network)
                     isConnected = true
-                    displaySnackbar()
+                    displaySnackbar(context)
                 }
 
                 override fun onLost(network: Network) {
                     super.onLost(network)
                     isConnected = false
-                    displaySnackbar()
+                    displaySnackbar(context)
                 }
             }
             cm.registerNetworkCallback(builder.build(), callback)
         } else {
-            currContext = context
             currView = view
             if (!isConnected) {
-                displaySnackbar()
+                displaySnackbar(context)
             }
         }
     }
 
     // Displays appropriate connectivity banner based on current connectivity status
-    private fun displaySnackbar() {
+    private fun displaySnackbar(context: Context) {
         currSnackbar?.dismiss()
-        val color = ContextCompat.getColor(currContext!!, if (isConnected) R.color.polloGreen else R.color.red)
+        val color = ContextCompat.getColor(context, if (isConnected) R.color.polloGreen else R.color.red)
         val text = if (isConnected) "Connected" else "Not Connected"
         val duration = if (isConnected) Snackbar.LENGTH_SHORT else Snackbar.LENGTH_INDEFINITE
         val snackbar = Snackbar.make(currView!!, text, duration).setBackgroundTint(color)
