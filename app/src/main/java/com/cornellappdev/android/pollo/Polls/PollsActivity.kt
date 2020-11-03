@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.cornellappdev.android.pollo.ConnectivityBanner
 import com.cornellappdev.android.pollo.R
 import com.cornellappdev.android.pollo.models.Poll
 import com.cornellappdev.android.pollo.models.PollState
@@ -73,6 +74,11 @@ class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.
             }
         })
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        ConnectivityBanner.setUpConnectivityBanners(this, findViewById(android.R.id.content))
     }
 
     override fun onDestroy() {

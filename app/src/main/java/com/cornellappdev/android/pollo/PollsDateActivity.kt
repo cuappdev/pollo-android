@@ -73,6 +73,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
 
     override fun onResume() {
         super.onResume()
+        ConnectivityBanner.setUpConnectivityBanners(this, findViewById(android.R.id.content))
         refreshPolls(false)
     }
 
