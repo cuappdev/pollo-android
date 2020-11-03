@@ -78,7 +78,7 @@ class PollsActivity : AppCompatActivity(), SocketDelegate, PollsRecyclerAdapter.
 
     override fun onResume() {
         super.onResume()
-        ConnectivityBanner.setUpConnectivityBanners(this, findViewById(android.R.id.content))
+        ConnectivityBanner(this).setUpConnectivityBanners(findViewById(android.R.id.content))
     }
 
     override fun onDestroy() {
