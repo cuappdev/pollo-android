@@ -33,7 +33,6 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.manage_group_view.*
 import kotlinx.android.synthetic.main.manage_group_view.view.*
-import kotlinx.android.synthetic.main.manage_group_view.view.renameGroupDetail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -62,8 +61,10 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
     private var groups = ArrayList<Group>()
     private var groupSelected: Group? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View {
         val rootView = inflater.inflate(R.layout.fragment_main, container, false)
         role = arguments?.getSerializable(GROUP_ROLE) as User.Role
 
@@ -161,7 +162,8 @@ class GroupFragment : Fragment(), GroupRecyclerAdapter.OnMoreButtonPressedListen
                 addGroupEditText.setHint(R.string.join_group_hint)
                 addGroupEditText.setTextColor(Color.WHITE)
                 addGroupEditText.isAllCaps = true
-                addGroupEditText.inputType = InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+
+                addGroupEditText.inputType = InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
                 addGroupEditText.filters = addGroupEditText.filters +
                         InputFilter.AllCaps() +
                         InputFilter.LengthFilter(6) +

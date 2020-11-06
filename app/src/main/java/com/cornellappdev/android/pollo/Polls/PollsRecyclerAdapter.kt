@@ -6,18 +6,17 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.cornellappdev.android.pollo.R
-import com.cornellappdev.android.pollo.inflate
-import com.cornellappdev.android.pollo.networking.Socket
-import kotlinx.android.synthetic.main.poll_recyclerview_item_row.view.*
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.cornellappdev.android.pollo.R
+import com.cornellappdev.android.pollo.inflate
 import com.cornellappdev.android.pollo.models.Poll
 import com.cornellappdev.android.pollo.models.PollState
 import com.cornellappdev.android.pollo.models.User
+import com.cornellappdev.android.pollo.networking.Socket
+import kotlinx.android.synthetic.main.poll_recyclerview_item_row.view.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 interface AnswerChoiceDelegate {
     fun sendAnswer(position: Int)
@@ -42,8 +41,9 @@ class PollsRecyclerAdapter(
     override fun onBindViewHolder(holder: PollHolder, position: Int) {
 
         val poll = polls[position]
+        val displayMetrics = Resources.getSystem().displayMetrics
+
         holder.view.layoutParams = (holder.view.layoutParams as RecyclerView.LayoutParams).apply {
-            val displayMetrics = Resources.getSystem().displayMetrics
 
             /* To show the edge of the next/previous card on the screen, we'll adjust the width of our MATCH_PARENT card to make
             it just slightly smaller than the screen. That way, no matter the size of the screen, the card will fill most of
@@ -62,13 +62,16 @@ class PollsRecyclerAdapter(
         }
 
         holder.bindPoll(poll, this, role)
+
         //Choices Recyclerview Height
         holder.view.pollsChoiceRecyclerView.layoutParams = (holder.view.pollsChoiceRecyclerView.layoutParams as ConstraintLayout.LayoutParams).apply {
-            val displayMetrics = Resources.getSystem().displayMetrics
-            val cellHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 55f, displayMetrics).toInt()
-            val recyclerviewHeight = cellHeight * poll.answerChoices.count()
-            height = if (recyclerviewHeight <= 500) recyclerviewHeight else 500
+            val cellHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 57f, displayMetrics).toInt()
+            matchConstraintMaxHeight = cellHeight * poll.answerChoices.count()
+            val adminMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 120f, displayMetrics).toInt()
+            val memberMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20f, displayMetrics).toInt()
+            bottomMargin = if (role == User.Role.ADMIN) adminMargin else memberMargin
         }
+
         val childLayoutManager = LinearLayoutManager(holder.view.pollsChoiceRecyclerView.context)
         childLayoutManager.initialPrefetchItemCount = 4
         holder.view.pollsChoiceRecyclerView.apply {
