@@ -76,7 +76,8 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
 
         addOption.setOnClickListener {
             addOptionToList()
-            if (options.size > 2) createPollAdapter?.deletable = true
+            createPollAdapter?.deletable = options.size >= 3
+            add_poll_option_button.visibility = if (options.size > 25) View.GONE else View.VISIBLE
             resetPollHeight()
         }
 
@@ -317,7 +318,9 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
         createPollAdapter!!.resetCorrectness()
         options.clear()
         options.addAll(savedPoll.options)
+        createPollAdapter?.deletable = options.size >= 3
         createPollAdapter?.notifyDataSetChanged()
+        add_poll_option_button.visibility = if (options.size > 25) View.GONE else View.VISIBLE
         resetPollHeight()
     }
 
@@ -492,8 +495,7 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
         val correct = createPollAdapter?.getCorrectness()
         if (correct == position) createPollAdapter?.resetCorrectness()
         if (correct!! > position) createPollAdapter?.decreaseCorrectness()
-        if (options.size < 3) createPollAdapter?.deletable = false
-
+        createPollAdapter?.deletable = options.size >= 3
         createPollAdapter?.notifyDataSetChanged()
         resetPollHeight()
     }
