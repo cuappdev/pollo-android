@@ -316,7 +316,7 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         toggleEmptyState()
     }
 
-    fun openNewPollFragment(view: View) {
+    private fun openNewPollFragment(view: View) {
         supportFragmentManager.beginTransaction()
                 .setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down)
                 .add(R.id.polls_date_layout, CreatePollFragment()).addToBackStack(null).commit()

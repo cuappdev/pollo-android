@@ -58,6 +58,7 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
             savedInstanceState: Bundle?
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_create_poll, container, false)
+        rootView.isClickable = true
 
         options = arrayListOf()
         createPollAdapter = CreatePollAdapter(requireContext(), options, -1, this)
@@ -399,6 +400,9 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
         view.setBackgroundColor(Color.TRANSPARENT)
         view.create_poll_options_text.setHintTextColor(Color.TRANSPARENT)
         view.create_poll_options_item.buttonTintList = ColorStateList.valueOf(Color.WHITE)
+        view.create_poll_options_text.isClickable = false
+        view.create_poll_options_text.isEnabled = false
+        view.deleteOption.visibility = View.GONE
     }
 
     /**
@@ -416,7 +420,7 @@ class CreatePollFragment : Fragment(), SavedPollAdapter.SavedPollDelegate, Saved
         }
     }
 
-    fun dismissPopup() {
+    private fun dismissPopup() {
         if (!isPopupActive) return
         isPopupActive = false
         setDim(false)
