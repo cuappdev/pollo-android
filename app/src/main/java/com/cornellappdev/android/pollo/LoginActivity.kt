@@ -29,6 +29,9 @@ import kotlinx.coroutines.withContext
 
 class LoginActivity : AppCompatActivity() {
 
+    private val dummyUserId1 = "616647266964"
+    private val dummyUserId2 = "616647266965"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -48,6 +51,29 @@ class LoginActivity : AppCompatActivity() {
             val host = "https://" + BuildConfig.BACKEND_URI + "/api/v2/auth/saml/cornell/"
             webview.loadUrl(host)
             webview.visibility = View.VISIBLE
+        }
+
+        if (BuildConfig.DUMMY_LOGIN_ENABLED) {
+            val buttons = arrayOf(dummy_login_button, dummy_login_button_2)
+            for ((i, button) in buttons.withIndex()) {
+                button.visibility = View.VISIBLE
+                button.text = getString(R.string.dummy_login, i)
+                button.setOnClickListener {
+                    dummyLogin(it)
+                }
+            }
+        }
+    }
+
+    private fun dummyLogin(view: View) {
+        val userId = if (view == dummy_login_button) dummyUserId1 else dummyUserId2
+        CoroutineScope(Dispatchers.Main).launch {
+            val dummyLoginEndpoint = Endpoint.dummyUserLogin(userId)
+            val typeToken = object : TypeToken<ApiResponse<UserSession>>() {}.type
+            val userSession = withContext(Dispatchers.IO) {
+                Request.makeRequest<ApiResponse<UserSession>>(dummyLoginEndpoint.okHttpRequest(), typeToken)
+            }!!.data
+            sendSessionInfo(userSession)
         }
     }
 
