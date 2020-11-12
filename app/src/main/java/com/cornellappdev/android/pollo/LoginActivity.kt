@@ -29,9 +29,6 @@ import kotlinx.coroutines.withContext
 
 class LoginActivity : AppCompatActivity() {
 
-    private val dummyUserId1 = "616647266964"
-    private val dummyUserId2 = "616647266965"
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -53,20 +50,21 @@ class LoginActivity : AppCompatActivity() {
             webview.visibility = View.VISIBLE
         }
 
+        // Dummy login, to be removed before pushing to production
         if (BuildConfig.DUMMY_LOGIN_ENABLED) {
             val buttons = arrayOf(dummy_login_button, dummy_login_button_2)
             for ((i, button) in buttons.withIndex()) {
                 button.visibility = View.VISIBLE
                 button.text = getString(R.string.dummy_login, i)
                 button.setOnClickListener {
-                    dummyLogin(it)
+                    val userId = if (i == 0) BuildConfig.DUMMY_USER_ID1 else BuildConfig.DUMMY_USER_ID2
+                    dummyLogin(userId)
                 }
             }
         }
     }
 
-    private fun dummyLogin(view: View) {
-        val userId = if (view == dummy_login_button) dummyUserId1 else dummyUserId2
+    private fun dummyLogin(userId: String) {
         CoroutineScope(Dispatchers.Main).launch {
             val dummyLoginEndpoint = Endpoint.dummyUserLogin(userId)
             val typeToken = object : TypeToken<ApiResponse<UserSession>>() {}.type

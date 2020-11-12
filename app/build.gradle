@@ -17,7 +17,6 @@ android {
         versionName "1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "web_client_id", keyProperties['web_client_id'])
-        buildConfigField("String", "BACKEND_URI", "\"pollo-dev.cornellappdev.com\"")
     }
     buildTypes {
         debug {
@@ -25,12 +24,16 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField("boolean", "DUMMY_LOGIN_ENABLED", "true")
+            buildConfigField("String", "DUMMY_USER_ID1", "\"616647266964\"")
+            buildConfigField("String", "DUMMY_USER_ID2", "\"616647266965\"")
+            buildConfigField("String", "BACKEND_URI", "\"pollo-dev.cornellappdev.com\"")
         }
         release {
             manifestPlaceholders = [crashlyticsCollectionEnabled: "true"]
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField("boolean", "DUMMY_LOGIN_ENABLED", "false")
+            buildConfigField("String", "BACKEND_URI", "\"pollo-backend.cornellappdev.com\"")
         }
     }
 

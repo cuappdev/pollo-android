@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
         // If there is no refresh token in preferences, attempt to sign in, otherwise launch the normal activity
         if (preferencesHelper.refreshToken!!.isNotEmpty()) {
             // Always attempt to refresh to reduce chances of access token expiring during user session
-            CoroutineScope(Dispatchers.Main).launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val refreshTokenEndpoint = Endpoint.userRefreshSession(preferencesHelper.refreshToken as String)
                     val typeToken = object : TypeToken<ApiResponse<UserSession>>() {}.type
@@ -60,7 +60,9 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
                     preferencesHelper.refreshToken = userSession.refreshToken
                     preferencesHelper.accessToken = userSession.accessToken
                     preferencesHelper.expiresAt = userSession.sessionExpiration.toLong()
-                    finishAuthFlow()
+                    withContext(Dispatchers.Main) {
+                        finishAuthFlow()
+                    }
                 } catch (e: Exception) {
                     val signInIntent = Intent(this@MainActivity, LoginActivity::class.java)
                     startActivityForResult(signInIntent, LOGIN_REQ_CODE)
