@@ -73,7 +73,8 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
 
     override fun onResume() {
         super.onResume()
-        refreshPolls()
+        ConnectivityBanner(this).setUpConnectivityBanners(findViewById(android.R.id.content))
+        refreshPolls(false)
     }
 
     fun goBack(view: View) {
@@ -90,12 +91,17 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
     fun startNewPoll(newPoll: Poll) {
         Socket.serverStart(newPoll)
         supportFragmentManager.popBackStack()
-        refreshPolls()
+        refreshPolls(true)
         onPollStart(newPoll)
     }
 
-    private fun refreshPolls() {
-        CoroutineScope(Dispatchers.Main).launch {
+    private fun refreshPolls(newPollCreated: Boolean) {
+        val handler = ExceptionHelper.getCoroutineExceptionHandler(this, "Failed to Update Polls") {
+            if (newPollCreated) {
+                onPollDeleteLive()
+            }
+        }
+        CoroutineScope(Dispatchers.Main).launch(handler) {
             val endpoint = Endpoint.joinGroupWithCode(group.code)
             val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
             val typeTokenSortedPolls = object : TypeToken<ApiResponse<ArrayList<GetSortedPollsResponse>>>() {}.type
@@ -310,10 +316,9 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         toggleEmptyState()
     }
 
-    fun openNewPollFragment(view: View) {
+    private fun openNewPollFragment(view: View) {
         supportFragmentManager.beginTransaction()
                 .setCustomAnimations(R.anim.slide_up, R.anim.slide_down, R.anim.slide_up, R.anim.slide_down)
                 .add(R.id.polls_date_layout, CreatePollFragment()).addToBackStack(null).commit()
     }
-
 }

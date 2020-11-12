@@ -9,6 +9,7 @@ import com.cornellappdev.android.pollo.models.Group
 import com.cornellappdev.android.pollo.models.User
 import com.cornellappdev.android.pollo.networking.*
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.group_list_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -56,8 +57,12 @@ class GroupRecyclerAdapter(
             view.groupDetailsButton.visibility = View.GONE
             view.groupLoadingIndicator.visibility = View.VISIBLE
 
-
-            CoroutineScope(Dispatchers.Main).launch {
+            val handler = ExceptionHelper.getCoroutineExceptionHandler(view.context, "Failed to Enter Group") {
+                view.groupDetailsButton.visibility = View.VISIBLE
+                view.groupLoadingIndicator.visibility = View.GONE
+                isLoading = false
+            }
+            CoroutineScope(Dispatchers.Main).launch(handler) {
                 val endpoint = Endpoint.joinGroupWithCode(group?.code ?: "")
                 val typeTokenGroupNode = object : TypeToken<ApiResponse<Group>>() {}.type
                 val typeTokenSortedPolls = object : TypeToken<ApiResponse<ArrayList<GetSortedPollsResponse>>>() {}.type
@@ -71,7 +76,7 @@ class GroupRecyclerAdapter(
                 val pollsDateActivity = Intent(context, PollsDateActivity::class.java)
                 pollsDateActivity.putExtra("SORTED_POLLS", sortedPolls!!.data)
                 pollsDateActivity.putExtra("GROUP_NODE", group)
-                pollsDateActivity.putExtra("USER_ROLE",role)
+                pollsDateActivity.putExtra("USER_ROLE", role)
                 context.startActivity(pollsDateActivity)
 
                 view.groupDetailsButton.visibility = View.VISIBLE
@@ -84,7 +89,7 @@ class GroupRecyclerAdapter(
             this.group = group
             view.groupNameTextView.text = group.name
 
-            if (group.isLive == true) {
+            if (group.isLive) {
                 view.groupLiveTextView.text = "• Live Now"
                 view.groupLiveTextView.setTextColor(ContextCompat.getColor(view.context, R.color.liveNow))
             } else {
@@ -97,7 +102,7 @@ class GroupRecyclerAdapter(
                     if (timeSplit[i] > 0) break
 
                     // To handle issue where `group.updatedAt` is greater than the current time
-                    if (i == TIME_LABELS.size-1) timeResult = "1 " + TIME_LABELS[i]
+                    if (i == TIME_LABELS.size - 1) timeResult = "1 " + TIME_LABELS[i]
                 }
 
                 if (timeResult[0] == '1') {

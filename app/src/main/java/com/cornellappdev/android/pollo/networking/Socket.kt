@@ -24,8 +24,6 @@ interface SocketDelegate {
 
 object Socket {
 
-    data class PollFilter(val success: Boolean, val text: String?, val filter: ArrayList<String>?)
-
     private var delegates = ArrayList<SocketDelegate>()
     private lateinit var manager: Manager
     private lateinit var socket: Socket

@@ -46,35 +46,28 @@ class MainActivity : AppCompatActivity(), GroupFragment.GroupFragmentDelegate {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // If there is no accessToken in preferences, attempt to sign in, otherwise launch the normal activity
-        if (preferencesHelper.accessToken!!.isNotEmpty()) {
-            val expiresAt = preferencesHelper.expiresAt
-            val dateAccessTokenExpires = Date(expiresAt * 1000)
-            val currentDate = Date()
-            val isAccessTokenExpired = currentDate >= dateAccessTokenExpires
-            CoroutineScope(Dispatchers.Main).launch {
-                if (isAccessTokenExpired) {
+        // If there is no refresh token in preferences, attempt to sign in, otherwise launch the normal activity
+        if (preferencesHelper.refreshToken!!.isNotEmpty()) {
+            // Always attempt to refresh to reduce chances of access token expiring during user session
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
                     val refreshTokenEndpoint = Endpoint.userRefreshSession(preferencesHelper.refreshToken as String)
                     val typeToken = object : TypeToken<ApiResponse<UserSession>>() {}.type
                     val userSession = withContext(Dispatchers.IO) {
                         Request.makeRequest<ApiResponse<UserSession>>(refreshTokenEndpoint.okHttpRequest(), typeToken)
                     }!!.data
                     User.currentSession = userSession
-
-                    if (userSession.sessionExpiration == null) {
-                        val signInIntent = Intent(this@MainActivity, LoginActivity::class.java)
-                        startActivityForResult(signInIntent, LOGIN_REQ_CODE)
-                        return@launch
-                    }
-
                     preferencesHelper.refreshToken = userSession.refreshToken
                     preferencesHelper.accessToken = userSession.accessToken
                     preferencesHelper.expiresAt = userSession.sessionExpiration.toLong()
-                } else {
-                    User.currentSession = UserSession(preferencesHelper.accessToken, preferencesHelper.refreshToken, expiresAt.toString(), true)
+                    withContext(Dispatchers.Main) {
+                        finishAuthFlow()
+                    }
+                } catch (e: Exception) {
+                    val signInIntent = Intent(this@MainActivity, LoginActivity::class.java)
+                    startActivityForResult(signInIntent, LOGIN_REQ_CODE)
+                    return@launch
                 }
-
-                finishAuthFlow()
             }
             return
         }
