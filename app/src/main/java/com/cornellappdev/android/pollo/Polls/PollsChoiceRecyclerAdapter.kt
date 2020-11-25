@@ -46,7 +46,7 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
     }
 
     private fun sendAnswer(index: Int) {
-        Socket.sendMCAnswer(index)
+        Socket.sendMCAnswer(poll,index)
     }
 
     class ChoiceHolder(v: View) : RecyclerView.ViewHolder(v) {

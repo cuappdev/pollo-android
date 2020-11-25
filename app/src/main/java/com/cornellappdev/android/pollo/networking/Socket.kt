@@ -161,7 +161,8 @@ object Socket {
         socket.emit("server/poll/delete/live")
     }
 
-    fun sendMCAnswer(pollIndex: Int) {
+    fun sendMCAnswer(poll: Poll, pollIndex: Int) {
+        delegates.forEach { it.onPollUpdateAdmin(poll) }
         socket.emit("server/poll/answer", pollIndex)
     }
 }

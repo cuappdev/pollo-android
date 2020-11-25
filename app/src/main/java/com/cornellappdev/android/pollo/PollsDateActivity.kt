@@ -43,7 +43,8 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
                 noPollsTitle.setText(R.string.no_polls_created_title)
                 noPollsSubtext.setText(R.string.no_polls_created_subtext)
             }
-            User.Role.MEMBER -> {}
+            User.Role.MEMBER -> {
+            }
         }
 
         togglePollCreation(group.isLive && sortedPolls.isNotEmpty())
@@ -290,8 +291,10 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
                     if (pollGroup.polls.isEmpty()) {
                         sortedPolls.remove(pollGroup)
                     }
-                    runOnUiThread { adapter.updatePolls(sortedPolls) }
-                    toggleEmptyState()
+                    runOnUiThread {
+                        adapter.updatePolls(sortedPolls)
+                        toggleEmptyState()
+                    }
                     return
                 }
             }
@@ -312,8 +315,8 @@ class PollsDateActivity : AppCompatActivity(), SocketDelegate, View.OnClickListe
         runOnUiThread {
             adapter.updatePolls(sortedPolls)
             togglePollCreation(false)
+            toggleEmptyState()
         }
-        toggleEmptyState()
     }
 
     private fun openNewPollFragment(view: View) {
