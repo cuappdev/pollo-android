@@ -9,14 +9,16 @@ import com.cornellappdev.android.pollo.inflate
 import com.cornellappdev.android.pollo.models.Poll
 import com.cornellappdev.android.pollo.models.PollState
 import com.cornellappdev.android.pollo.models.User
-import kotlinx.android.synthetic.main.poll_multiple_choice_item_row.view.*
 import com.cornellappdev.android.pollo.networking.Socket
+import kotlinx.android.synthetic.main.poll_multiple_choice_item_row.view.*
 import kotlin.math.roundToInt
 
 
-class PollsChoiceRecyclerAdapter(private val poll: Poll,
-                                 private val userId: String,
-                                 private val role: User.Role) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PollsChoiceRecyclerAdapter(
+        private val poll: Poll,
+        private val userId: String,
+        private val role: User.Role
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var positionSelected = -1
 
@@ -46,7 +48,7 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
     }
 
     private fun sendAnswer(index: Int) {
-        Socket.sendMCAnswer(index)
+        Socket.sendMCAnswer(poll, index)
     }
 
     class ChoiceHolder(v: View) : RecyclerView.ViewHolder(v) {
@@ -105,11 +107,11 @@ class PollsChoiceRecyclerAdapter(private val poll: Poll,
 
                 PollState.shared -> {
                     view.answerButton.background =
-                        when (poll.correctAnswer) {
-                            -1 -> ContextCompat.getDrawable(view.context, R.drawable.no_correct_radio_button)
-                            potentialUserAnswer?.first() -> ContextCompat.getDrawable(view.context, R.drawable.checked_correct_radio_button)
-                            else -> ContextCompat.getDrawable(view.context, R.drawable.checked_incorrect_radio_button)
-                        }
+                            when (poll.correctAnswer) {
+                                -1 -> ContextCompat.getDrawable(view.context, R.drawable.no_correct_radio_button)
+                                potentialUserAnswer?.first() -> ContextCompat.getDrawable(view.context, R.drawable.checked_correct_radio_button)
+                                else -> ContextCompat.getDrawable(view.context, R.drawable.checked_incorrect_radio_button)
+                            }
                 }
             }
         }

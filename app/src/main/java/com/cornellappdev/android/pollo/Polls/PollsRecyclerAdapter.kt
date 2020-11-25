@@ -18,16 +18,13 @@ import com.cornellappdev.android.pollo.networking.Socket
 import kotlinx.android.synthetic.main.poll_recyclerview_item_row.view.*
 import java.util.*
 
-interface AnswerChoiceDelegate {
-    fun sendAnswer(position: Int)
-}
 
 class PollsRecyclerAdapter(
         private var polls: ArrayList<Poll>,
         private val userId: String,
         private val role: User.Role,
         val callback: OnPollOptionsPressedListener
-) : RecyclerView.Adapter<PollsRecyclerAdapter.PollHolder>(), AnswerChoiceDelegate {
+) : RecyclerView.Adapter<PollsRecyclerAdapter.PollHolder>() {
 
     private val viewPool = RecyclerView.RecycledViewPool()
 
@@ -61,11 +58,12 @@ class PollsRecyclerAdapter(
             marginEnd = if (position == (itemCount - 1)) endAdjustment else 16
         }
 
-        holder.bindPoll(poll, this, role)
+        holder.bindPoll(poll, role)
 
         //Choices Recyclerview Height
         holder.view.pollsChoiceRecyclerView.layoutParams = (holder.view.pollsChoiceRecyclerView.layoutParams as ConstraintLayout.LayoutParams).apply {
-            val cellHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 57f, displayMetrics).toInt()
+            val cellHeight = if (poll.answerChoices.count() == 2) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 58.5f, displayMetrics).toInt()
+            else TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 57f, displayMetrics).toInt()
             matchConstraintMaxHeight = cellHeight * poll.answerChoices.count()
             val adminMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 120f, displayMetrics).toInt()
             val memberMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20f, displayMetrics).toInt()
@@ -81,22 +79,17 @@ class PollsRecyclerAdapter(
         }
     }
 
-    override fun sendAnswer(position: Int) {
-        Socket.sendMCAnswer(position)
-    }
 
     inner class PollHolder(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener {
 
         var view: View = v
         private var poll: Poll? = null
-        private var delegate: AnswerChoiceDelegate? = null
         private var role: User.Role? = null
 
         override fun onClick(v: View) {}
 
-        fun bindPoll(poll: Poll, delegate: AnswerChoiceDelegate, role: User.Role) {
+        fun bindPoll(poll: Poll, role: User.Role) {
             this.poll = poll
-            this.delegate = delegate
             this.role = role
 
             val totalNumberOfResponses = poll.answerChoices.map { pollResult ->
@@ -216,4 +209,6 @@ class PollsRecyclerAdapter(
     interface OnPollOptionsPressedListener {
         fun onPollOptionsPressed(poll: Poll)
     }
+
+
 }
